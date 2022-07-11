@@ -1,0 +1,46 @@
+{
+  "name": "@ecmwf-projects/cads-ui-library",
+  "version": "1.0.0-beta.0",
+  "description": "Common UI kit library",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ecmwf-projects/cads-ui-library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ecmwf-projects/cads-ui-library/issues"
+  },
+  "homepage": "https://github.com/ecmwf-projects/cads-ui-library#README",
+  "license": "Apache 2.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "sideEffects": "false",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "test": "jest",
+    "format": "prettier --write .",
+    "lint:format": "prettier --check .",
+    "lint": "eslint src/**",
+    "preversion": "npm run build"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@types/styled-components": "^5.1.25",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "styled-components": "^5.3.5"
+  }
+}
