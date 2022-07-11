@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "module": "ESNext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
@@ -11,8 +16,18 @@
     "declaration": true,
     "declarationDir": "dist/types",
     "sourceMap": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "@src/*": [
+        "src/*"
+      ]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["**/*.spec.*"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "**/*.spec.*",
+    "node_modules"
+  ]
 }
