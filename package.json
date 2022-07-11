@@ -29,6 +29,7 @@
     "format": "prettier --write .",
     "lint:format": "prettier --check .",
     "lint": "eslint src/**",
+    "lint:staged": "lint-staged",
     "preversion": "npm run build",
     "prepare": "husky install"
   },
@@ -47,15 +48,16 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
+    "husky": "^7.0.0",
     "jest": "^28.1.2",
     "jest-environment-jsdom": "^28.1.2",
+    "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "styled-components": "^5.3.5",
     "ts-jest": "^28.0.5",
     "ts-node": "^10.8.2",
-    "typescript": "^4.7.4",
-    "husky": "^7.0.0"
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^0.1.5",
