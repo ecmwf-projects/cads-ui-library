@@ -1,5 +1,11 @@
 # cads-ui-library
-Common UI Kit library, shared among CDS portal, toolbox, EQC, CIM
+> Common UI Kit library, shared among CDS portal, toolbox, EQC, CIM
+
+<p>
+  <a href="https://github.com/ecmwf-projects/cads-ui-library/actions" target="_blank">
+    <img alt="Unit tests" src="https://github.com/ecmwf-projects/cads-ui-library/workflows/Test/badge.svg" />
+  </a>  
+</p>
 
 This is `cads-ui-library`. The aim of this UI library is to provide a set of styled and un-styled, accessible-first UI primitives that can be used and further customized in CDS and ADS portals.
 
