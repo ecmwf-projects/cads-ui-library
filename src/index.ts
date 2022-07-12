@@ -1,3 +1,3 @@
-import { Base as BaseButton } from '@src/buttons/Base'
+import { Base as BaseButton } from './buttons/Base'
 
 export { BaseButton }

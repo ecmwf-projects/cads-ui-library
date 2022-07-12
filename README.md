@@ -5,7 +5,25 @@ This is `cads-ui-library`. The aim of this UI library is to provide a set of sty
 
 ## Usage
 
-TODO
+**TODO: document with private NPM registry**
+
+Install the library with Yarn:
+
+```shell
+yarn add @ecmwf-projects/cads-ui-library
+```
+
+or with NPM:
+
+```shell
+npm install @ecmwf-projects/cads-ui-library
+```
+
+Then, import the desired component into your project:
+
+```shell
+import { BaseButton } from '@ecmwf-projects/cads-ui-library'
+```
 
 ## Publishing a new version
 
