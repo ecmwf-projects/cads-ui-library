@@ -1,7 +1,7 @@
 # cads-ui-library
 Common UI Kit library, shared among CDS portal, toolbox, EQC, CIM
 
-This is `cads-ui-library`. The aim of this UI library is to provide a set of un-styled, accessible-first UI primitives that can be further customized in CDS and ADS portals.
+This is `cads-ui-library`. The aim of this UI library is to provide a set of styled and un-styled, accessible-first UI primitives that can be used and further customized in CDS and ADS portals.
 
 ## Usage
 
@@ -9,4 +9,12 @@ TODO
 
 ## Publishing a new version
 
-TODO
+Increment the desired Semver version where the version can be one of `--major`, `--minor`, `--patch`. Run `yarn version -h` for a full list of flags:
+
+```shell
+yarn version --minor
+```
+
+This will also publish a release tag via `postversion` script.
+
+The tag will trigger the related Github actions for publishing to the desired package registry.
