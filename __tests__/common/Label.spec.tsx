@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 
-import { Label } from '../../src/common/Label'
+import { Label } from '../../src'
 
 describe('<Label/>', () => {
   it('renders with associated input', () => {
