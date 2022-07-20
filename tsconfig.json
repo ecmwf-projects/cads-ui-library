@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "strict": true,
+    "noImplicitAny": true,
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "declarationMap": true,
+    "sourceMap": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@src/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "**/*.spec.*",
+    "node_modules"
+  ]
+}
