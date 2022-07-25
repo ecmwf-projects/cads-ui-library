@@ -11,8 +11,6 @@ This is `cads-ui-library`. The aim of this UI library is to provide a set of sty
 
 ## Usage
 
-**TODO: document with private NPM registry**
-
 Install the library with Yarn:
 
 ```shell
