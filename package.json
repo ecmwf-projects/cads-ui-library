@@ -31,7 +31,8 @@
     "lint": "eslint src/**",
     "lint:staged": "lint-staged",
     "preversion": "npm run build",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postversion": "git push --follow-tags"
   },
   "devDependencies": {
     "@testing-library/dom": "^8.16.0",
