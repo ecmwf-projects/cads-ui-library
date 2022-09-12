@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import { Except } from 'type-fest'
+
 import {
   Accordion as AccordionPrimitive,
   Item as AccordionItemPrimitive,
@@ -11,15 +13,14 @@ import {
 
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 
+import type {
+  AccordionSingleProps,
+  AccordionItemProps
+} from '@radix-ui/react-accordion'
+
 type Props = {
-  rootProps: {
-    /**
-     * The value of the accordion item to expand by default.
-     * Must match itemProps.value.
-     */
-    defaultValue?: string
-  }
-  itemProps: { value: string; trigger: () => React.ReactNode }
+  rootProps: Except<AccordionSingleProps, 'type'>
+  itemProps: AccordionItemProps & { trigger: () => React.ReactNode }
   children: React.ReactNode
 }
 
@@ -27,9 +28,11 @@ type Props = {
  * An uncontrolled AccordionSingle component.
  */
 const AccordionSingle = ({ rootProps, itemProps, children }: Props) => {
+  const { trigger, ...restOfItemProps } = itemProps
+
   return (
-    <StyledRoot type='single' defaultValue={rootProps.defaultValue} collapsible>
-      <AccordionItemPrimitive value={itemProps.value}>
+    <StyledRoot {...rootProps} type='single'>
+      <AccordionItemPrimitive {...restOfItemProps}>
         <StyledHeader>
           <StyledTrigger>
             {itemProps.trigger()}

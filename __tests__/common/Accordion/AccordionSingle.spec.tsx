@@ -8,7 +8,9 @@ describe('<AccordionSingle/>', () => {
     render(
       <AccordionSingle
         rootProps={{
-          defaultValue: 'the label'
+          defaultValue: 'the label',
+          onValueChange: () => null,
+          collapsible: true
         }}
         itemProps={{
           value: 'the label',
