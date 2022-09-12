@@ -31,11 +31,11 @@ const AccordionSingle = ({ rootProps, itemProps, children }: Props) => {
   const { trigger, ...restOfItemProps } = itemProps
 
   return (
-    <StyledRoot {...rootProps} type='single'>
+    <StyledRoot {...rootProps} type='single' collapsible>
       <AccordionItemPrimitive {...restOfItemProps}>
         <StyledHeader>
           <StyledTrigger>
-            {itemProps.trigger()}
+            {trigger()}
             <StyledChevron />
           </StyledTrigger>
         </StyledHeader>
