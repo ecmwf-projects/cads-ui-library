@@ -37,7 +37,7 @@ const StyledCheckbox = styled(CheckboxPrimitive)`
   width: 16px;
   height: 16px;
   background-color: #ffffff;
-  border: 1px solid #e6e9f2;
+  border: 1px solid #9599a6;
   border-radius: 2px;
 
   &[data-state='checked'] {
