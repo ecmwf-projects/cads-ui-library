@@ -1,5 +1,5 @@
 import { AccordionSingle } from './common/Accordion/AccordionSingle'
-import { Badge, StatusBadge, Circle } from '@src/common/Badge'
+import { Badge, StatusBadge, Circle } from './common/Badge'
 import { Base as BaseButton } from './buttons/Base'
 import { Checkbox } from './common/Checkbox'
 import { Label } from './common/Label'
