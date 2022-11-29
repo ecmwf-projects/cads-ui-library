@@ -1,17 +1,10 @@
-import { AccordionSingle } from './common/Accordion/AccordionSingle'
-import { Badge, StatusBadge, Circle } from './common/Badge'
-import { Base as BaseButton } from './buttons/Base'
-import { Checkbox } from './common/Checkbox'
-import { Label } from './common/Label'
-import { TooltipProvider, Tooltip, TooltipArrow } from './common/Tooltip'
-import { Tabs, StyledTabTrigger, StyledTabContent } from './common/Tabs'
-import { RadioGroup, RadioGroupItem, RadioIndicator } from './common/RadioGroup'
+export { AccordionSingle } from './common/Accordion/AccordionSingle'
+export { Badge, StatusBadge, Circle } from './common/Badge'
+export { Base as BaseButton } from './buttons/Base'
+export { Checkbox } from './common/Checkbox'
+export { Label } from './common/Label'
+export { TooltipProvider, Tooltip, TooltipArrow } from './common/Tooltip'
+export { Tabs, StyledTabTrigger, StyledTabContent } from './common/Tabs'
+export { RadioGroup, RadioGroupItem, RadioIndicator } from './common/RadioGroup'
 
-export { AccordionSingle }
-export { BaseButton }
-export { Badge, StatusBadge, Circle }
-export { Checkbox }
-export { TooltipProvider, Tooltip, TooltipArrow }
-export { Label }
-export { Tabs, StyledTabTrigger, StyledTabContent }
-export { RadioGroup, RadioGroupItem, RadioIndicator }
+export { TextWidget } from './widgets/TextWidget'
