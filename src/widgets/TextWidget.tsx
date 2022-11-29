@@ -1,7 +1,7 @@
 import React from 'react'
 import Markdown from 'markdown-to-jsx'
 
-import { Widget, WidgetHeader, WidgetTitle } from '@src/widgets/Widget'
+import { Widget, WidgetHeader, WidgetTitle } from '../widgets/Widget'
 
 import type { MarkdownToJSX } from 'markdown-to-jsx'
 
