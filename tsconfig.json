@@ -12,6 +12,7 @@
     "declaration": true,
     "declarationDir": "./dist/types",
     "declarationMap": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "jsx": "react-jsx",
     "paths": {
