@@ -1,9 +1,10 @@
 import React from 'react'
-import Markdown from 'markdown-to-jsx'
+
+import { Markdown } from '../internal/markdown'
 
 import { Widget, WidgetHeader, WidgetTitle } from '../widgets/Widget'
 
-import type { MarkdownToJSX } from 'markdown-to-jsx'
+import type { TMarkdownToJSX } from '../internal/markdown'
 
 export interface TextWidgetConfiguration {
   details: {
@@ -17,7 +18,10 @@ export interface TextWidgetConfiguration {
 
 interface TextWidgetProps {
   configuration: TextWidgetConfiguration
-  markdownParsingOptions?: MarkdownToJSX.Options
+  /**
+   * Pass-through configuration parameters for Markdown parser.
+   */
+  markdownParsingOptions?: TMarkdownToJSX.Options
 }
 
 /**
