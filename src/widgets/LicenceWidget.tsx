@@ -7,6 +7,7 @@ import { BaseButton } from '../index'
 
 import { TMarkdownToJSX } from '../internal'
 import { Widget, WidgetHeader, WidgetTitle } from './Widget'
+import { WidgetTooltip } from '../index'
 
 export type Licence = {
   /**
@@ -81,6 +82,7 @@ const LicenceWidget = ({
     type,
     name,
     label,
+    help,
     details: { licences }
   } = configuration
 
@@ -126,6 +128,7 @@ const LicenceWidget = ({
     <Widget id={name}>
       <WidgetHeader>
         <WidgetTitle>{label}</WidgetTitle>
+        <WidgetTooltip helpText={help || null} />
       </WidgetHeader>
       {licences.map((licence, index) => {
         const { id, label, accepted, revision, contents_url, attachment_url } =
