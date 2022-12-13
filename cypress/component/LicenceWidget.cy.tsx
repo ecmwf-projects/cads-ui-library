@@ -1,6 +1,7 @@
 import './workaround-cypress-10-0-2-process-issue'
 
 import { LicenceWidget } from '../../src'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 describe('<LicenceWidget />', () => {
   it('handles accept', () => {
@@ -8,6 +9,7 @@ describe('<LicenceWidget />', () => {
       type: 'LicenceWidget' as const,
       name: 'licences',
       label: 'Terms of use',
+      help: 'Terms of use',
       details: {
         licences: [
           {
@@ -31,10 +33,12 @@ describe('<LicenceWidget />', () => {
     }
 
     cy.mount(
-      <LicenceWidget
-        configuration={configuration}
-        onLicenceAccept={cy.stub().as('onLicenceAccept')}
-      />
+      <TooltipProvider>
+        <LicenceWidget
+          configuration={configuration}
+          onLicenceAccept={cy.stub().as('onLicenceAccept')}
+        />
+      </TooltipProvider>
     )
     cy.findByText(/accept terms/i).click()
 
@@ -49,6 +53,7 @@ describe('<LicenceWidget />', () => {
       type: 'LicenceWidget' as const,
       name: 'licences',
       label: 'Terms of use',
+      help: 'Terms of use',
       details: {
         licences: [
           {
@@ -72,10 +77,12 @@ describe('<LicenceWidget />', () => {
     }
 
     cy.mount(
-      <LicenceWidget
-        configuration={configuration}
-        onLicenceClick={cy.stub().as('onLicenceClick')}
-      />
+      <TooltipProvider>
+        <LicenceWidget
+          configuration={configuration}
+          onLicenceClick={cy.stub().as('onLicenceClick')}
+        />
+      </TooltipProvider>
     )
     cy.findByText('Licence to use Copernicus products').click()
 
