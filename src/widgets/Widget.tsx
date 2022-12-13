@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 const Widget = styled.div`
+  font-family: 'Lato', sans-serif;
   background-color: #ffffff;
   margin-bottom: 1em;
   padding: 1.875em;
