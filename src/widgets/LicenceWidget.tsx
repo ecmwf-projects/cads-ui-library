@@ -114,6 +114,7 @@ const LicenceWidget = ({
             ev.stopPropagation()
             handleAccept(licence)
           }}
+          type='button'
         >
           Accept terms
         </AcceptTerms>
@@ -137,6 +138,7 @@ const LicenceWidget = ({
                   ev.stopPropagation()
                   onLicenceClick && onLicenceClick(licence)
                 }}
+                type='button'
               >
                 {label}
               </Label>
