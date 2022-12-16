@@ -4,6 +4,28 @@ import { render, screen } from '@testing-library/react'
 import { LicenceWidget } from '../../src'
 
 describe('<LicenceWidget/>', () => {
+  it('renders from configuration - falls back to licence id', () => {
+    const configuration = {
+      type: 'LicenceWidget' as const,
+      name: 'licences',
+      label: 'Terms of use',
+      details: {
+        licences: [
+          {
+            id: 'licence-xyz',
+            revision: '3',
+            contents_url: '',
+            attachment_url: ''
+          }
+        ]
+      }
+    }
+
+    render(<LicenceWidget configuration={configuration} />)
+    screen.getByText('Terms of use')
+    screen.getByText('licence-xyz')
+  })
+
   it('renders from configuration', () => {
     const configuration = {
       type: 'LicenceWidget' as const,
