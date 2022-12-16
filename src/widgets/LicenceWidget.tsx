@@ -21,7 +21,7 @@ export type Licence = {
   /**
    * The licence label.
    */
-  label: string
+  label?: string
   /**
    * URL to get Licence markdown content.
    */
@@ -143,7 +143,7 @@ const LicenceWidget = ({
                 }}
                 type='button'
               >
-                {label}
+                {label || id}
               </Label>
               {getLicence({
                 id,
