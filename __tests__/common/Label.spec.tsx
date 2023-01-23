@@ -7,26 +7,38 @@ describe('<Label/>', () => {
   it('renders with associated input', () => {
     render(
       <>
-        <Label>name</Label>
+        <Label htmlFor='name'>name</Label>
         <input id='name' />
       </>
     )
 
-    screen.getByRole('label')
+    screen.getByLabelText('name')
   })
 
   it('renders non full width', () => {
-    render(<Label>the label</Label>)
+    render(
+      <>
+        <Label htmlFor='name'>the label</Label>
+        <input id='name' />
+      </>
+    )
 
-    expect(screen.getByRole('label')).toHaveStyle({
+    expect(screen.getByText('the label')).toHaveStyle({
       display: 'inline-block'
     })
   })
 
   it('renders full width', () => {
-    render(<Label $isFullWidth={true}>the label</Label>)
+    render(
+      <>
+        <Label $isFullWidth={true} htmlFor='name'>
+          the label
+        </Label>
+        <input id='name' />
+      </>
+    )
 
-    expect(screen.getByRole('label')).toHaveStyle({
+    expect(screen.getByText('the label')).toHaveStyle({
       display: 'block',
       width: '100%'
     })
