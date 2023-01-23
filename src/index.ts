@@ -7,6 +7,7 @@ export { TooltipProvider, Tooltip, TooltipArrow } from './common/Tooltip'
 export { Tabs, StyledTabTrigger, StyledTabContent } from './common/Tabs'
 export { RadioGroup, RadioGroupItem, RadioIndicator } from './common/RadioGroup'
 export { WidgetTooltip } from './common/WidgetTooltip'
+export { SingleSelect } from './common/Select'
 
 export { LicenceWidget } from './widgets/LicenceWidget'
 export { TextWidget } from './widgets/TextWidget'
