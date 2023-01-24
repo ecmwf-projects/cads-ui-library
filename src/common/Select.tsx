@@ -155,6 +155,7 @@ const StyledTrigger = styled(Trigger)`
   display: inline-flex;
   gap: 3.125em;
   align-items: center;
+  justify-content: space-between;
   border: 1px solid #9599a6;
   border-radius: 4px;
   padding: 1em;
