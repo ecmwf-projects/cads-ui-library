@@ -36,6 +36,12 @@ type Props<TOptions> = {
    * Event handler called when the value changes.
    */
   onChange: (value: string) => void
+
+  /**
+   * The id to associate this widget with its label.
+   * See https://www.radix-ui.com/docs/primitives/components/select#labelling
+   */
+  id: string
   /**
    * The name of the select. Submitted with its owning form as part of a name/value pair.
    */
@@ -88,6 +94,7 @@ const SingleSelect = <TOptions extends { id: number; label: string }[]>({
   ariaLabel,
   placeholder,
   onChange,
+  id,
   name,
   disabled,
   required,
@@ -108,7 +115,7 @@ const SingleSelect = <TOptions extends { id: number; label: string }[]>({
       disabled={disabled}
       required={required}
     >
-      <StyledTrigger aria-label={ariaLabel}>
+      <StyledTrigger id={id} aria-label={ariaLabel}>
         <Value
           placeholder={(() => (
             <StyledPlaceholder>{placeholder}</StyledPlaceholder>
@@ -130,7 +137,7 @@ const SingleSelect = <TOptions extends { id: number; label: string }[]>({
               return (
                 <StyledItem value={String(id)} key={String(id)}>
                   <ItemText>{label}</ItemText>
-                  <ItemIndicator />
+                  <StyledIndicator />
                 </StyledItem>
               )
             })}
@@ -173,7 +180,6 @@ const StyledContent = styled(Content)`
 
   overflow: hidden;
   background-color: #ffffff;
-  border-radius: 6px;
   box-shadow: 0 10px 38px -10px rgba(22, 23, 24, 0.35),
     0px 10px 20px -15px rgba(22, 23, 24, 0.2);
 
@@ -220,6 +226,15 @@ const StyledScrollDownButton = styled(ScrollDownButton)`
   background-color: #ffffff;
   height: 25px;
   cursor: default;
+`
+
+const StyledIndicator = styled(ItemIndicator)`
+  position: absolute;
+  left: 0;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 `
 
 export { SingleSelect }

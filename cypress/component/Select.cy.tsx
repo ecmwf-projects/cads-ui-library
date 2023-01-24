@@ -2,7 +2,7 @@ import './workaround-cypress-10-0-2-process-issue'
 
 import styled from 'styled-components'
 
-import { SingleSelect } from '../../src'
+import { SingleSelect, Label } from '../../src'
 
 const StyledTestWrapper = ({ children }: { children: React.ReactNode }) => {
   return <StyledWrapper>{children}</StyledWrapper>
@@ -13,12 +13,20 @@ const StyledWrapper = styled.div`
 
   [role='combobox'] {
     width: 400px;
+
+    margin-top: 10px;
+
+    &:hover,
+    &:focus {
+      background-color: #dadada;
+    }
   }
 
   [role='option'] {
-    /**
-    Your custom styles here ...
-     */
+    &:hover,
+    &:focus {
+      background-color: #dadada;
+    }
   }
 `
 
@@ -26,6 +34,7 @@ describe('<Select/>', () => {
   it('handles select', () => {
     cy.mount(
       <StyledTestWrapper>
+        <Label htmlFor='thematic-activity'>Thematic activity</Label>
         <SingleSelect
           options={[
             {
@@ -102,6 +111,8 @@ describe('<Select/>', () => {
           onChange={cy.stub().as('onChange')}
           scrollDownOn={true}
           scrollUpOn={true}
+          name='thematic-activity'
+          id='thematic-activity'
         />
       </StyledTestWrapper>
     )
