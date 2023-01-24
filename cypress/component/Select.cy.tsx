@@ -19,22 +19,72 @@ describe('<Select/>', () => {
         <SingleSelect
           options={[
             {
-              value: '1',
-              label:
-                'Policy support - support to EU policy or EU national or regional policy'
+              id: 8,
+              label: 'Air quality and atmospheric composition'
             },
             {
-              value: '2',
-              label: 'A'
+              id: 3,
+              label: 'Arctic policy, polar areas'
             },
             {
-              value: '3',
-              label: 'BA'
+              id: 11,
+              label: 'Climate change'
             },
             {
-              value: '4',
-              label:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dapibus sapien sit amet velit egestas, eu consectetur lacus rhoncus. Donec ut turpis et ex congue ornare sed a ligula. Nullam eu rhoncus eros.'
+              id: 5,
+              label: 'Energy'
+            },
+            {
+              id: 6,
+              label: 'Environmental compliance'
+            },
+            {
+              id: 12,
+              label: 'European Civil Protection and Humanitarian Aid Operations'
+            },
+            {
+              id: 9,
+              label: 'Health'
+            },
+            {
+              id: 13,
+              label: 'International development and cooperation'
+            },
+            {
+              id: 1,
+              label: 'Land'
+            },
+            {
+              id: 2,
+              label: 'Marine environment, maritime affairs, fisheries'
+            },
+            {
+              id: 14,
+              label: 'Migration/home affairs'
+            },
+            {
+              id: 17,
+              label: 'Other'
+            },
+            {
+              id: 7,
+              label: 'Raw materials'
+            },
+            {
+              id: 16,
+              label: 'Research/innovation'
+            },
+            {
+              id: 15,
+              label: 'Security'
+            },
+            {
+              id: 10,
+              label: 'Tourism'
+            },
+            {
+              id: 4,
+              label: 'Transport'
             }
           ]}
           ariaLabel='Thematic activity'
@@ -47,16 +97,16 @@ describe('<Select/>', () => {
     )
 
     cy.findByLabelText('Thematic activity').click()
-    cy.findByText('BA').click()
+    cy.findByText('Air quality and atmospheric composition').click()
 
     cy.findByLabelText('Thematic activity').click()
     cy.findByText(
-      'Policy support - support to EU policy or EU national or regional policy'
+      'European Civil Protection and Humanitarian Aid Operations'
     ).click()
 
     cy.get('@onChange').should('have.been.calledTwice')
 
-    cy.get('@onChange').its('firstCall.args.0').should('eq', '3')
-    cy.get('@onChange').its('secondCall.args.0').should('eq', '1')
+    cy.get('@onChange').its('firstCall.args.0').should('eq', '8')
+    cy.get('@onChange').its('secondCall.args.0').should('eq', '12')
   })
 })

@@ -10,16 +10,16 @@ describe('Select components', () => {
         <SingleSelect
           options={[
             {
-              value: '1',
+              id: 1,
               label:
                 'Policy support - support to EU policy or EU national or regional policy'
             },
             {
-              value: '2',
+              id: 2,
               label: 'A'
             },
             {
-              value: '3',
+              id: 3,
               label: 'BA'
             }
           ]}

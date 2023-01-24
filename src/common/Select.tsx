@@ -84,7 +84,7 @@ type Props<TOptions> = {
 /**
  * SingleSelect. An uncontrolled select component for displaying a single group options.
  */
-const SingleSelect = <TOptions extends { value: string; label: string }[]>({
+const SingleSelect = <TOptions extends { id: number; label: string }[]>({
   options,
   ariaLabel,
   placeholder,
@@ -128,9 +128,9 @@ const SingleSelect = <TOptions extends { value: string; label: string }[]>({
           ) : null}
           <StyledViewport>
             <Group>
-              {options.map(({ value, label }) => {
+              {options.map(({ id, label }) => {
                 return (
-                  <StyledItem value={value} key={value}>
+                  <StyledItem value={String(id)} key={String(id)}>
                     <ItemText>{label}</ItemText>
                     <ItemIndicator />
                   </StyledItem>
@@ -155,7 +155,6 @@ const StyledTrigger = styled(Trigger)`
   display: inline-flex;
   gap: 3.125em;
   align-items: center;
-  justify-content: center;
   border: 1px solid #9599a6;
   border-radius: 4px;
   padding: 1em;
@@ -184,14 +183,13 @@ const StyledContent = styled(Content)`
   max-height: var(--radix-select-content-available-height);
 `
 
-const StyledViewport = styled(Viewport)`
-  padding: 5px;
-`
+const StyledViewport = styled(Viewport)``
 
 const StyledItem = styled(Item)`
   all: unset;
 
   display: flex;
+  min-height: 25px;
   padding: 0.5em;
   line-height: 1;
   border-radius: 3px;
