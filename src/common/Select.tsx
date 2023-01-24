@@ -1,6 +1,5 @@
 import React from 'react'
-
-import { CheckIcon, ChevronDownIcon } from '@radix-ui/react-icons'
+import styled from 'styled-components'
 
 import {
   Root,
@@ -11,11 +10,14 @@ import {
   Content,
   Viewport,
   Group,
-  Label,
   Item,
   ItemText,
-  ItemIndicator
+  ItemIndicator,
+  ScrollUpButton,
+  ScrollDownButton
 } from '@radix-ui/react-select'
+
+import { ChevronUpIcon, ChevronDownIcon } from '@radix-ui/react-icons'
 
 type Props<TOptions> = {
   /**
@@ -51,10 +53,6 @@ type Props<TOptions> = {
   required?: boolean
 
   /**
-   * The select label group.
-   */
-  label?: string
-  /**
    * The open state of the select when it is initially rendered.
    */
   defaultOpen?: boolean
@@ -67,6 +65,21 @@ type Props<TOptions> = {
    * Defaults to 'popper'.
    */
   position?: 'item-aligned' | 'popper'
+
+  /**
+   * The distance in pixels from the anchor. Only available when position is set to popper.
+   */
+  sideOffset?: number
+
+  /**
+   * Enables the scroll up control.
+   */
+  scrollUpOn?: boolean
+
+  /**
+   * Enables the scroll down control.
+   */
+  scrollDownOn?: boolean
 }
 /**
  * SingleSelect. An uncontrolled select component for displaying a single group options.
@@ -79,10 +92,12 @@ const SingleSelect = <TOptions extends { value: string; label: string }[]>({
   name,
   disabled,
   required,
-  label,
   defaultOpen,
   defaultValue,
-  position
+  position,
+  sideOffset,
+  scrollUpOn,
+  scrollDownOn
 }: Props<TOptions>) => {
   if (!options?.length) return null
   return (
@@ -94,33 +109,122 @@ const SingleSelect = <TOptions extends { value: string; label: string }[]>({
       disabled={disabled}
       required={required}
     >
-      <Trigger aria-label={ariaLabel}>
-        <Value placeholder={placeholder} />
+      <StyledTrigger aria-label={ariaLabel}>
+        <Value
+          placeholder={(() => (
+            <StyledPlaceholder>{placeholder}</StyledPlaceholder>
+          ))()}
+        />
         <Icon>
           <ChevronDownIcon />
         </Icon>
-      </Trigger>
+      </StyledTrigger>
       <Portal>
-        <Content position={position || 'popper'}>
-          <Viewport>
+        <StyledContent position={position || 'popper'} sideOffset={sideOffset}>
+          {scrollUpOn ? (
+            <StyledScrollUpButton>
+              <ChevronUpIcon />
+            </StyledScrollUpButton>
+          ) : null}
+          <StyledViewport>
             <Group>
-              {label ? <Label>{label}</Label> : null}
               {options.map(({ value, label }) => {
                 return (
-                  <Item value={value} key={value}>
+                  <StyledItem value={value} key={value}>
                     <ItemText>{label}</ItemText>
-                    <ItemIndicator>
-                      <CheckIcon />
-                    </ItemIndicator>
-                  </Item>
+                    <ItemIndicator />
+                  </StyledItem>
                 )
               })}
             </Group>
-          </Viewport>
-        </Content>
+          </StyledViewport>
+          {scrollDownOn ? (
+            <StyledScrollDownButton>
+              <ChevronDownIcon />
+            </StyledScrollDownButton>
+          ) : null}
+        </StyledContent>
       </Portal>
     </Root>
   )
 }
+
+const StyledTrigger = styled(Trigger)`
+  all: unset;
+
+  display: inline-flex;
+  gap: 3.125em;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #9599a6;
+  border-radius: 4px;
+  padding: 1em;
+  background-color: #ffffff;
+
+  &:hover,
+  &:focus {
+    background-color: #f0f2f7;
+  }
+`
+
+const StyledPlaceholder = styled.span`
+  color: #9599a6;
+`
+
+const StyledContent = styled(Content)`
+  all: unset;
+
+  overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 10px 38px -10px rgba(22, 23, 24, 0.35),
+    0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+
+  width: var(--radix-select-trigger-width);
+  max-height: var(--radix-select-content-available-height);
+`
+
+const StyledViewport = styled(Viewport)`
+  padding: 5px;
+`
+
+const StyledItem = styled(Item)`
+  all: unset;
+
+  display: flex;
+  padding: 0.5em;
+  line-height: 1;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+
+  &[data-highlighted] {
+    outline: none;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: #f0f2f7;
+  }
+`
+
+const StyledScrollUpButton = styled(ScrollUpButton)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  height: 25px;
+  cursor: default;
+`
+
+const StyledScrollDownButton = styled(ScrollDownButton)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  height: 25px;
+  cursor: default;
+`
 
 export { SingleSelect }
