@@ -6,7 +6,6 @@ import {
   Trigger,
   Value,
   Icon,
-  Portal,
   Content,
   Viewport,
   Group,
@@ -119,32 +118,30 @@ const SingleSelect = <TOptions extends { id: number; label: string }[]>({
           <ChevronDownIcon />
         </Icon>
       </StyledTrigger>
-      <Portal>
-        <StyledContent position={position || 'popper'} sideOffset={sideOffset}>
-          {scrollUpOn ? (
-            <StyledScrollUpButton>
-              <ChevronUpIcon />
-            </StyledScrollUpButton>
-          ) : null}
-          <StyledViewport>
-            <Group>
-              {options.map(({ id, label }) => {
-                return (
-                  <StyledItem value={String(id)} key={String(id)}>
-                    <ItemText>{label}</ItemText>
-                    <ItemIndicator />
-                  </StyledItem>
-                )
-              })}
-            </Group>
-          </StyledViewport>
-          {scrollDownOn ? (
-            <StyledScrollDownButton>
-              <ChevronDownIcon />
-            </StyledScrollDownButton>
-          ) : null}
-        </StyledContent>
-      </Portal>
+      <StyledContent position={position || 'popper'} sideOffset={sideOffset}>
+        {scrollUpOn ? (
+          <StyledScrollUpButton>
+            <ChevronUpIcon />
+          </StyledScrollUpButton>
+        ) : null}
+        <StyledViewport>
+          <Group>
+            {options.map(({ id, label }) => {
+              return (
+                <StyledItem value={String(id)} key={String(id)}>
+                  <ItemText>{label}</ItemText>
+                  <ItemIndicator />
+                </StyledItem>
+              )
+            })}
+          </Group>
+        </StyledViewport>
+        {scrollDownOn ? (
+          <StyledScrollDownButton>
+            <ChevronDownIcon />
+          </StyledScrollDownButton>
+        ) : null}
+      </StyledContent>
     </Root>
   )
 }
@@ -191,8 +188,7 @@ const StyledItem = styled(Item)`
 
   display: flex;
   min-height: 25px;
-  padding: 0.5em;
-  line-height: 1;
+  padding: 0.5em 0.5em 0.5em 1em;
   border-radius: 3px;
   cursor: pointer;
   position: relative;

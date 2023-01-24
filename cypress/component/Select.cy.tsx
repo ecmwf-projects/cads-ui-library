@@ -10,6 +10,16 @@ const StyledTestWrapper = ({ children }: { children: React.ReactNode }) => {
 
 const StyledWrapper = styled.div`
   font-family: 'Lato', sans-serif;
+
+  [role='combobox'] {
+    width: 400px;
+  }
+
+  [role='option'] {
+    /**
+    Your custom styles here ...
+     */
+  }
 `
 
 describe('<Select/>', () => {
