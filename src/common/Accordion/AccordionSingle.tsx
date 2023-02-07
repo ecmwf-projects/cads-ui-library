@@ -31,10 +31,15 @@ const AccordionSingle = ({ rootProps, itemProps, children }: Props) => {
   const { trigger, ...restOfItemProps } = itemProps
 
   return (
-    <StyledRoot {...rootProps} type='single' collapsible>
+    <StyledRoot
+      {...rootProps}
+      type='single'
+      data-stylizable='accordion-single'
+      collapsible
+    >
       <AccordionItemPrimitive {...restOfItemProps}>
         <StyledHeader>
-          <StyledTrigger>
+          <StyledTrigger data-stylizable='accordion-single-trigger'>
             {trigger()}
             <StyledChevron />
           </StyledTrigger>
@@ -46,7 +51,6 @@ const AccordionSingle = ({ rootProps, itemProps, children }: Props) => {
 }
 
 const StyledRoot = styled(AccordionPrimitive)`
-  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   padding: 1.0625em;
@@ -59,7 +63,6 @@ const StyledHeader = styled(AccordionHeaderPrimitive)`
 
 const StyledTrigger = styled(AccordionTriggerPrimitive)`
   all: unset;
-  background-color: transparent;
   color: #39393a;
   cursor: pointer;
   display: flex;
