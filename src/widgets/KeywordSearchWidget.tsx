@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
 import { AccordionSingle, Checkbox, Label } from '../index'
@@ -12,7 +12,7 @@ export interface KeywordSearchWidgetProps {
   categories: KeywordCategory[]
 
   /**
-   * Keyword change handlers. Invoked when the user selects/deselects a keyword, with the selected keywords as an object.
+   * Keyword change handlers. Invoked when the user selects/deselects a keyword.
    */
   onKeywordSelection?: (params: URLSearchParams) => void
 }
@@ -21,43 +21,72 @@ type Selections = Record<string, string[]>
 
 /**
  * KeywordSearchWidget. Widget to handle faceted search.
- * This widget is not configurable, and intended to be used inside a form.
+ * This widget is not configurable, and is intended to be used inside a form.
  */
 const KeywordSearchWidget = ({
   categories,
   onKeywordSelection
 }: KeywordSearchWidgetProps) => {
-  const [selections, setSelections] = useState<Selections>(() => {
-    /**
-     * Populate the initial state with a mapping between categories and empty arrays.
-     */
-    if (!categories?.length) return {}
-    const entries = categories.map(({ label }) => [label, []])
-    return Object.fromEntries(entries)
-  })
+  /**
+   * Keep track of the selected keywords. This is used to preserve the selections when the accordion are closed and subsequently opened.
+   */
+  const [selections, setSelections] = useState<Selections>({})
+  const formRef = useRef(null)
+
+  useEffect(() => {
+    setSelections({})
+  }, [categories])
 
   if (!categories?.length) return null
 
-  const getSelectedKeywordsAsQueryParams = (selections: Selections) => {
+  const getSelectedKeywordsAsQueryParams = (selections: FormData) => {
     const searchParams = new URLSearchParams()
 
-    for (const selection in selections) {
-      if (selections[selection].length) {
-        for (const keyword of selections[selection]) {
-          searchParams.append(selection, keyword)
-        }
+    for (const [category, keyword] of selections.entries()) {
+      if (typeof keyword === 'string') {
+        searchParams.append(category, keyword)
       }
     }
 
     return searchParams
   }
 
-  const isChecked = (categoryLabel: string, name: string) => {
-    return selections[categoryLabel]?.includes(name)
+  const isDefaultChecked = (category: string, keyword: string) => {
+    return selections[category]?.includes(keyword)
+  }
+
+  const handlePreserveSelections = (selections: FormData) => {
+    const selection = [...selections.entries()].reduce<Selections>(
+      (prevValue, currentValue) => {
+        const [name, value] = currentValue
+
+        if (typeof value !== 'string') return prevValue
+
+        if (prevValue[name]) {
+          prevValue[name] = [...prevValue[name], value]
+
+          return prevValue
+        }
+
+        prevValue[name] = [value]
+
+        return prevValue
+      },
+      {}
+    )
+
+    return setSelections(selection)
   }
 
   return (
-    <div>
+    <form
+      ref={formRef}
+      onChange={ev => {
+        const formData = new FormData(ev.currentTarget)
+        onKeywordSelection?.(getSelectedKeywordsAsQueryParams(formData))
+        handlePreserveSelections(formData)
+      }}
+    >
       {categories.map(category => {
         const { label: categoryLabel } = category
 
@@ -66,7 +95,11 @@ const KeywordSearchWidget = ({
             <AccordionSingle
               rootProps={{
                 defaultValue: categoryLabel,
-                collapsible: true
+                collapsible: true,
+                onValueChange: () => {
+                  if (!formRef.current) return
+                  handlePreserveSelections(new FormData(formRef.current))
+                }
               }}
               itemProps={{
                 value: categoryLabel,
@@ -76,66 +109,33 @@ const KeywordSearchWidget = ({
               }}
             >
               <Body>
-                {Object.entries(category.groups).map(([name, count]) => (
-                  <InputGroup key={name}>
-                    <Keyword>
-                      <Checkbox
-                        rootProps={{
-                          checked: isChecked(categoryLabel, name),
-                          onCheckedChange: checked => {
-                            if (checked) {
-                              return setSelections(prevState => {
-                                const state = {
-                                  ...prevState,
-                                  [categoryLabel]: [
-                                    ...prevState[categoryLabel],
-                                    name
-                                  ]
-                                }
-
-                                onKeywordSelection?.(
-                                  getSelectedKeywordsAsQueryParams(state)
-                                )
-
-                                return state
-                              })
-                            }
-
-                            return setSelections(prevState => {
-                              const state = {
-                                ...prevState,
-                                [categoryLabel]: prevState[
-                                  categoryLabel
-                                ].filter(val => val !== name)
-                              }
-
-                              onKeywordSelection?.(
-                                getSelectedKeywordsAsQueryParams(state)
-                              )
-
-                              return state
-                            })
-                          },
-                          name,
-                          id: name,
-                          value: name
-                        }}
-                      />
-                      <LabelWrapper
-                        isBold={selections[categoryLabel]?.includes(name)}
-                      >
+                {Object.entries(category.groups).map(([name, count]) => {
+                  return (
+                    <InputGroup key={name}>
+                      <Keyword>
+                        <Checkbox
+                          rootProps={{
+                            defaultChecked: isDefaultChecked(
+                              categoryLabel,
+                              name
+                            ),
+                            name: categoryLabel,
+                            id: name,
+                            value: name
+                          }}
+                        />
                         <Label htmlFor={name}>{name}</Label>
-                      </LabelWrapper>
-                    </Keyword>
-                    <Count>{count}</Count>
-                  </InputGroup>
-                ))}
+                      </Keyword>
+                      <Count>{count}</Count>
+                    </InputGroup>
+                  )
+                })}
               </Body>
             </AccordionSingle>
           </Group>
         )
       })}
-    </div>
+    </form>
   )
 }
 
@@ -149,15 +149,12 @@ const Group = styled.div`
   }
 
   [data-stylizable='accordion-single-trigger'] {
-    background-color: #e6e9f2;
     padding: 0.5em;
-    border-radius: 8px;
   }
 `
 
 const AccordionTrigger = styled.h5`
   all: unset;
-  background-color: #e6e9f2;
   color: #75787b;
   font-size: 16px;
   font-weight: 700;
@@ -180,6 +177,12 @@ const InputGroup = styled.div`
   button {
     background-color: inherit;
   }
+
+  &:has(button[data-state='checked']) {
+    label {
+      font-weight: 700;
+    }
+  }
 `
 
 const Keyword = styled.div`
@@ -189,12 +192,6 @@ const Keyword = styled.div`
 
 const Count = styled.span`
   color: #9599a6;
-`
-
-const LabelWrapper = styled.div<{ isBold?: boolean }>`
-  label {
-    font-weight: ${props => (props.isBold ? '700' : '400')};
-  }
 `
 
 export { KeywordSearchWidget }

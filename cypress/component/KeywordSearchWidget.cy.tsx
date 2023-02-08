@@ -10,8 +10,12 @@ const StyledTestWrapper = ({ children }: { children: React.ReactNode }) => {
 }
 
 const StyledWrapper = styled.div`
-  background-color: #f0f2f7;
   font-family: 'Lato', sans-serif;
+
+  [data-stylizable='accordion-single-trigger'] {
+    padding: 0.5em;
+    background-color: #e6e9f2;
+  }
 `
 
 describe('<KeywordSearchWidget />', () => {
@@ -60,6 +64,7 @@ describe('<KeywordSearchWidget />', () => {
     /**
      * Test selection persistence for closed/open accordion
      */
+
     cy.findByText('Variable domain').click().click()
     cy.findByLabelText(/Atmosphere \(composition\)/i).should(
       'have.attr',
@@ -102,91 +107,184 @@ describe('<KeywordSearchWidget />', () => {
       })
   })
 
-  it('handles selection clean up', () => {
+  it('handles selection restore and clean up', () => {
     cy.viewport('macbook-11')
-    const initialCategories = [
-      {
-        label: 'Spatial coverage',
-        groups: {
-          Global: 27,
-          Europe: 12
-        }
-      },
-      {
-        label: 'Temporal coverage',
-        groups: {
-          Past: 18
-        }
-      },
-      {
-        label: 'Variable domain',
-        groups: {
-          'Atmosphere (composition)': 12,
-          'Atmosphere (physical)': 22,
-          'Land (cryosphere)': 12
-        }
-      }
-    ]
-    const Wrapper = () => {
-      const [categories, setCategories] = useState(initialCategories)
-
-      return (
-        <StyledWrapper>
-          <button
-            onClick={() => {
-              return setCategories([
-                {
-                  label: 'Spatial coverage',
-                  groups: {
-                    Europe: 12
-                  }
-                },
-                {
-                  label: 'Temporal coverage',
-                  groups: {
-                    Past: 18
-                  }
-                },
-                {
-                  label: 'Variable domain',
-                  groups: {
-                    'Atmosphere (composition)': 12,
-                    'Atmosphere (physical)': 22,
-                    'Land (cryosphere)': 12
-                  }
-                }
-              ])
-            }}
-          >
-            remove a category
-          </button>
-          <button onClick={() => setCategories(initialCategories)}>
-            restore categories
-          </button>
-          <KeywordSearchWidget
-            categories={categories}
-            onKeywordSelection={cy.stub().as('onKeywordSelection')}
-          />
-        </StyledWrapper>
-      )
-    }
 
     cy.mount(
-      <StyledTestWrapper>
-        <Wrapper />
-      </StyledTestWrapper>
-    )
+      <KeywordSearchWidget
+        categories={[
+          {
+            label: 'Spatial coverage',
+            groups: {
+              Global: 27,
+              Europe: 12
+            }
+          },
+          {
+            label: 'Temporal coverage',
+            groups: {
+              Past: 18
+            }
+          },
+          {
+            label: 'Variable domain',
+            groups: {
+              'Atmosphere (composition)': 12,
+              'Atmosphere (physical)': 22,
+              'Land (cryosphere)': 12
+            }
+          }
+        ]}
+        onKeywordSelection={cy.stub().as('onKeywordSelection')}
+      />
+    ).then(({ rerender }) => {
+      cy.findByText(/Global/i).click()
+      cy.findByText(/Atmosphere \(composition\)/i).click()
+      cy.findByText('Land (cryosphere)').click()
 
-    cy.findByText(/Global/i).click()
+      /**
+       * Re-render with new props, removing 'Global' from the list of keywords.
+       */
+      rerender(
+        <KeywordSearchWidget
+          categories={[
+            {
+              label: 'Spatial coverage',
+              groups: {
+                Europe: 12
+              }
+            },
+            {
+              label: 'Temporal coverage',
+              groups: {
+                Past: 18
+              }
+            },
+            {
+              label: 'Variable domain',
+              groups: {
+                'Atmosphere (composition)': 12,
+                'Atmosphere (physical)': 22
+              }
+            }
+          ]}
+        />
+      )
 
-    cy.findByText('Land (cryosphere)').click()
+      /**
+       * Re-render with new props, adding 'Global' again
+       */
+      rerender(
+        <KeywordSearchWidget
+          categories={[
+            {
+              label: 'Spatial coverage',
+              groups: {
+                Global: 27,
+                Europe: 12
+              }
+            },
+            {
+              label: 'Temporal coverage',
+              groups: {
+                Past: 18
+              }
+            },
+            {
+              label: 'Variable domain',
+              groups: {
+                'Atmosphere (composition)': 12,
+                'Atmosphere (physical)': 22,
+                'Land (cryosphere)': 12
+              }
+            }
+          ]}
+        />
+      )
 
-    /**
-     * Simulate interaction with a parent component setting props on KeywordSearchWidget.
-     */
-    cy.findByText('remove a category').click()
-    cy.findByText('restore categories').click()
+      cy.findByLabelText(/Global/i).should('have.attr', 'aria-checked', 'false')
 
-    cy.findByLabelText(/Global/i).should('have.attr', 'aria-checked', 'false')
+      cy.findByText('Variable domain').click().click()
+      cy.findByLabelText('Land (cryosphere)').should(
+        'have.attr',
+        'aria-checked',
+        'false'
+      )
+
+      cy.findByLabelText(/Atmosphere \(composition\)/i).should(
+        'have.attr',
+        'aria-checked',
+        'true'
+      )
+
+      cy.findByText(/Europe/i).click()
+      cy.findByText('Land (cryosphere)').click()
+      cy.findByText('Atmosphere (physical)').click()
+
+      /**
+       * Re-render with new props, removing 'Variable domain' from the categories.
+       */
+      rerender(
+        <KeywordSearchWidget
+          categories={[
+            {
+              label: 'Spatial coverage',
+              groups: {
+                Europe: 12
+              }
+            },
+            {
+              label: 'Temporal coverage',
+              groups: {
+                Past: 18
+              }
+            }
+          ]}
+        />
+      )
+
+      /**
+       * Re-render with new props, restoring 'Variable domain'.
+       */
+      rerender(
+        <KeywordSearchWidget
+          categories={[
+            {
+              label: 'Spatial coverage',
+              groups: {
+                Global: 27,
+                Europe: 12
+              }
+            },
+            {
+              label: 'Temporal coverage',
+              groups: {
+                Past: 18
+              }
+            },
+            {
+              label: 'Variable domain',
+              groups: {
+                'Atmosphere (composition)': 12,
+                'Atmosphere (physical)': 22,
+                'Land (cryosphere)': 12
+              }
+            }
+          ]}
+        />
+      )
+
+      cy.findByLabelText(/Europe/i).should('have.attr', 'aria-checked', 'true')
+      cy.findByLabelText('Land (cryosphere)').should(
+        'have.attr',
+        'aria-checked',
+        'false'
+      )
+      cy.findByLabelText('Atmosphere (physical)').should(
+        'have.attr',
+        'aria-checked',
+        'false'
+      )
+    })
   })
 })
