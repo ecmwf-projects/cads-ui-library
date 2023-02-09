@@ -19,7 +19,7 @@ import type {
 } from '@radix-ui/react-accordion'
 
 type Props = {
-  rootProps: Except<AccordionSingleProps, 'type'>
+  rootProps?: Except<AccordionSingleProps, 'type'>
   itemProps: AccordionItemProps & { trigger: () => React.ReactNode }
   children: React.ReactNode
 }

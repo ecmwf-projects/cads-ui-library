@@ -28,23 +28,43 @@ const KeywordSearchWidget = ({
   onKeywordSelection
 }: KeywordSearchWidgetProps) => {
   /**
-   * Keep track of the selected keywords. This is used to preserve the selections when the accordion are closed and subsequently opened.
+   * Keep track of the selected keywords. This is used to preserve selections when accordions are closed and subsequently opened.
    */
   const [selections, setSelections] = useState<Selections>({})
+
   const formRef = useRef(null)
 
   useEffect(() => {
-    setSelections({})
+    /**
+     * Reset available selections when the categories change. The following removes any selection that is no longer available.
+     */
+    const _selections = categories.reduce<Record<string, any>>(
+      (nextState, keywordCategory) => {
+        nextState[keywordCategory.label] = [
+          ...intersection(
+            new Set(Object.keys(keywordCategory.groups)),
+            new Set(selections[keywordCategory.label] || [])
+          )
+        ]
+
+        return nextState
+      },
+      {}
+    )
+
+    setSelections(_selections)
   }, [categories])
 
   if (!categories?.length) return null
 
-  const getSelectedKeywordsAsQueryParams = (selections: FormData) => {
+  const getSelectedKeywordsAsQueryParams = (selections: Selections) => {
     const searchParams = new URLSearchParams()
 
-    for (const [category, keyword] of selections.entries()) {
-      if (typeof keyword === 'string') {
-        searchParams.append(category, keyword)
+    for (const selection in selections) {
+      if (selections[selection].length) {
+        for (const keyword of selections[selection]) {
+          searchParams.append(selection, keyword)
+        }
       }
     }
 
@@ -55,36 +75,12 @@ const KeywordSearchWidget = ({
     return selections[category]?.includes(keyword)
   }
 
-  const handlePreserveSelections = (selections: FormData) => {
-    const selection = [...selections.entries()].reduce<Selections>(
-      (prevValue, currentValue) => {
-        const [name, value] = currentValue
-
-        if (typeof value !== 'string') return prevValue
-
-        if (prevValue[name]) {
-          prevValue[name] = [...prevValue[name], value]
-
-          return prevValue
-        }
-
-        prevValue[name] = [value]
-
-        return prevValue
-      },
-      {}
-    )
-
-    return setSelections(selection)
-  }
-
   return (
     <form
       ref={formRef}
       onChange={ev => {
-        const formData = new FormData(ev.currentTarget)
-        onKeywordSelection?.(getSelectedKeywordsAsQueryParams(formData))
-        handlePreserveSelections(formData)
+        ev.stopPropagation()
+        onKeywordSelection?.(getSelectedKeywordsAsQueryParams(selections))
       }}
     >
       {categories.map(category => {
@@ -93,14 +89,6 @@ const KeywordSearchWidget = ({
         return (
           <Group key={categoryLabel}>
             <AccordionSingle
-              rootProps={{
-                defaultValue: categoryLabel,
-                collapsible: true,
-                onValueChange: () => {
-                  if (!formRef.current) return
-                  handlePreserveSelections(new FormData(formRef.current))
-                }
-              }}
               itemProps={{
                 value: categoryLabel,
                 trigger: () => (
@@ -115,10 +103,34 @@ const KeywordSearchWidget = ({
                       <Keyword>
                         <Checkbox
                           rootProps={{
+                            checked: isDefaultChecked(categoryLabel, name),
                             defaultChecked: isDefaultChecked(
                               categoryLabel,
                               name
                             ),
+                            onCheckedChange: checked => {
+                              if (checked) {
+                                return setSelections(prevState => {
+                                  return {
+                                    ...prevState,
+                                    [categoryLabel]: [
+                                      ...prevState[categoryLabel],
+                                      name
+                                    ]
+                                  }
+                                })
+                              }
+
+                              return setSelections(prevState => {
+                                return {
+                                  ...prevState,
+                                  [categoryLabel]: prevState[
+                                    categoryLabel
+                                  ].filter(val => val !== name)
+                                }
+                              })
+                            },
+
                             name: categoryLabel,
                             id: name,
                             value: name
@@ -137,6 +149,19 @@ const KeywordSearchWidget = ({
       })}
     </form>
   )
+}
+
+const intersection = <TSetElement,>(
+  setA: Set<TSetElement>,
+  setB: Set<TSetElement>
+) => {
+  const _intersection = new Set()
+  for (const elem of setB) {
+    if (setA.has(elem)) {
+      _intersection.add(elem)
+    }
+  }
+  return _intersection
 }
 
 const Group = styled.div`

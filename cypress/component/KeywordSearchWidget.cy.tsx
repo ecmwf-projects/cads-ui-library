@@ -1,5 +1,4 @@
 import './workaround-cypress-10-0-2-process-issue'
-import { useState } from 'react'
 
 import styled from 'styled-components'
 
@@ -55,9 +54,15 @@ describe('<KeywordSearchWidget />', () => {
       </StyledTestWrapper>
     )
 
+    cy.findByText('Spatial coverage').click()
     cy.findByText(/Global/i).click()
     cy.findByText(/Europe/i)
+
+    cy.findByText('Spatial coverage').click()
+    cy.findByText('Temporal coverage').click()
     cy.findByText(/Past/i)
+
+    cy.findByText('Variable domain').click()
     cy.findByText(/Atmosphere \(composition\)/i).click()
     cy.findByText('Land (cryosphere)').click()
 
@@ -138,13 +143,18 @@ describe('<KeywordSearchWidget />', () => {
         onKeywordSelection={cy.stub().as('onKeywordSelection')}
       />
     ).then(({ rerender }) => {
+      cy.findByText('Spatial coverage').click()
       cy.findByText(/Global/i).click()
+
+      cy.findByText('Variable domain').click()
       cy.findByText(/Atmosphere \(composition\)/i).click()
       cy.findByText('Land (cryosphere)').click()
 
-      /**
-       * Re-render with new props, removing 'Global' from the list of keywords.
-       */
+      cy.findByText('Variable domain').click()
+
+      cy.log(
+        "Re-render with new props, removing 'Global' and 'Land (cryosphere)' from the list of keywords"
+      )
       rerender(
         <KeywordSearchWidget
           categories={[
@@ -171,9 +181,9 @@ describe('<KeywordSearchWidget />', () => {
         />
       )
 
-      /**
-       * Re-render with new props, adding 'Global' again
-       */
+      cy.log(
+        "Re-render with new props, adding 'Global' and 'Land (cryosphere)' again."
+      )
       rerender(
         <KeywordSearchWidget
           categories={[
@@ -202,9 +212,25 @@ describe('<KeywordSearchWidget />', () => {
         />
       )
 
+      cy.get('@onKeywordSelection')
+        .its('thirdCall.args.0')
+        .then(searchParams => {
+          expect(searchParams.get('Spatial coverage')).to.equal('Global')
+          expect(searchParams.getAll('Variable domain')).to.deep.equal([
+            'Atmosphere (composition)',
+            'Land (cryosphere)'
+          ])
+          expect(searchParams.get('Temporal coverage')).to.be.null
+        })
+
+      cy.findByLabelText(/Europe/i).should('have.attr', 'aria-checked', 'false')
+
+      cy.findByText('Variable domain').click()
+
       cy.findByLabelText(/Global/i).should('have.attr', 'aria-checked', 'false')
 
       cy.findByText('Variable domain').click().click()
+
       cy.findByLabelText('Land (cryosphere)').should(
         'have.attr',
         'aria-checked',
@@ -221,9 +247,9 @@ describe('<KeywordSearchWidget />', () => {
       cy.findByText('Land (cryosphere)').click()
       cy.findByText('Atmosphere (physical)').click()
 
-      /**
-       * Re-render with new props, removing 'Variable domain' from the categories.
-       */
+      cy.log(
+        "Re-render with new props, removing 'Variable domain' from the categories."
+      )
       rerender(
         <KeywordSearchWidget
           categories={[
@@ -243,9 +269,7 @@ describe('<KeywordSearchWidget />', () => {
         />
       )
 
-      /**
-       * Re-render with new props, restoring 'Variable domain'.
-       */
+      cy.log("Re-render with new props, restoring 'Variable domain'.")
       rerender(
         <KeywordSearchWidget
           categories={[
@@ -275,6 +299,8 @@ describe('<KeywordSearchWidget />', () => {
       )
 
       cy.findByLabelText(/Europe/i).should('have.attr', 'aria-checked', 'true')
+
+      cy.findByText('Variable domain').click()
       cy.findByLabelText('Land (cryosphere)').should(
         'have.attr',
         'aria-checked',
