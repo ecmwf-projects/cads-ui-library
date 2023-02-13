@@ -15,6 +15,11 @@ export interface KeywordSearchWidgetProps {
    * Keyword change handlers. Invoked when the user selects/deselects a keyword.
    */
   onKeywordSelection?: (params: URLSearchParams) => void
+
+  /**
+   * The key used as the query parameter for the keyword search. Defaults to "kw".
+   */
+  keywordQueryParam?: string
 }
 
 type Selections = Record<string, string[]>
@@ -25,7 +30,8 @@ type Selections = Record<string, string[]>
  */
 const KeywordSearchWidget = ({
   categories,
-  onKeywordSelection
+  onKeywordSelection,
+  keywordQueryParam = 'kw'
 }: KeywordSearchWidgetProps) => {
   /**
    * Keep track of the selected keywords. This is used to preserve selections when accordions are closed and subsequently opened.
@@ -63,7 +69,7 @@ const KeywordSearchWidget = ({
     for (const selection in selections) {
       if (selections[selection].length) {
         for (const keyword of selections[selection]) {
-          searchParams.append(selection, keyword)
+          searchParams.append(keywordQueryParam, `${selection}:${keyword}`)
         }
       }
     }
@@ -166,7 +172,9 @@ const Group = styled.div`
   }
 
   [data-stylizable='accordion-single-trigger'] {
-    padding: 0.5em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-right: 0.5em;
   }
 `
 

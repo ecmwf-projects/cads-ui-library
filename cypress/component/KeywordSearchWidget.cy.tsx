@@ -87,28 +87,23 @@ describe('<KeywordSearchWidget />', () => {
     cy.get('@onKeywordSelection')
       .its('firstCall.args.0')
       .then(searchParams => {
-        expect(searchParams.get('Spatial coverage')).to.equal('Global')
+        expect(searchParams.toString()).to.equal('kw=Spatial+coverage%3AGlobal')
       })
 
     cy.get('@onKeywordSelection')
       .its('secondCall.args.0')
       .then(searchParams => {
-        expect(searchParams.get('Spatial coverage')).to.equal('Global')
-        expect(searchParams.get('Variable domain')).to.equal(
-          'Atmosphere (composition)'
+        expect(searchParams.toString()).to.equal(
+          'kw=Spatial+coverage%3AGlobal&kw=Variable+domain%3AAtmosphere+%28composition%29'
         )
-        expect(searchParams.get('Temporal coverage')).to.be.null
       })
 
     cy.get('@onKeywordSelection')
       .its('thirdCall.args.0')
       .then(searchParams => {
-        expect(searchParams.get('Spatial coverage')).to.equal('Global')
-        expect(searchParams.getAll('Variable domain')).to.deep.equal([
-          'Atmosphere (composition)',
-          'Land (cryosphere)'
-        ])
-        expect(searchParams.get('Temporal coverage')).to.be.null
+        expect(searchParams.toString()).to.equal(
+          'kw=Spatial+coverage%3AGlobal&kw=Variable+domain%3AAtmosphere+%28composition%29&kw=Variable+domain%3ALand+%28cryosphere%29'
+        )
       })
   })
 
@@ -215,12 +210,9 @@ describe('<KeywordSearchWidget />', () => {
       cy.get('@onKeywordSelection')
         .its('thirdCall.args.0')
         .then(searchParams => {
-          expect(searchParams.get('Spatial coverage')).to.equal('Global')
-          expect(searchParams.getAll('Variable domain')).to.deep.equal([
-            'Atmosphere (composition)',
-            'Land (cryosphere)'
-          ])
-          expect(searchParams.get('Temporal coverage')).to.be.null
+          expect(searchParams.toString()).to.equal(
+            'kw=Spatial+coverage%3AGlobal&kw=Variable+domain%3AAtmosphere+%28composition%29&kw=Variable+domain%3ALand+%28cryosphere%29'
+          )
         })
 
       cy.findByLabelText(/Europe/i).should('have.attr', 'aria-checked', 'false')
