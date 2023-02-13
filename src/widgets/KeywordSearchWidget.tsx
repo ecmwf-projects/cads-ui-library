@@ -4,8 +4,8 @@ import styled from 'styled-components'
 import { AccordionSingle, Checkbox, Label } from '../index'
 
 export type KeywordCategory = {
-  label: string
-  groups: Record<string, number>
+  category: string
+  groups: Record<string, number | null>
 }
 
 export interface KeywordSearchWidgetProps {
@@ -40,10 +40,10 @@ const KeywordSearchWidget = ({
      */
     const _selections = categories.reduce<Record<string, any>>(
       (nextState, keywordCategory) => {
-        nextState[keywordCategory.label] = [
+        nextState[keywordCategory.category] = [
           ...intersection(
             new Set(Object.keys(keywordCategory.groups)),
-            new Set(selections[keywordCategory.label] || [])
+            new Set(selections[keywordCategory.category] || [])
           )
         ]
 
@@ -83,40 +83,32 @@ const KeywordSearchWidget = ({
         onKeywordSelection?.(getSelectedKeywordsAsQueryParams(selections))
       }}
     >
-      {categories.map(category => {
-        const { label: categoryLabel } = category
+      {categories.map(cat => {
+        const { category } = cat
 
         return (
-          <Group key={categoryLabel}>
+          <Group key={category}>
             <AccordionSingle
               itemProps={{
-                value: categoryLabel,
-                trigger: () => (
-                  <AccordionTrigger>{categoryLabel}</AccordionTrigger>
-                )
+                value: category,
+                trigger: () => <AccordionTrigger>{category}</AccordionTrigger>
               }}
             >
               <Body>
-                {Object.entries(category.groups).map(([name, count]) => {
+                {Object.entries(cat.groups).map(([name, count]) => {
                   return (
                     <InputGroup key={name}>
                       <Keyword>
                         <Checkbox
                           rootProps={{
-                            checked: isDefaultChecked(categoryLabel, name),
-                            defaultChecked: isDefaultChecked(
-                              categoryLabel,
-                              name
-                            ),
+                            checked: isDefaultChecked(category, name),
+                            defaultChecked: isDefaultChecked(category, name),
                             onCheckedChange: checked => {
                               if (checked) {
                                 return setSelections(prevState => {
                                   return {
                                     ...prevState,
-                                    [categoryLabel]: [
-                                      ...prevState[categoryLabel],
-                                      name
-                                    ]
+                                    [category]: [...prevState[category], name]
                                   }
                                 })
                               }
@@ -124,21 +116,21 @@ const KeywordSearchWidget = ({
                               return setSelections(prevState => {
                                 return {
                                   ...prevState,
-                                  [categoryLabel]: prevState[
-                                    categoryLabel
-                                  ].filter(val => val !== name)
+                                  [category]: prevState[category].filter(
+                                    val => val !== name
+                                  )
                                 }
                               })
                             },
 
-                            name: categoryLabel,
+                            name: category,
                             id: name,
                             value: name
                           }}
                         />
                         <Label htmlFor={name}>{name}</Label>
                       </Keyword>
-                      <Count>{count}</Count>
+                      {count ? <Count>{count}</Count> : null}
                     </InputGroup>
                   )
                 })}

@@ -23,24 +23,24 @@ describe('<KeywordSearchWidget />', () => {
 
     const categories = [
       {
-        label: 'Spatial coverage',
+        category: 'Spatial coverage',
         groups: {
-          Global: 27,
+          Global: null,
           Europe: 12
         }
       },
       {
-        label: 'Temporal coverage',
+        category: 'Temporal coverage',
         groups: {
-          Past: 18
+          Past: null
         }
       },
       {
-        label: 'Variable domain',
+        category: 'Variable domain',
         groups: {
           'Atmosphere (composition)': 12,
-          'Atmosphere (physical)': 22,
-          'Land (cryosphere)': 12
+          'Atmosphere (physical)': null,
+          'Land (cryosphere)': null
         }
       }
     ]
@@ -119,20 +119,20 @@ describe('<KeywordSearchWidget />', () => {
       <KeywordSearchWidget
         categories={[
           {
-            label: 'Spatial coverage',
+            category: 'Spatial coverage',
             groups: {
               Global: 27,
               Europe: 12
             }
           },
           {
-            label: 'Temporal coverage',
+            category: 'Temporal coverage',
             groups: {
               Past: 18
             }
           },
           {
-            label: 'Variable domain',
+            category: 'Variable domain',
             groups: {
               'Atmosphere (composition)': 12,
               'Atmosphere (physical)': 22,
@@ -159,19 +159,19 @@ describe('<KeywordSearchWidget />', () => {
         <KeywordSearchWidget
           categories={[
             {
-              label: 'Spatial coverage',
+              category: 'Spatial coverage',
               groups: {
                 Europe: 12
               }
             },
             {
-              label: 'Temporal coverage',
+              category: 'Temporal coverage',
               groups: {
                 Past: 18
               }
             },
             {
-              label: 'Variable domain',
+              category: 'Variable domain',
               groups: {
                 'Atmosphere (composition)': 12,
                 'Atmosphere (physical)': 22
@@ -188,20 +188,20 @@ describe('<KeywordSearchWidget />', () => {
         <KeywordSearchWidget
           categories={[
             {
-              label: 'Spatial coverage',
+              category: 'Spatial coverage',
               groups: {
                 Global: 27,
                 Europe: 12
               }
             },
             {
-              label: 'Temporal coverage',
+              category: 'Temporal coverage',
               groups: {
                 Past: 18
               }
             },
             {
-              label: 'Variable domain',
+              category: 'Variable domain',
               groups: {
                 'Atmosphere (composition)': 12,
                 'Atmosphere (physical)': 22,
@@ -254,13 +254,13 @@ describe('<KeywordSearchWidget />', () => {
         <KeywordSearchWidget
           categories={[
             {
-              label: 'Spatial coverage',
+              category: 'Spatial coverage',
               groups: {
                 Europe: 12
               }
             },
             {
-              label: 'Temporal coverage',
+              category: 'Temporal coverage',
               groups: {
                 Past: 18
               }
@@ -274,20 +274,20 @@ describe('<KeywordSearchWidget />', () => {
         <KeywordSearchWidget
           categories={[
             {
-              label: 'Spatial coverage',
+              category: 'Spatial coverage',
               groups: {
                 Global: 27,
                 Europe: 12
               }
             },
             {
-              label: 'Temporal coverage',
+              category: 'Temporal coverage',
               groups: {
                 Past: 18
               }
             },
             {
-              label: 'Variable domain',
+              category: 'Variable domain',
               groups: {
                 'Atmosphere (composition)': 12,
                 'Atmosphere (physical)': 22,
