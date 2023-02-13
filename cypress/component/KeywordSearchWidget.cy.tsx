@@ -87,23 +87,28 @@ describe('<KeywordSearchWidget />', () => {
     cy.get('@onKeywordSelection')
       .its('firstCall.args.0')
       .then(searchParams => {
-        expect(searchParams.toString()).to.equal('kw=Spatial+coverage%3AGlobal')
+        expect(searchParams.getAll('kw')).to.deep.equal([
+          'Spatial%20coverage%3A%20Global'
+        ])
       })
 
     cy.get('@onKeywordSelection')
       .its('secondCall.args.0')
       .then(searchParams => {
-        expect(searchParams.toString()).to.equal(
-          'kw=Spatial+coverage%3AGlobal&kw=Variable+domain%3AAtmosphere+%28composition%29'
-        )
+        expect(searchParams.getAll('kw')).to.deep.equal([
+          'Spatial%20coverage%3A%20Global',
+          'Variable%20domain%3A%20Atmosphere%20(composition)'
+        ])
       })
 
     cy.get('@onKeywordSelection')
       .its('thirdCall.args.0')
       .then(searchParams => {
-        expect(searchParams.toString()).to.equal(
-          'kw=Spatial+coverage%3AGlobal&kw=Variable+domain%3AAtmosphere+%28composition%29&kw=Variable+domain%3ALand+%28cryosphere%29'
-        )
+        expect(searchParams.getAll('kw')).to.deep.equal([
+          'Spatial%20coverage%3A%20Global',
+          'Variable%20domain%3A%20Atmosphere%20(composition)',
+          'Variable%20domain%3A%20Land%20(cryosphere)'
+        ])
       })
   })
 
@@ -210,9 +215,11 @@ describe('<KeywordSearchWidget />', () => {
       cy.get('@onKeywordSelection')
         .its('thirdCall.args.0')
         .then(searchParams => {
-          expect(searchParams.toString()).to.equal(
-            'kw=Spatial+coverage%3AGlobal&kw=Variable+domain%3AAtmosphere+%28composition%29&kw=Variable+domain%3ALand+%28cryosphere%29'
-          )
+          expect(searchParams.getAll('kw')).to.deep.equal([
+            'Spatial%20coverage%3A%20Global',
+            'Variable%20domain%3A%20Atmosphere%20(composition)',
+            'Variable%20domain%3A%20Land%20(cryosphere)'
+          ])
         })
 
       cy.findByLabelText(/Europe/i).should('have.attr', 'aria-checked', 'false')

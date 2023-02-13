@@ -20,6 +20,11 @@ export interface KeywordSearchWidgetProps {
    * The key used as the query parameter for the keyword search. Defaults to "kw".
    */
   keywordQueryParam?: string
+
+  /**
+   * A custom transformer for the query parameter. Defaults to using encodeURIComponent.
+   */
+  keywordQueryParamTransformer?: (category: string, keyword: string) => string
 }
 
 type Selections = Record<string, string[]>
@@ -31,7 +36,8 @@ type Selections = Record<string, string[]>
 const KeywordSearchWidget = ({
   categories,
   onKeywordSelection,
-  keywordQueryParam = 'kw'
+  keywordQueryParam = 'kw',
+  keywordQueryParamTransformer
 }: KeywordSearchWidgetProps) => {
   /**
    * Keep track of the selected keywords. This is used to preserve selections when accordions are closed and subsequently opened.
@@ -69,7 +75,12 @@ const KeywordSearchWidget = ({
     for (const selection in selections) {
       if (selections[selection].length) {
         for (const keyword of selections[selection]) {
-          searchParams.append(keywordQueryParam, `${selection}:${keyword}`)
+          searchParams.append(
+            keywordQueryParam,
+            (keywordQueryParamTransformer &&
+              keywordQueryParamTransformer(selection, keyword)) ||
+              encodeURIComponent(`${selection}: ${keyword}`)
+          )
         }
       }
     }
