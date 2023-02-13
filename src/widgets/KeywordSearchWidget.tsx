@@ -25,6 +25,11 @@ export interface KeywordSearchWidgetProps {
    * A custom transformer for the query parameter. Defaults to using encodeURIComponent.
    */
   keywordQueryParamTransformer?: (category: string, keyword: string) => string
+
+  /**
+   * Optional intrinsic props for the wrapper form.
+   */
+  formProps?: JSX.IntrinsicElements['form']
 }
 
 type Selections = Record<string, string[]>
@@ -37,7 +42,8 @@ const KeywordSearchWidget = ({
   categories,
   onKeywordSelection,
   keywordQueryParam = 'kw',
-  keywordQueryParamTransformer
+  keywordQueryParamTransformer,
+  formProps
 }: KeywordSearchWidgetProps) => {
   /**
    * Keep track of the selected keywords. This is used to preserve selections when accordions are closed and subsequently opened.
@@ -99,6 +105,7 @@ const KeywordSearchWidget = ({
         ev.stopPropagation()
         onKeywordSelection?.(getSelectedKeywordsAsQueryParams(selections))
       }}
+      {...formProps}
     >
       {categories.map(cat => {
         const { category } = cat
