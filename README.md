@@ -41,3 +41,13 @@ yarn version --minor
 This will also publish a release tag via `postversion` script.
 
 The tag will trigger the related Github actions for publishing to the desired package registry.
+
+To publish a pre-release, add `--pre` to the flag:
+
+```shell
+yarn version --preminor
+
+# or
+
+yarn version --premajor
+```
