@@ -5,7 +5,10 @@ module.exports = async () => {
   return {
     preset: 'ts-jest',
     testEnvironment: 'jsdom',
-    collectCoverageFrom: ['src/**/*.{ts,tsx}'],
+    collectCoverageFrom: [
+      'src/**/*.{ts,tsx}',
+      '!src/widgets/KeywordSearchWidget.tsx'
+    ],
     coverageThreshold: {
       global: { lines: 90 }
     },

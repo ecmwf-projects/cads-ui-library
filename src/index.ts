@@ -11,3 +11,4 @@ export { SingleSelect } from './common/Select'
 
 export { LicenceWidget } from './widgets/LicenceWidget'
 export { TextWidget } from './widgets/TextWidget'
+export { KeywordSearchWidget } from './widgets/KeywordSearchWidget'
