@@ -50,9 +50,14 @@ describe('<KeywordSearchWidget />', () => {
         <KeywordSearchWidget
           categories={categories}
           onKeywordSelection={cy.stub().as('onKeywordSelection')}
+          formProps={{
+            'aria-label': 'Filter by'
+          }}
         />
       </StyledTestWrapper>
     )
+
+    cy.findByLabelText('Filter by')
 
     cy.findByText('Spatial coverage').click()
     cy.findByText(/Global/i).click()
