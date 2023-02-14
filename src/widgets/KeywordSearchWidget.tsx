@@ -12,6 +12,11 @@ export interface KeywordSearchWidgetProps {
   categories: KeywordCategory[]
 
   /**
+   * Optional default selections. This is used to control checkbox selections.
+   */
+  defaultSelections?: Selections
+
+  /**
    * Keyword change handlers. Invoked when the user selects/deselects a keyword.
    */
   onKeywordSelection?: (params: URLSearchParams) => void
@@ -40,6 +45,7 @@ type Selections = Record<string, string[]>
  */
 const KeywordSearchWidget = ({
   categories,
+  defaultSelections,
   onKeywordSelection,
   keywordQueryParam = 'kw',
   keywordQueryParamTransformer,
@@ -60,8 +66,15 @@ const KeywordSearchWidget = ({
       (nextState, keywordCategory) => {
         nextState[keywordCategory.category] = [
           ...intersection(
-            new Set(Object.keys(keywordCategory.groups)),
-            new Set(selections[keywordCategory.category] || [])
+            intersection(
+              new Set(Object.keys(keywordCategory.groups)),
+              new Set(selections[keywordCategory.category] || [])
+            ),
+            new Set(
+              (defaultSelections &&
+                defaultSelections[keywordCategory.category]) ||
+                selections[keywordCategory.category]
+            )
           )
         ]
 
