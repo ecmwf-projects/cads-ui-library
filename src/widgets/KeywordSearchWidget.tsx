@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
 import { AccordionSingle, Checkbox, Label } from '../index'
@@ -12,9 +12,9 @@ export interface KeywordSearchWidgetProps {
   categories: KeywordCategory[]
 
   /**
-   * Optional default selections. This is used to control checkbox selections.
+   * Default selections. This is used to control checkbox selections from the outside.
    */
-  defaultSelections?: Selections
+  defaultSelections: Selections
 
   /**
    * Keyword change handlers. Invoked when the user selects/deselects a keyword.
@@ -56,8 +56,6 @@ const KeywordSearchWidget = ({
    */
   const [selections, setSelections] = useState<Selections>({})
 
-  const formRef = useRef(null)
-
   useEffect(() => {
     /**
      * Reset available selections when the categories change. The following removes any selection that is no longer available.
@@ -70,11 +68,7 @@ const KeywordSearchWidget = ({
               new Set(Object.keys(keywordCategory.groups)),
               new Set(selections[keywordCategory.category] || [])
             ),
-            new Set(
-              (defaultSelections &&
-                defaultSelections[keywordCategory.category]) ||
-                selections[keywordCategory.category]
-            )
+            new Set(defaultSelections[keywordCategory.category])
           )
         ]
 
@@ -113,7 +107,6 @@ const KeywordSearchWidget = ({
 
   return (
     <form
-      ref={formRef}
       onChange={ev => {
         ev.stopPropagation()
         onKeywordSelection?.(getSelectedKeywordsAsQueryParams(selections))

@@ -48,6 +48,9 @@ describe('<KeywordSearchWidget />', () => {
     cy.mount(
       <StyledTestWrapper>
         <KeywordSearchWidget
+          defaultSelections={{
+            'Spatial coverage': ['Global']
+          }}
           categories={categories}
           onKeywordSelection={cy.stub().as('onKeywordSelection')}
           formProps={{
@@ -122,6 +125,9 @@ describe('<KeywordSearchWidget />', () => {
 
     cy.mount(
       <KeywordSearchWidget
+        defaultSelections={{
+          'Spatial coverage': ['Global']
+        }}
         categories={[
           {
             category: 'Spatial coverage',
@@ -162,6 +168,10 @@ describe('<KeywordSearchWidget />', () => {
       )
       rerender(
         <KeywordSearchWidget
+          defaultSelections={{
+            'Spatial coverage': ['Global'],
+            'Variable domain': ['Atmosphere (composition)']
+          }}
           categories={[
             {
               category: 'Spatial coverage',
@@ -191,6 +201,10 @@ describe('<KeywordSearchWidget />', () => {
       )
       rerender(
         <KeywordSearchWidget
+          defaultSelections={{
+            'Spatial coverage': ['Global'],
+            'Variable domain': ['Atmosphere (composition)']
+          }}
           categories={[
             {
               category: 'Spatial coverage',
@@ -256,6 +270,9 @@ describe('<KeywordSearchWidget />', () => {
       )
       rerender(
         <KeywordSearchWidget
+          defaultSelections={{
+            'Spatial coverage': ['Global', 'Europe']
+          }}
           categories={[
             {
               category: 'Spatial coverage',
@@ -276,6 +293,9 @@ describe('<KeywordSearchWidget />', () => {
       cy.log("Re-render with new props, restoring 'Variable domain'.")
       rerender(
         <KeywordSearchWidget
+          defaultSelections={{
+            'Spatial coverage': ['Global', 'Europe']
+          }}
           categories={[
             {
               category: 'Spatial coverage',
@@ -324,6 +344,7 @@ describe('<KeywordSearchWidget />', () => {
       rerender(
         <KeywordSearchWidget
           defaultSelections={{
+            'Spatial coverage': ['Global'],
             'Variable domain': ['Atmosphere (composition)', 'Land (cryosphere)']
           }}
           categories={[
