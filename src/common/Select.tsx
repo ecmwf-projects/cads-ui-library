@@ -89,7 +89,9 @@ type Props<TOptions> = {
 /**
  * SingleSelect. An uncontrolled select component for displaying a single group options.
  */
-const SingleSelect = <TOptions extends { id: number; label: string }[]>({
+const SingleSelect = <
+  TOptions extends { id: number | string; label: string }[]
+>({
   options,
   ariaLabel,
   placeholder,
