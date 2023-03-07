@@ -128,7 +128,7 @@ const KeywordSearchWidget = ({
                 {Object.entries(cat.groups).map(([name, count]) => {
                   return (
                     <InputGroup key={name}>
-                      <Keyword>
+                      <Keyword data-stylizable='keyword'>
                         <Checkbox
                           rootProps={{
                             checked: isDefaultChecked(category, name),
