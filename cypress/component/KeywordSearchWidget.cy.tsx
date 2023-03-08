@@ -62,8 +62,6 @@ describe('<KeywordSearchWidget />', () => {
 
     cy.findByLabelText('Filter by')
 
-    cy.findByText('Spatial coverage').click()
-    cy.findByText(/Global/i).click()
     cy.findByText(/Europe/i)
 
     cy.findByText('Spatial coverage').click()
@@ -90,18 +88,10 @@ describe('<KeywordSearchWidget />', () => {
       'true'
     )
 
-    cy.get('@onKeywordSelection').should('have.been.calledThrice')
+    cy.get('@onKeywordSelection').should('have.been.calledTwice')
 
     cy.get('@onKeywordSelection')
       .its('firstCall.args.0')
-      .then(searchParams => {
-        expect(searchParams.getAll('kw')).to.deep.equal([
-          'Spatial%20coverage%3A%20Global'
-        ])
-      })
-
-    cy.get('@onKeywordSelection')
-      .its('secondCall.args.0')
       .then(searchParams => {
         expect(searchParams.getAll('kw')).to.deep.equal([
           'Spatial%20coverage%3A%20Global',
@@ -110,7 +100,7 @@ describe('<KeywordSearchWidget />', () => {
       })
 
     cy.get('@onKeywordSelection')
-      .its('thirdCall.args.0')
+      .its('secondCall.args.0')
       .then(searchParams => {
         expect(searchParams.getAll('kw')).to.deep.equal([
           'Spatial%20coverage%3A%20Global',
@@ -154,7 +144,6 @@ describe('<KeywordSearchWidget />', () => {
         onKeywordSelection={cy.stub().as('onKeywordSelection')}
       />
     ).then(({ rerender }) => {
-      cy.findByText('Spatial coverage').click()
       cy.findByText(/Global/i).click()
 
       cy.findByText('Variable domain').click()
@@ -169,7 +158,7 @@ describe('<KeywordSearchWidget />', () => {
       rerender(
         <KeywordSearchWidget
           defaultSelections={{
-            'Spatial coverage': ['Global'],
+            'Spatial coverage': [],
             'Variable domain': ['Atmosphere (composition)']
           }}
           categories={[
@@ -235,7 +224,6 @@ describe('<KeywordSearchWidget />', () => {
         .its('thirdCall.args.0')
         .then(searchParams => {
           expect(searchParams.getAll('kw')).to.deep.equal([
-            'Spatial%20coverage%3A%20Global',
             'Variable%20domain%3A%20Atmosphere%20(composition)',
             'Variable%20domain%3A%20Land%20(cryosphere)'
           ])
@@ -245,7 +233,7 @@ describe('<KeywordSearchWidget />', () => {
 
       cy.findByText('Variable domain').click()
 
-      cy.findByLabelText(/Global/i).should('have.attr', 'aria-checked', 'false')
+      cy.findByLabelText(/Global/i).should('have.attr', 'aria-checked', 'true')
 
       cy.findByText('Variable domain').click().click()
 
@@ -379,7 +367,50 @@ describe('<KeywordSearchWidget />', () => {
         'false'
       )
 
-      cy.findByLabelText('Global').should('have.attr', 'aria-checked', 'true')
+      cy.findByLabelText('Global').should('have.attr', 'aria-checked', 'false')
     })
+  })
+
+  it('handles default selection restore and default opened accordion', () => {
+    const categories = [
+      {
+        category: 'Spatial coverage',
+        groups: {
+          Global: null,
+          Europe: 12
+        }
+      },
+      {
+        category: 'Temporal coverage',
+        groups: {
+          Past: null
+        }
+      },
+      {
+        category: 'Variable domain',
+        groups: {
+          'Atmosphere (composition)': 12,
+          'Atmosphere (physical)': null,
+          'Land (cryosphere)': null
+        }
+      }
+    ]
+
+    cy.mount(
+      <StyledTestWrapper>
+        <KeywordSearchWidget
+          defaultSelections={{
+            'Spatial coverage': ['Global']
+          }}
+          categories={categories}
+          onKeywordSelection={cy.stub().as('onKeywordSelection')}
+          formProps={{
+            'aria-label': 'Filter by'
+          }}
+        />
+      </StyledTestWrapper>
+    )
+
+    cy.findByLabelText(/Global/i).should('have.attr', 'aria-checked', 'true')
   })
 })
