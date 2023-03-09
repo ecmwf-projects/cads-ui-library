@@ -54,14 +54,25 @@ const KeywordSearchWidget = ({
   /**
    * Keep track of the selected keywords. This is used to preserve selections when accordions are closed and subsequently opened.
    */
-  const [selections, setSelections] = useState<Selections>({})
+  const [selections, setSelections] = useState<Selections>(defaultSelections)
 
   useEffect(() => {
     /**
      * Reset available selections when the categories change. The following removes any selection that is no longer available.
      */
-    const _selections = categories.reduce<Record<string, any>>(
+    const _selections = categories.reduce<Selections>(
       (nextState, keywordCategory) => {
+        if (
+          defaultSelections[keywordCategory?.category]?.length >
+          selections[keywordCategory?.category]?.length
+        ) {
+          nextState[keywordCategory.category] = [
+            ...new Set(defaultSelections[keywordCategory.category]),
+            ...new Set(selections[keywordCategory.category])
+          ]
+          return nextState
+        }
+
         nextState[keywordCategory.category] = [
           ...intersection(
             intersection(
@@ -78,7 +89,7 @@ const KeywordSearchWidget = ({
     )
 
     setSelections(_selections)
-  }, [categories])
+  }, [defaultSelections, categories])
 
   if (!categories?.length) return null
 
@@ -101,7 +112,7 @@ const KeywordSearchWidget = ({
     return searchParams
   }
 
-  const isDefaultChecked = (category: string, keyword: string) => {
+  const isChecked = (category: string, keyword: string) => {
     return selections[category]?.includes(keyword)
   }
 
@@ -119,6 +130,11 @@ const KeywordSearchWidget = ({
         return (
           <Group key={category}>
             <AccordionSingle
+              rootProps={{
+                ...(Object.keys(defaultSelections).includes(category) && {
+                  defaultValue: category
+                })
+              }}
               itemProps={{
                 value: category,
                 trigger: () => <AccordionTrigger>{category}</AccordionTrigger>
@@ -128,11 +144,10 @@ const KeywordSearchWidget = ({
                 {Object.entries(cat.groups).map(([name, count]) => {
                   return (
                     <InputGroup key={name}>
-                      <Keyword>
+                      <Keyword data-stylizable='keyword'>
                         <Checkbox
                           rootProps={{
-                            checked: isDefaultChecked(category, name),
-                            defaultChecked: isDefaultChecked(category, name),
+                            checked: isChecked(category, name),
                             onCheckedChange: checked => {
                               if (checked) {
                                 return setSelections(prevState => {
@@ -177,7 +192,7 @@ const intersection = <TSetElement,>(
   setA: Set<TSetElement>,
   setB: Set<TSetElement>
 ) => {
-  const _intersection = new Set()
+  const _intersection = new Set<TSetElement>()
   for (const elem of setB) {
     if (setA.has(elem)) {
       _intersection.add(elem)

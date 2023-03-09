@@ -36,6 +36,37 @@ describe('Select components', () => {
       screen.getByLabelText('Thematic activity')
     })
 
+    it('renders - id as string', () => {
+      render(
+        <>
+          <Label htmlFor='thematic-activity'>Thematic activity</Label>
+          <SingleSelect
+            options={[
+              {
+                id: 'regional',
+                label:
+                  'Policy support - support to EU policy or EU national or regional policy'
+              },
+              {
+                id: 'a',
+                label: 'A'
+              },
+              {
+                id: 'ba',
+                label: 'BA'
+              }
+            ]}
+            ariaLabel='Thematic activity'
+            placeholder='Select an option ...'
+            onChange={() => void 0}
+            id='thematic-activity'
+          />
+        </>
+      )
+
+      screen.getByLabelText('Thematic activity')
+    })
+
     it('fails gracefully', () => {
       render(
         // @ts-expect-error
