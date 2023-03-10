@@ -67,8 +67,10 @@ const KeywordSearchWidget = ({
           selections[keywordCategory?.category]?.length
         ) {
           nextState[keywordCategory.category] = [
-            ...new Set(defaultSelections[keywordCategory.category]),
-            ...new Set(selections[keywordCategory.category])
+            ...new Set([
+              ...defaultSelections[keywordCategory.category],
+              ...selections[keywordCategory.category]
+            ])
           ]
           return nextState
         }

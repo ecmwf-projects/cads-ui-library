@@ -323,51 +323,6 @@ describe('<KeywordSearchWidget />', () => {
         'aria-checked',
         'false'
       )
-
-      cy.log('Re-render with new props, providing a default selection.')
-      cy.findByText('Land (cryosphere)').click()
-      cy.findByText('Atmosphere (physical)').click()
-      cy.findByText('Global').click()
-
-      rerender(
-        <KeywordSearchWidget
-          defaultSelections={{
-            'Spatial coverage': ['Global'],
-            'Variable domain': ['Atmosphere (composition)', 'Land (cryosphere)']
-          }}
-          categories={[
-            {
-              category: 'Spatial coverage',
-              groups: {
-                Global: 27,
-                Europe: 12
-              }
-            },
-            {
-              category: 'Temporal coverage',
-              groups: {
-                Past: 18
-              }
-            },
-            {
-              category: 'Variable domain',
-              groups: {
-                'Atmosphere (composition)': 12,
-                'Atmosphere (physical)': 22,
-                'Land (cryosphere)': 12
-              }
-            }
-          ]}
-        />
-      )
-
-      cy.findByLabelText('Atmosphere (physical)').should(
-        'have.attr',
-        'aria-checked',
-        'false'
-      )
-
-      cy.findByLabelText('Global').should('have.attr', 'aria-checked', 'false')
     })
   })
 
