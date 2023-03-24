@@ -7,15 +7,23 @@ import { QuestionMarkCircledIcon } from '@radix-ui/react-icons'
 
 type Props = {
   helpText: string | null
+  triggerAriaLabel: string
 }
 
-const WidgetTooltip = ({ helpText }: Props) => {
+const WidgetTooltip = ({ helpText, triggerAriaLabel }: Props) => {
   if (!helpText) return null
   return (
     <Tooltip
       triggerProps={{
         asChild: true,
-        child: () => <StyledQuestionMarkCircledIcon />
+        child: () => (
+          <Trigger aria-label={triggerAriaLabel}>
+            <StyledQuestionMarkCircledIcon
+              focusable={false}
+              aria-hidden={true}
+            />
+          </Trigger>
+        )
       }}
       contentProps={{
         child: () => (
@@ -28,6 +36,10 @@ const WidgetTooltip = ({ helpText }: Props) => {
     />
   )
 }
+
+const Trigger = styled.button`
+  all: unset;
+`
 
 const ContentWrapper = styled.div`
   max-width: 18.75em;
