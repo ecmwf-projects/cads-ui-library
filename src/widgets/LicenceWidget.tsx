@@ -128,7 +128,10 @@ const LicenceWidget = ({
     <Widget id={name}>
       <WidgetHeader>
         <WidgetTitle>{label}</WidgetTitle>
-        <WidgetTooltip helpText={help || null} />
+        <WidgetTooltip
+          helpText={help || null}
+          triggerAriaLabel={`Get help about ${label}`}
+        />
       </WidgetHeader>
       {licences.map((licence, index) => {
         const { id, label, accepted, revision, contents_url, attachment_url } =
