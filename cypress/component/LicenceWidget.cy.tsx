@@ -1,5 +1,3 @@
-import './workaround-cypress-10-0-2-process-issue'
-
 import { LicenceWidget } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 

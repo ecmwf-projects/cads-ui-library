@@ -1,7 +1,6 @@
-import './workaround-cypress-10-0-2-process-issue'
-
 import {
   ExclusiveGroupWidget,
+  StringListWidget,
   StringListArrayWidget,
   GeographicExtentWidget,
   TextWidget
@@ -9,6 +8,7 @@ import {
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 import {
+  getStringListWidgetConfiguration,
   getStringListArrayWidgetConfiguration,
   getGeographicExtentWidgetConfiguration,
   getTextWidgetConfiguration
@@ -75,6 +75,74 @@ describe('<ExclusiveGroupWidget/>', () => {
             ),
             second: () => (
               <TextWidget configuration={getTextWidgetConfiguration()} />
+            )
+          }}
+        />
+      </TooltipProvider>
+    )
+  })
+
+  it('renders with StringListWidget and TextWidget', () => {
+    cy.viewport(984, 597)
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Generic selections',
+      help: 'Select one choice from the widgets below',
+      name: 'checkbox_groups',
+      required: true,
+      children: ['first', 'second'],
+      details: {
+        default: 'first',
+        information: 'Select something ...'
+      }
+    }
+    cy.mount(
+      <TooltipProvider>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childGetter={{
+            first: () => (
+              <StringListWidget
+                configuration={getStringListWidgetConfiguration()}
+              />
+            ),
+            second: () => (
+              <TextWidget configuration={getTextWidgetConfiguration()} />
+            )
+          }}
+        />
+      </TooltipProvider>
+    )
+  })
+
+  it('renders with StringListWidget and StringListArrayWidget', () => {
+    cy.viewport(468, 1318)
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Generic selections',
+      help: 'Select one choice from the widgets below',
+      name: 'checkbox_groups',
+      required: true,
+      children: ['first', 'second'],
+      details: {
+        default: 'first',
+        information: 'Select something ...'
+      }
+    }
+    cy.mount(
+      <TooltipProvider>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childGetter={{
+            first: () => (
+              <StringListWidget
+                configuration={getStringListWidgetConfiguration()}
+              />
+            ),
+            second: () => (
+              <StringListArrayWidget
+                configuration={getStringListArrayWidgetConfiguration()}
+              />
             )
           }}
         />

@@ -103,3 +103,27 @@ export const getTextWidgetConfiguration = () => {
     type: 'FreeEditionWidget' as const
   }
 }
+
+export const getStringListWidgetConfiguration = () => {
+  return {
+    css: 'todo',
+    details: {
+      columns: 2,
+      id: 0,
+      labels: {
+        ['monthly_averaged_reanalysis']: 'Monthly averaged reanalysis',
+        ['monthly_averaged_reanalysis_by_hour_of_day']:
+          'Monthly averaged reanalysis by hour of day'
+      },
+      values: [
+        'monthly_averaged_reanalysis',
+        'monthly_averaged_reanalysis_by_hour_of_day'
+      ]
+    },
+    help: 'Monthly averaged reanalysis data are produced by averaging all daily data. Monthly averages by hour of day constitute the average over all data within the calendar month for every hour (UTC) of the day.',
+    label: 'Product type',
+    name: 'product_type',
+    required: true,
+    type: 'StringListWidget' as const
+  }
+}

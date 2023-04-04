@@ -1,5 +1,3 @@
-import './workaround-cypress-10-0-2-process-issue'
-
 import { GeographicExtentWidget } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
