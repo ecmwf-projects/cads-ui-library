@@ -71,10 +71,10 @@ export const getGeographicExtentWidgetConfiguration = () => {
     help: 'Select a sub region of the available area by providing its limit in latitude and longitude',
     details: {
       extentLabels: {
-        e: 'East',
         n: 'North',
-        s: 'South',
-        w: 'West'
+        w: 'West',
+        e: 'East',
+        s: 'South'
       },
       range: {
         e: 180,

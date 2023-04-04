@@ -57,12 +57,13 @@ const ExclusiveGroupWidget = ({
         <Legend>{label}</Legend>
         <RadioGroup rootProps={{ defaultValue: getDefault() }}>
           {children.map(child => {
+            if (!childGetter[child]) return null
             return (
               <Group key={child}>
                 <RadioGroupItem value={child} id={child}>
                   <RadioIndicator />
                 </RadioGroupItem>
-                {childGetter[child] && childGetter[child]()}
+                {childGetter[child]()}
               </Group>
             )
           })}
@@ -77,7 +78,6 @@ const Group = styled.div`
   flex-flow: row;
   gap: 1em;
 
-  // Reset child container styles.
   div:first-of-type {
     padding: unset;
   }
