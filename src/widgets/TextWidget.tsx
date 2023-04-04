@@ -44,7 +44,7 @@ const TextWidget = ({
   if (type !== 'FreeEditionWidget') return null
 
   return (
-    <Widget>
+    <Widget data-stylizable='widget'>
       <WidgetHeader>
         <WidgetTitle htmlFor={name}>{label}</WidgetTitle>
       </WidgetHeader>

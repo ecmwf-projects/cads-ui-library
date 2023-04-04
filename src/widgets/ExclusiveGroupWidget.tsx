@@ -78,8 +78,19 @@ const Group = styled.div`
   flex-flow: row;
   gap: 1em;
 
-  div:first-of-type {
-    padding: unset;
+  [data-stylizable='widget geographic-extent-widget'] {
+    margin-top: unset;
+    padding-top: unset;
+  }
+
+  [data-stylizable='widget'] {
+    margin-top: unset;
+    padding-top: unset;
+    width: 100%;
+  }
+
+  [data-stylizable='widget-action-wrapper'] {
+    align-items: flex-start;
   }
 `
 

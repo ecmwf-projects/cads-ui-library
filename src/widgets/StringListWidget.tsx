@@ -71,9 +71,9 @@ const StringListWidget = ({
   const allValues = getAllValues(labels)
 
   return (
-    <Widget>
+    <Widget data-stylizable='widget'>
       <WidgetHeader>
-        <WidgetActionsWrapper>
+        <WidgetActionsWrapper data-stylizable='widget-action-wrapper'>
           <WidgetTitle aria-hidden={true}>{label}</WidgetTitle>
           {constraints?.length === 0 ? null : isAllSelected({
               availableSelection: allValues,

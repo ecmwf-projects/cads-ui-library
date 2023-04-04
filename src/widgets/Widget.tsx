@@ -23,6 +23,8 @@ const WidgetTitle = styled.label`
 
 const Fieldset = styled.fieldset`
   all: unset;
+  display: block;
+  width: 100%;
 `
 
 const Legend = styled.legend`

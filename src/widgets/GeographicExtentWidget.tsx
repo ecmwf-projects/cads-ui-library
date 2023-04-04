@@ -1,14 +1,9 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 
-import {
-  Widget,
-  WidgetHeader,
-  WidgetTitle,
-  Fieldset,
-  Input,
-  Legend
-} from './Widget'
+import { useEventListener } from 'usehooks-ts'
+
+import { Widget, WidgetHeader, WidgetTitle, Fieldset, Legend } from './Widget'
 import { Label, WidgetTooltip } from '../index'
 
 export interface GeographicExtentWidgetConfiguration {
@@ -19,16 +14,16 @@ export interface GeographicExtentWidgetConfiguration {
   details: {
     extentLabels?: Record<string, string> | null
     range: {
-      e: number
       n: number
-      s: number
       w: number
+      e: number
+      s: number
     }
     default?: {
-      e: number
       n: number
-      s: number
       w: number
+      e: number
+      s: number
     }
   }
 }
@@ -38,33 +33,56 @@ export interface GeographicExtentWidgetProps {
 }
 
 /**
+ * A default mapping to use in case the configuration is missing a default extentLabels.
+ */
+const defaultMapping = {
+  n: 'North',
+  w: 'West',
+  e: 'East',
+  s: 'South'
+}
+
+/**
  * GeographicExtentWidget: select a geographic area by specifying a bounding box with North, West, South and East coordinates.
  */
 const GeographicExtentWidget = ({
   configuration
 }: GeographicExtentWidgetProps) => {
+  const fieldSetRef = useRef<HTMLFieldSetElement>(null)
+
+  const getRange = () => {
+    return details.range
+  }
+
+  const injectWidgetPayload = (ev: FormDataEvent) => {
+    const { formData } = ev
+    /**
+     * Remove the original keys from the form data object, that is, any n, s, o, w, and replace them with the fieldset name.
+     * This is required for the request payload utils to properly assemble the request object.
+     */
+
+    for (const extent of Object.keys(getRange())) {
+      if (formData.has(extent)) {
+        const value = formData.get(extent) as unknown as string
+        formData.delete(extent)
+        formData.append(name, value)
+      }
+    }
+  }
+
+  useEventListener('formdata', injectWidgetPayload, fieldSetRef)
+
   if (!configuration) return null
 
   const { type, name, label, help, details } = configuration
 
   if (type !== 'GeographicExtentWidget') return null
 
-  const getRange = () => {
-    return details.range
-  }
-
   const getDefault = () => {
     return details.default
   }
 
   const getFields = () => {
-    const defaultMapping = {
-      e: 'East',
-      n: 'North',
-      s: 'South',
-      w: 'West'
-    }
-
     if (!details.extentLabels)
       return Object.keys(getRange()).map(key => {
         const k = key as unknown as keyof ReturnType<typeof getRange>
@@ -88,7 +106,7 @@ const GeographicExtentWidget = ({
   }
 
   return (
-    <Widget>
+    <Widget data-stylizable='widget geographic-extent-widget'>
       <WidgetHeader>
         <WidgetTitle htmlFor={name}>{label}</WidgetTitle>
         <WidgetTooltip
@@ -111,9 +129,9 @@ const Inputs = styled.div`
   column-gap: 4.375em;
   row-gap: 1em;
   grid-template-areas:
-    'n n n'
-    'w w e'
-    's s s';
+    'n n n n'
+    'w w e e'
+    's s s s';
 
   @media (min-width: 984px) {
     column-gap: 9.375em;

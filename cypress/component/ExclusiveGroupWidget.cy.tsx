@@ -38,78 +38,6 @@ const Form = ({
 }
 
 describe('<ExclusiveGroupWidget/>', () => {
-  it('with GeographicExtentWidget and TextWidget', () => {
-    const configuration = {
-      type: 'ExclusiveGroupWidget' as const,
-      label: 'Geographical area',
-      help: 'Select one choice from the widgets below',
-      name: 'area_group',
-      required: true,
-      children: ['global', 'area'],
-      details: {
-        default: 'area',
-        information:
-          'Valid latitude and longitude values are multiples of 0.05 degree.'
-      }
-    }
-
-    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
-
-    cy.viewport(984, 597)
-    cy.mount(
-      <TooltipProvider>
-        <Form handleSubmit={stubbedHandleSubmit}>
-          <ExclusiveGroupWidget
-            configuration={configuration}
-            childGetter={{
-              global: () => (
-                <TextWidget
-                  configuration={{
-                    details: {
-                      id: 1,
-                      text: '<p>With this option selected the entire available area will be provided</p>'
-                    },
-                    label: 'Whole available region',
-                    name: 'global',
-                    type: 'FreeEditionWidget' as const
-                  }}
-                />
-              ),
-              area: () => (
-                <GeographicExtentWidget
-                  configuration={{
-                    ...getGeographicExtentWidgetConfiguration(),
-                    label: 'Sub-region extraction'
-                  }}
-                />
-              )
-            }}
-          />
-        </Form>
-      </TooltipProvider>
-    )
-
-    cy.findByLabelText('Sub-region extraction').should(
-      'have.attr',
-      'aria-checked',
-      'true'
-    )
-
-    cy.findByLabelText('North').type('90')
-    cy.findByLabelText('West').type('-90')
-    cy.findByLabelText('East').type('144')
-    cy.findByLabelText('South').type('44')
-
-    cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
-      ['area', '90'],
-      ['area', '-90'],
-      ['area', '144'],
-      ['area', '44']
-    ])
-  })
-
   it('with StringListArrayWidget and TextWidget', () => {
     const configuration = {
       type: 'ExclusiveGroupWidget' as const,
@@ -126,7 +54,7 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
-    cy.viewport(984, 597)
+    cy.viewport(800, 600)
     cy.mount(
       <TooltipProvider>
         <Form handleSubmit={stubbedHandleSubmit}>
@@ -205,7 +133,7 @@ describe('<ExclusiveGroupWidget/>', () => {
   })
 
   it('with StringListWidget and StringListArrayWidget', () => {
-    cy.viewport(468, 1318)
+    cy.viewport(1200, 900)
     const configuration = {
       type: 'ExclusiveGroupWidget' as const,
       label: 'Generic selections',
@@ -237,5 +165,77 @@ describe('<ExclusiveGroupWidget/>', () => {
         />
       </TooltipProvider>
     )
+  })
+
+  it('with GeographicExtentWidget and TextWidget', () => {
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Geographical area',
+      help: 'Select one choice from the widgets below',
+      name: 'area_group',
+      required: true,
+      children: ['global', 'area'],
+      details: {
+        default: 'area',
+        information:
+          'Valid latitude and longitude values are multiples of 0.05 degree.'
+      }
+    }
+
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.viewport(1200, 900)
+    cy.mount(
+      <TooltipProvider>
+        <Form handleSubmit={stubbedHandleSubmit}>
+          <ExclusiveGroupWidget
+            configuration={configuration}
+            childGetter={{
+              global: () => (
+                <TextWidget
+                  configuration={{
+                    details: {
+                      id: 1,
+                      text: '<p>With this option selected the entire available area will be provided</p>'
+                    },
+                    label: 'Whole available region',
+                    name: 'global',
+                    type: 'FreeEditionWidget' as const
+                  }}
+                />
+              ),
+              area: () => (
+                <GeographicExtentWidget
+                  configuration={{
+                    ...getGeographicExtentWidgetConfiguration(),
+                    label: 'Sub-region extraction'
+                  }}
+                />
+              )
+            }}
+          />
+        </Form>
+      </TooltipProvider>
+    )
+
+    cy.findByLabelText('Sub-region extraction').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+
+    cy.findByLabelText('North').type('90')
+    cy.findByLabelText('West').type('-90')
+    cy.findByLabelText('East').type('144')
+    cy.findByLabelText('South').type('44')
+
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+      ['area', '90'],
+      ['area', '-90'],
+      ['area', '144'],
+      ['area', '44']
+    ])
   })
 })
