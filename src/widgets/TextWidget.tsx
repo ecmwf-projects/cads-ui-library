@@ -44,9 +44,9 @@ const TextWidget = ({
   if (type !== 'FreeEditionWidget') return null
 
   return (
-    <Widget id={name}>
+    <Widget>
       <WidgetHeader>
-        <WidgetTitle>{label}</WidgetTitle>
+        <WidgetTitle htmlFor={name}>{label}</WidgetTitle>
       </WidgetHeader>
       <Markdown options={markdownParsingOptions}>{text}</Markdown>
     </Widget>

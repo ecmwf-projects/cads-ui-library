@@ -40,6 +40,10 @@ const ExclusiveGroupWidget = ({
 
   if (!childGetter) return null
 
+  const getDefault = () => {
+    return details.default
+  }
+
   return (
     <Widget id={name}>
       <WidgetHeader>
@@ -51,7 +55,7 @@ const ExclusiveGroupWidget = ({
       </WidgetHeader>
       <Fieldset>
         <Legend>{label}</Legend>
-        <RadioGroup>
+        <RadioGroup rootProps={{ defaultValue: getDefault() }}>
           {children.map(child => {
             return (
               <Group key={child}>
@@ -68,6 +72,15 @@ const ExclusiveGroupWidget = ({
   )
 }
 
-const Group = styled.div``
+const Group = styled.div`
+  display: flex;
+  flex-flow: row;
+  gap: 1em;
+
+  // Reset child container styles.
+  div:first-of-type {
+    padding: unset;
+  }
+`
 
 export { ExclusiveGroupWidget }

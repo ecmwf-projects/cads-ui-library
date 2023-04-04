@@ -67,8 +67,8 @@ export const getGeographicExtentWidgetConfiguration = () => {
   return {
     type: 'GeographicExtentWidget' as const,
     label: 'Area',
-    name: 'area_group',
-    help: null,
+    name: 'area',
+    help: 'Select a sub region of the available area by providing its limit in latitude and longitude',
     details: {
       extentLabels: {
         e: 'East',

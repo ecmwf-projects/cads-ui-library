@@ -16,7 +16,7 @@ const WidgetHeader = styled.div`
   margin-bottom: 1em;
 `
 
-const WidgetTitle = styled.h4`
+const WidgetTitle = styled.label`
   font-weight: 700;
   margin: unset;
 `

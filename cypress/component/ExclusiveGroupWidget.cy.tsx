@@ -24,28 +24,48 @@ describe('<ExclusiveGroupWidget/>', () => {
       required: true,
       children: ['global', 'area'],
       details: {
-        default: 'global',
+        default: 'area',
         information:
           'Valid latitude and longitude values are multiples of 0.05 degree.'
       }
     }
 
+    cy.viewport(984, 597)
     cy.mount(
       <TooltipProvider>
         <ExclusiveGroupWidget
           configuration={configuration}
           childGetter={{
             global: () => (
-              <GeographicExtentWidget
-                configuration={getGeographicExtentWidgetConfiguration()}
+              <TextWidget
+                configuration={{
+                  details: {
+                    id: 1,
+                    text: '<p>With this option selected the entire available area will be provided</p>'
+                  },
+                  label: 'Whole available region',
+                  name: 'global',
+                  type: 'FreeEditionWidget' as const
+                }}
               />
             ),
             area: () => (
-              <TextWidget configuration={getTextWidgetConfiguration()} />
+              <GeographicExtentWidget
+                configuration={{
+                  ...getGeographicExtentWidgetConfiguration(),
+                  label: 'Sub-region extraction'
+                }}
+              />
             )
           }}
         />
       </TooltipProvider>
+    )
+
+    cy.findByLabelText('Sub-region extraction').should(
+      'have.attr',
+      'aria-checked',
+      'true'
     )
   })
 
