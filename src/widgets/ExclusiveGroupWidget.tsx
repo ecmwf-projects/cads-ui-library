@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 import { Widget, WidgetHeader, WidgetTitle, Fieldset, Legend } from './Widget'
 import {
-  Label,
   RadioGroup,
   RadioGroupItem,
   RadioIndicator,
@@ -23,14 +22,23 @@ export interface ExclusiveGroupWidgetConfiguration {
 
 export interface ExclusiveGroupWidgetProps {
   configuration: ExclusiveGroupWidgetConfiguration
+  /**
+   * A mapping between child names and their given JSX representation.
+   */
+  childGetter: Record<string, () => JSX.Element>
 }
 
-const ExclusiveGroupWidget = ({ configuration }: ExclusiveGroupWidgetProps) => {
+const ExclusiveGroupWidget = ({
+  configuration,
+  childGetter
+}: ExclusiveGroupWidgetProps) => {
   if (!configuration) return null
 
   const { type, name, label, help, children, details } = configuration
 
   if (type !== 'ExclusiveGroupWidget') return null
+
+  if (!childGetter) return null
 
   return (
     <Widget id={name}>
@@ -50,7 +58,7 @@ const ExclusiveGroupWidget = ({ configuration }: ExclusiveGroupWidgetProps) => {
                 <RadioGroupItem value={child} id={child}>
                   <RadioIndicator />
                 </RadioGroupItem>
-                <div>the child instance</div>
+                {childGetter[child] && childGetter[child]()}
               </Group>
             )
           })}
