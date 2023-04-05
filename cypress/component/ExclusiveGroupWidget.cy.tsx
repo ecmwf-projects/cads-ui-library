@@ -5,6 +5,7 @@ import {
   StringListWidget,
   StringListArrayWidget,
   GeographicExtentWidget,
+  StringChoiceWidget,
   TextWidget
 } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
@@ -13,7 +14,8 @@ import {
   getStringListWidgetConfiguration,
   getStringListArrayWidgetConfiguration,
   getGeographicExtentWidgetConfiguration,
-  getTextWidgetConfiguration
+  getTextWidgetConfiguration,
+  getStringChoiceWidgetConfiguration
 } from '../../__tests__/factories'
 
 const Form = ({
@@ -240,5 +242,51 @@ describe('<ExclusiveGroupWidget/>', () => {
     cy.findByLabelText('Whole available region').click()
     cy.findByText('submit').click()
     cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [])
+  })
+
+  it('with StringChoiceWidget and TextWidget', () => {
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Generic selections',
+      help: 'Select one choice from the widgets below',
+      name: 'checkbox_groups',
+      children: ['format', 'surface_help'],
+      details: {
+        default: 'format',
+        information: 'Select something ...'
+      }
+    }
+
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.viewport(800, 600)
+    cy.mount(
+      <TooltipProvider>
+        <Form handleSubmit={stubbedHandleSubmit}>
+          <ExclusiveGroupWidget
+            configuration={configuration}
+            childGetter={{
+              format: ({ fieldsetDisabled }) => (
+                <StringChoiceWidget
+                  fieldsetDisabled={fieldsetDisabled}
+                  configuration={getStringChoiceWidgetConfiguration()}
+                />
+              ),
+              surface_help: () => (
+                <TextWidget configuration={getTextWidgetConfiguration()} />
+              )
+            }}
+          />
+        </Form>
+      </TooltipProvider>
+    )
+
+    cy.findByLabelText('NetCDF (experimental)').click()
+
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+      ['format', 'netcdf']
+    ])
   })
 })

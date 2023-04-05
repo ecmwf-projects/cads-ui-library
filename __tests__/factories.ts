@@ -127,3 +127,24 @@ export const getStringListWidgetConfiguration = () => {
     type: 'StringListWidget' as const
   }
 }
+
+export const getStringChoiceWidgetConfiguration = () => {
+  return {
+    css: 'todo',
+    details: {
+      columns: 2,
+      default: ['grib'],
+      id: 8,
+      labels: {
+        grib: 'GRIB',
+        netcdf: 'NetCDF (experimental)'
+      },
+      values: ['grib', 'netcdf']
+    },
+    help: null,
+    label: 'Format',
+    name: 'format',
+    required: true,
+    type: 'StringChoiceWidget' as const
+  }
+}
