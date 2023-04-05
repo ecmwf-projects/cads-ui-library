@@ -57,6 +57,10 @@ interface StringListArrayWidgetProps {
    * Permitted selections for the widget.
    */
   constraints?: string[]
+  /**
+   * Whether the underlying fieldset should be functionally and visually disabled.
+   */
+  fieldsetDisabled?: boolean
 }
 
 const getAllValues = (
@@ -105,7 +109,8 @@ const appendToFormData = (
  */
 const StringListArrayWidget = ({
   configuration,
-  constraints
+  constraints,
+  fieldsetDisabled
 }: StringListArrayWidgetProps) => {
   const {
     details: { groups, accordionOptions },
@@ -208,7 +213,7 @@ const StringListArrayWidget = ({
           <Error>At least one selection must be made</Error>
         ) : null}
       </ReservedSpace>
-      <Fieldset name={name} ref={fieldSetRef}>
+      <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
         {groups.map(({ label: groupLabel, columns, labels }) => {
           if (!Object.keys(labels).length) return null

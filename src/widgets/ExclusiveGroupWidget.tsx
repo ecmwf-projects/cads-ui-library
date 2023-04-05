@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { Widget, WidgetHeader, WidgetTitle, Fieldset, Legend } from './Widget'
@@ -25,24 +25,21 @@ export interface ExclusiveGroupWidgetProps {
   /**
    * A mapping between child names and their given JSX representation.
    */
-  childGetter: Record<string, () => JSX.Element>
+  childGetter: Record<string, (...props: any) => JSX.Element>
 }
 
 const ExclusiveGroupWidget = ({
   configuration,
   childGetter
 }: ExclusiveGroupWidgetProps) => {
-  if (!configuration) return null
-
   const { type, name, label, help, children, details } = configuration
+
+  const [selection, setSelection] = useState<string>(details.default)
+  if (!configuration) return null
 
   if (type !== 'ExclusiveGroupWidget') return null
 
   if (!childGetter) return null
-
-  const getDefault = () => {
-    return details.default
-  }
 
   return (
     <Widget id={name}>
@@ -55,7 +52,12 @@ const ExclusiveGroupWidget = ({
       </WidgetHeader>
       <Fieldset>
         <Legend>{label}</Legend>
-        <RadioGroup rootProps={{ defaultValue: getDefault() }}>
+        <RadioGroup
+          rootProps={{
+            value: selection,
+            onValueChange: value => setSelection(value)
+          }}
+        >
           {children.map(child => {
             if (!childGetter[child]) return null
             return (
@@ -63,7 +65,7 @@ const ExclusiveGroupWidget = ({
                 <RadioGroupItem value={child} id={child}>
                   <RadioIndicator />
                 </RadioGroupItem>
-                {childGetter[child]()}
+                {childGetter[child]({ fieldsetDisabled: child !== selection })}
               </Group>
             )
           })}
@@ -91,6 +93,18 @@ const Group = styled.div`
 
   [data-stylizable='widget-action-wrapper'] {
     align-items: flex-start;
+  }
+
+  fieldset[disabled] {
+    input {
+      background-color: #e6e9f2;
+    }
+  }
+
+  &:has(fieldset[disabled]) {
+    label {
+      color: #bcc0cc;
+    }
   }
 `
 

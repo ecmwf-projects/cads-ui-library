@@ -45,9 +45,9 @@ describe('<ExclusiveGroupWidget/>', () => {
       help: 'Select one choice from the widgets below',
       name: 'checkbox_groups',
       required: true,
-      children: ['first', 'second'],
+      children: ['variable', 'surface_help'],
       details: {
-        default: 'first',
+        default: 'variable',
         information: 'Select something ...'
       }
     }
@@ -61,12 +61,13 @@ describe('<ExclusiveGroupWidget/>', () => {
           <ExclusiveGroupWidget
             configuration={configuration}
             childGetter={{
-              first: () => (
+              variable: ({ fieldsetDisabled }) => (
                 <StringListArrayWidget
+                  fieldsetDisabled={fieldsetDisabled}
                   configuration={getStringListArrayWidgetConfiguration()}
                 />
               ),
-              second: () => (
+              surface_help: () => (
                 <TextWidget configuration={getTextWidgetConfiguration()} />
               )
             }}
@@ -93,9 +94,9 @@ describe('<ExclusiveGroupWidget/>', () => {
       help: 'Select one choice from the widgets below',
       name: 'checkbox_groups',
       required: true,
-      children: ['first', 'second'],
+      children: ['product_type', 'surface_help'],
       details: {
-        default: 'first',
+        default: 'product_type',
         information: 'Select something ...'
       }
     }
@@ -109,12 +110,13 @@ describe('<ExclusiveGroupWidget/>', () => {
           <ExclusiveGroupWidget
             configuration={configuration}
             childGetter={{
-              first: () => (
+              product_type: ({ fieldsetDisabled }) => (
                 <StringListWidget
+                  fieldsetDisabled={fieldsetDisabled}
                   configuration={getStringListWidgetConfiguration()}
                 />
               ),
-              second: () => (
+              surface_help: () => (
                 <TextWidget configuration={getTextWidgetConfiguration()} />
               )
             }}
@@ -204,8 +206,9 @@ describe('<ExclusiveGroupWidget/>', () => {
                   }}
                 />
               ),
-              area: () => (
+              area: ({ fieldsetDisabled }) => (
                 <GeographicExtentWidget
+                  fieldsetDisabled={fieldsetDisabled}
                   configuration={{
                     ...getGeographicExtentWidgetConfiguration(),
                     label: 'Sub-region extraction'
@@ -231,11 +234,15 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     cy.findByText('submit').click()
 
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+    cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
       ['area', '90'],
       ['area', '-90'],
       ['area', '144'],
       ['area', '44']
     ])
+
+    cy.findByLabelText('Whole available region').click()
+    cy.findByText('submit').click()
+    cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [])
   })
 })

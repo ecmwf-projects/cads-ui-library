@@ -49,6 +49,10 @@ type StringListWidgetProps = {
    * Permitted selections for the widget.
    */
   constraints?: string[]
+  /**
+   * Whether the underlying fieldset should be functionally and visually disabled.
+   */
+  fieldsetDisabled?: boolean
 }
 
 const getAllValues = (labels: StringListWidgetDetails['labels']) => {
@@ -57,7 +61,8 @@ const getAllValues = (labels: StringListWidgetDetails['labels']) => {
 
 const StringListWidget = ({
   configuration,
-  constraints
+  constraints,
+  fieldsetDisabled
 }: StringListWidgetProps) => {
   const { details, label, help, name, required } = configuration
   const {
@@ -102,7 +107,7 @@ const StringListWidget = ({
           <Error>At least one selection must be made</Error>
         ) : null}
       </ReservedSpace>
-      <Fieldset name={name}>
+      <Fieldset name={name} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
         <InputsGrid columns={columns}>
           {details.values.map(value => {

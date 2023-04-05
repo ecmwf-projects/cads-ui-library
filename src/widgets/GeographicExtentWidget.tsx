@@ -30,6 +30,10 @@ export interface GeographicExtentWidgetConfiguration {
 
 export interface GeographicExtentWidgetProps {
   configuration: GeographicExtentWidgetConfiguration
+  /**
+   * Whether the underlying fieldset should be functionally and visually disabled.
+   */
+  fieldsetDisabled?: boolean
 }
 
 /**
@@ -46,7 +50,8 @@ const defaultMapping = {
  * GeographicExtentWidget: select a geographic area by specifying a bounding box with North, West, South and East coordinates.
  */
 const GeographicExtentWidget = ({
-  configuration
+  configuration,
+  fieldsetDisabled
 }: GeographicExtentWidgetProps) => {
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
 
@@ -114,7 +119,7 @@ const GeographicExtentWidget = ({
           triggerAriaLabel={`Get help about ${label}`}
         />
       </WidgetHeader>
-      <Fieldset>
+      <Fieldset disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
         <Inputs>{getFields()}</Inputs>
       </Fieldset>
@@ -150,6 +155,7 @@ const Wrap = styled.div<{ area: string }>`
 
   input {
     all: unset;
+    color: #9599a6;
     border: 2px solid #9599a6;
     border-radius: 4px;
     max-width: 100px;
