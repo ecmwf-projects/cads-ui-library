@@ -159,10 +159,12 @@ const StringListArrayWidget = ({
   const allValues = getAllValues(groups)
 
   return (
-    <Widget>
+    <Widget data-stylizable='widget'>
       <WidgetHeader>
-        <WidgetActionsWrapper>
-          <WidgetTitle aria-hidden={true}>{label}</WidgetTitle>
+        <WidgetActionsWrapper data-stylizable='widget-action-wrapper'>
+          <WidgetTitle data-stylizable='widget-title' aria-hidden={true}>
+            {label}
+          </WidgetTitle>
           <BulkSelectionTrigger
             aria-hidden={true}
             type='checkbox'

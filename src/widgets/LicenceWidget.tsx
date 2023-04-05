@@ -125,9 +125,9 @@ const LicenceWidget = ({
   }
 
   return (
-    <Widget id={name}>
+    <Widget data-stylizable='widget'>
       <WidgetHeader>
-        <WidgetTitle>{label}</WidgetTitle>
+        <WidgetTitle data-stylizable='widget-title'>{label}</WidgetTitle>
         <WidgetTooltip
           helpText={help || null}
           triggerAriaLabel={`Get help about ${label}`}

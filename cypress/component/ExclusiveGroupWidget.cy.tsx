@@ -44,7 +44,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       label: 'Generic selections',
       help: 'Select one choice from the widgets below',
       name: 'checkbox_groups',
-      required: true,
       children: ['variable', 'surface_help'],
       details: {
         default: 'variable',
@@ -93,7 +92,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       label: 'Generic selections',
       help: 'Select one choice from the widgets below',
       name: 'checkbox_groups',
-      required: true,
       children: ['product_type', 'surface_help'],
       details: {
         default: 'product_type',
@@ -141,7 +139,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       label: 'Generic selections',
       help: 'Select one choice from the widgets below',
       name: 'checkbox_groups',
-      required: true,
       children: ['product_type', 'variable'],
       details: {
         default: 'variable',
@@ -175,7 +172,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       label: 'Geographical area',
       help: 'Select one choice from the widgets below',
       name: 'area_group',
-      required: true,
       children: ['global', 'area'],
       details: {
         default: 'area',

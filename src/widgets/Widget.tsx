@@ -2,7 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 
 /**
- * Common building blocks for all widgets. Inheritors in webportal should override colors.
+ * Common building blocks for all widgets. Inheritors in webportal can override styles
+ * by targeting data-stylizable attributes.
+ * .
  */
 const Widget = styled.div`
   margin-bottom: 1em;
