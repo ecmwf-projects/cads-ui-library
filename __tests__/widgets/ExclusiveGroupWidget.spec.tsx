@@ -1,7 +1,13 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 
-import { ExclusiveGroupWidget } from '../../src'
+import { ExclusiveGroupWidget, getExclusiveGroupChildren } from '../../src'
+
+import {
+  getStringListWidgetConfiguration,
+  getGeographicExtentWidgetConfiguration,
+  getStringChoiceWidgetConfiguration
+} from '../factories'
 
 describe('<ExclusiveGroupWidget/>', () => {
   it('renders', () => {
@@ -10,7 +16,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       label: 'Geographical area',
       help: null,
       name: 'area_group',
-      required: true,
       children: ['global', 'area'],
       details: {
         default: 'global',
@@ -22,7 +27,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     render(
       <ExclusiveGroupWidget
         configuration={configuration}
-        childGetter={{
+        childrenGetter={{
           global: () => <p>global</p>,
           area: () => <p>area</p>
         }}
@@ -38,7 +43,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       label: 'Geographical area',
       help: null,
       name: 'area_group',
-      required: true,
       children: ['global', 'area'],
       details: {
         default: 'global',
@@ -57,7 +61,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       label: 'Geographical area',
       help: null,
       name: 'area_group',
-      required: true,
       children: ['global', 'area'],
       details: {
         default: 'global',
@@ -69,10 +72,56 @@ describe('<ExclusiveGroupWidget/>', () => {
     render(
       <ExclusiveGroupWidget
         configuration={configuration}
-        childGetter={{
+        childrenGetter={{
           invalid: () => <p>hi</p>
         }}
       />
     )
+  })
+
+  it('groups its children', () => {
+    const widgetConfiguration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Geographical area',
+      help: null,
+      name: 'area_group',
+      children: ['global', 'global_1', 'area'],
+      details: {
+        default: 'global',
+        information:
+          'Valid latitude and longitude values are multiples of 0.05 degree.'
+      }
+    }
+
+    const formConfiguration = [
+      widgetConfiguration,
+      getGeographicExtentWidgetConfiguration(),
+      getStringListWidgetConfiguration(),
+      getStringChoiceWidgetConfiguration(),
+      {
+        details: {
+          id: 1,
+          text: '<p>With this option selected the entire available area will be provided</p>'
+        },
+        label: 'Whole available region',
+        name: 'global',
+        type: 'FreeEditionWidget' as const
+      },
+      {
+        details: {
+          id: 1,
+          text: '<p>With this option selected the entire available area will be provided</p>'
+        },
+        label: 'Whole available region 1',
+        name: 'global_1',
+        type: 'FreeEditionWidget' as const
+      }
+    ]
+
+    expect(getExclusiveGroupChildren(formConfiguration, 'area_group')).toEqual({
+      global: expect.any(Function),
+      global_1: expect.any(Function),
+      area: expect.any(Function)
+    })
   })
 })

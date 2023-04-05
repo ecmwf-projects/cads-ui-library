@@ -23,14 +23,14 @@ export interface ExclusiveGroupWidgetConfiguration {
 export interface ExclusiveGroupWidgetProps {
   configuration: ExclusiveGroupWidgetConfiguration
   /**
-   * A mapping between child names and their given JSX representation.
+   * A mapping between children names and their corresponding components.
    */
-  childGetter: Record<string, (...props: any) => JSX.Element>
+  childrenGetter: Record<string, (...props: any) => JSX.Element>
 }
 
 const ExclusiveGroupWidget = ({
   configuration,
-  childGetter
+  childrenGetter
 }: ExclusiveGroupWidgetProps) => {
   const { type, name, label, help, children, details } = configuration
 
@@ -39,7 +39,7 @@ const ExclusiveGroupWidget = ({
 
   if (type !== 'ExclusiveGroupWidget') return null
 
-  if (!childGetter) return null
+  if (!childrenGetter) return null
 
   return (
     <Widget data-stylizable='widget'>
@@ -59,13 +59,15 @@ const ExclusiveGroupWidget = ({
           }}
         >
           {children.map(child => {
-            if (!childGetter[child]) return null
+            if (!childrenGetter[child]) return null
             return (
               <Group key={child}>
                 <RadioGroupItem value={child} id={child}>
                   <RadioIndicator />
                 </RadioGroupItem>
-                {childGetter[child]({ fieldsetDisabled: child !== selection })}
+                {childrenGetter[child]({
+                  fieldsetDisabled: child !== selection
+                })}
               </Group>
             )
           })}
@@ -73,6 +75,40 @@ const ExclusiveGroupWidget = ({
       </Fieldset>
     </Widget>
   )
+}
+
+/**
+ * Given the complete form configuration, group the ExclusiveGroupWidget children, and return a mapping between children names and their corresponding components.
+ */
+type GetExclusiveGroupChildren = <
+  TFormConfiguration extends Record<string | 'type' | 'name', unknown>
+>(
+  formConfiguration: TFormConfiguration[],
+  name: string
+) => unknown
+const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
+  formConfiguration,
+  name
+) => {
+  const thisExclusiveGroup = formConfiguration.find(
+    configuration =>
+      configuration.type === 'ExclusiveGroupWidget' &&
+      configuration.name === name
+  )
+
+  if (
+    thisExclusiveGroup &&
+    'children' in thisExclusiveGroup &&
+    Array.isArray(thisExclusiveGroup.children)
+  ) {
+    return thisExclusiveGroup.children.reduce<
+      Record<string, (...props: any) => JSX.Element>
+    >((prevValue, currentValue) => {
+      prevValue[currentValue] = () => <p>FIXME</p>
+
+      return prevValue
+    }, {})
+  }
 }
 
 const Group = styled.div`
@@ -109,3 +145,4 @@ const Group = styled.div`
 `
 
 export { ExclusiveGroupWidget }
+export { getExclusiveGroupChildren }

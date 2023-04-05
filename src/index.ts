@@ -17,3 +17,8 @@ export { ExclusiveGroupWidget } from './widgets/ExclusiveGroupWidget'
 export { StringListArrayWidget } from './widgets/StringListArrayWidget'
 export { StringListWidget } from './widgets/StringListWidget'
 export { StringChoiceWidget } from './widgets/StringChoiceWidget'
+
+/**
+ * Widget utils.
+ */
+export { getExclusiveGroupChildren } from './widgets/ExclusiveGroupWidget'

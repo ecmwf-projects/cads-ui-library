@@ -6,7 +6,8 @@ import {
   StringListArrayWidget,
   GeographicExtentWidget,
   StringChoiceWidget,
-  TextWidget
+  TextWidget,
+  getExclusiveGroupChildren
 } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
@@ -61,7 +62,8 @@ describe('<ExclusiveGroupWidget/>', () => {
         <Form handleSubmit={stubbedHandleSubmit}>
           <ExclusiveGroupWidget
             configuration={configuration}
-            childGetter={{
+            childrenGetter={{
+              // TODO getExclusiveGroupChildren
               variable: ({ fieldsetDisabled }) => (
                 <StringListArrayWidget
                   fieldsetDisabled={fieldsetDisabled}
@@ -109,7 +111,7 @@ describe('<ExclusiveGroupWidget/>', () => {
         <Form handleSubmit={stubbedHandleSubmit}>
           <ExclusiveGroupWidget
             configuration={configuration}
-            childGetter={{
+            childrenGetter={{
               product_type: ({ fieldsetDisabled }) => (
                 <StringListWidget
                   fieldsetDisabled={fieldsetDisabled}
@@ -151,7 +153,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       <TooltipProvider>
         <ExclusiveGroupWidget
           configuration={configuration}
-          childGetter={{
+          childrenGetter={{
             product_type: () => (
               <StringListWidget
                 configuration={getStringListWidgetConfiguration()}
@@ -190,7 +192,7 @@ describe('<ExclusiveGroupWidget/>', () => {
         <Form handleSubmit={stubbedHandleSubmit}>
           <ExclusiveGroupWidget
             configuration={configuration}
-            childGetter={{
+            childrenGetter={{
               global: () => (
                 <TextWidget
                   configuration={{
@@ -265,7 +267,7 @@ describe('<ExclusiveGroupWidget/>', () => {
         <Form handleSubmit={stubbedHandleSubmit}>
           <ExclusiveGroupWidget
             configuration={configuration}
-            childGetter={{
+            childrenGetter={{
               format: ({ fieldsetDisabled }) => (
                 <StringChoiceWidget
                   fieldsetDisabled={fieldsetDisabled}
