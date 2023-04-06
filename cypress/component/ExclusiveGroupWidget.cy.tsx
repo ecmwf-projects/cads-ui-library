@@ -41,8 +41,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       name: 'checkbox_groups',
       children: ['variable', 'surface_help'],
       details: {
-        default: 'variable',
-        information: 'Select something ...'
+        default: 'variable'
       }
     }
 
@@ -90,8 +89,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       name: 'checkbox_groups',
       children: ['product_type', 'surface_help'],
       details: {
-        default: 'product_type',
-        information: 'Select something ...'
+        default: 'product_type'
       }
     }
 
@@ -146,8 +144,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       name: 'checkbox_groups',
       children: ['product_type', 'variable'],
       details: {
-        default: 'variable',
-        information: 'Select something ...'
+        default: 'variable'
       }
     }
 
@@ -180,9 +177,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       name: 'area_group',
       children: ['global', 'area'],
       details: {
-        default: 'area',
-        information:
-          'Valid latitude and longitude values are multiples of 0.05 degree.'
+        default: 'area'
       }
     }
 
@@ -253,8 +248,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       name: 'checkbox_groups',
       children: ['format', 'surface_help'],
       details: {
-        default: 'format',
-        information: 'Select something ...'
+        default: 'format'
       }
     }
 
@@ -287,6 +281,100 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
       ['format', 'netcdf']
+    ])
+  })
+
+  it('multiple ExclusiveGroupWidget', () => {
+    const thisExclusive = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'This exclusive',
+      help: 'This exclusive',
+      name: 'this_exclusive',
+      children: ['format', 'surface_help'],
+      details: {
+        default: 'format'
+      }
+    }
+
+    const otherExclusive = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Other exclusive',
+      help: 'Other exclusive',
+      name: 'other_exclusive',
+      children: ['product_type'],
+      details: {
+        default: 'product_type'
+      }
+    }
+
+    const formConfiguration = [
+      thisExclusive,
+      otherExclusive,
+      getStringChoiceWidgetConfiguration(),
+      getTextWidgetConfiguration(),
+      getStringListWidgetConfiguration(),
+      getGeographicExtentWidgetConfiguration(),
+      {
+        details: {
+          id: 1,
+          text: '<p>To obtain something completely different ...</p>'
+        },
+        label: 'I have nothing to do here',
+        name: 'useless',
+        type: 'FreeEditionWidget' as const
+      },
+      {
+        details: {
+          columns: 2,
+          id: 0,
+          labels: {
+            ['1']: '1',
+            ['2']: '2'
+          },
+          values: ['1', '1']
+        },
+        help: null,
+        label: 'Me neither',
+        name: 'me_neither',
+        required: true,
+        type: 'StringListWidget' as const
+      }
+    ]
+
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.viewport(800, 600)
+    cy.mount(
+      <TooltipProvider>
+        <Form handleSubmit={stubbedHandleSubmit}>
+          <ExclusiveGroupWidget
+            configuration={thisExclusive}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'this_exclusive'
+            )}
+          />
+
+          <ExclusiveGroupWidget
+            configuration={otherExclusive}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'other_exclusive'
+            )}
+          />
+        </Form>
+      </TooltipProvider>
+    )
+
+    cy.findByLabelText(/netcdf/i)
+    cy.findByLabelText('Surface data')
+    cy.findByLabelText('Monthly averaged reanalysis').click()
+
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+      ['format', 'grib'],
+      ['product_type', 'monthly_averaged_reanalysis']
     ])
   })
 })

@@ -106,7 +106,6 @@ export const getTextWidgetConfiguration = () => {
 
 export const getStringListWidgetConfiguration = () => {
   return {
-    css: 'todo',
     details: {
       columns: 2,
       id: 0,
@@ -130,7 +129,6 @@ export const getStringListWidgetConfiguration = () => {
 
 export const getStringChoiceWidgetConfiguration = () => {
   return {
-    css: 'todo',
     details: {
       columns: 2,
       default: ['grib'],
