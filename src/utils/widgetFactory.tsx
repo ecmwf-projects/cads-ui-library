@@ -19,52 +19,62 @@ import type { TextWidgetConfiguration } from '../widgets/TextWidget'
 type CreateWidget = <TConfiguration extends Record<string | 'type', unknown>>(
   configuration: TConfiguration,
   constraints?: string[]
-) => JSX.Element | null
+) => (...props: any) => JSX.Element | null
 const createWidget: CreateWidget = (configuration, constraints) => {
   switch (configuration.type) {
     case 'GeographicExtentWidget':
-      return (
+      // eslint-disable-next-line react/display-name
+      return props => (
         <GeographicExtentWidget
           configuration={
             configuration as unknown as GeographicExtentWidgetConfiguration
           }
+          {...props}
         />
       )
     case 'StringListArrayWidget':
-      return (
+      // eslint-disable-next-line react/display-name
+      return props => (
         <StringListArrayWidget
           configuration={
             configuration as unknown as StringListArrayWidgetConfiguration
           }
           constraints={constraints}
+          {...props}
         />
       )
     case 'StringListWidget':
-      return (
+      // eslint-disable-next-line react/display-name
+      return props => (
         <StringListWidget
           configuration={
             configuration as unknown as StringListWidgetConfiguration
           }
           constraints={constraints}
+          {...props}
         />
       )
     case 'StringChoiceWidget':
-      return (
+      // eslint-disable-next-line react/display-name
+      return props => (
         <StringChoiceWidget
           configuration={
             configuration as unknown as StringChoiceWidgetConfiguration
           }
           constraints={constraints}
+          {...props}
         />
       )
     case 'FreeEditionWidget':
-      return (
+      // eslint-disable-next-line react/display-name
+      return props => (
         <TextWidget
           configuration={configuration as unknown as TextWidgetConfiguration}
+          {...props}
         />
       )
     default:
-      return null
+      return _props => null
   }
 }
 

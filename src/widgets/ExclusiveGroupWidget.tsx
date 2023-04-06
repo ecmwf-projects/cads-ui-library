@@ -67,7 +67,8 @@ const ExclusiveGroupWidget = ({
                   <RadioIndicator />
                 </RadioGroupItem>
                 {childrenGetter[child]({
-                  fieldsetDisabled: child !== selection
+                  fieldsetDisabled: child !== selection,
+                  inert: child !== selection
                 })}
               </Group>
             )
@@ -87,7 +88,7 @@ type GetExclusiveGroupChildren = <
   formConfiguration: TFormConfiguration[],
   name: string,
   constraints?: Record<string, string[]>
-) => Record<string, (...props: any) => JSX.Element> | undefined
+) => Record<string, (...props: any) => JSX.Element | null> | undefined
 const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
   formConfiguration,
   name,
@@ -105,7 +106,7 @@ const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
     Array.isArray(thisExclusiveGroup.children)
   ) {
     return thisExclusiveGroup.children.reduce<
-      Record<string, (...props: any) => JSX.Element>
+      Record<string, (...props: any) => JSX.Element | null>
     >((childMap, childName) => {
       const childConfiguration = formConfiguration.find(
         configuration => configuration.name === childName
@@ -113,10 +114,9 @@ const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
 
       if (!childConfiguration) return childMap
       const childConstraints = constraints && constraints[childName]
-      const widget = createWidget(childConfiguration, childConstraints)
+      const childWidget = createWidget(childConfiguration, childConstraints)
 
-      if (!widget) return childMap
-      childMap[childName] = () => widget // FIXME allow props
+      childMap[childName] = props => childWidget(props)
 
       return childMap
     }, {})

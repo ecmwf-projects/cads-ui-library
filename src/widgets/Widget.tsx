@@ -9,6 +9,14 @@ import styled from 'styled-components'
 const Widget = styled.div`
   margin-bottom: 1em;
   padding: 1.875em;
+
+  [inert],
+  [inert] * {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: default;
+    user-select: none;
+  }
 `
 
 const WidgetHeader = styled.div`

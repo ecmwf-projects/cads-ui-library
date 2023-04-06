@@ -1,14 +1,6 @@
 import React from 'react'
 
-import {
-  ExclusiveGroupWidget,
-  StringListWidget,
-  StringListArrayWidget,
-  GeographicExtentWidget,
-  StringChoiceWidget,
-  TextWidget,
-  getExclusiveGroupChildren
-} from '../../src'
+import { ExclusiveGroupWidget, getExclusiveGroupChildren } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 import {

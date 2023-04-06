@@ -22,15 +22,20 @@ interface TextWidgetProps {
    * Pass-through configuration parameters for Markdown parser.
    */
   markdownParsingOptions?: TMarkdownToJSX.Options
+  /**
+   * Whether the widget should be functionally and visually disabled.
+   */
+  inert?: boolean
 }
 
 /**
  * TextWidget, also known as FreeEditionWidget.
- * Widget to display a block of text. Markdown supported.
+ * Widget to display a block of text. Supports markdown.
  */
 const TextWidget = ({
   configuration,
-  markdownParsingOptions
+  markdownParsingOptions,
+  inert
 }: TextWidgetProps) => {
   if (!configuration) return null
 
@@ -48,7 +53,9 @@ const TextWidget = ({
       <WidgetHeader>
         <WidgetTitle htmlFor={name}>{label}</WidgetTitle>
       </WidgetHeader>
-      <Markdown options={markdownParsingOptions}>{text}</Markdown>
+      <Markdown options={markdownParsingOptions} {...(inert && { inert: '' })}>
+        {text}
+      </Markdown>
     </Widget>
   )
 }
