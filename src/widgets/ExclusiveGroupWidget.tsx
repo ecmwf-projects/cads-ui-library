@@ -8,6 +8,7 @@ import {
   RadioIndicator,
   WidgetTooltip
 } from '../index'
+import { createWidget } from '../index'
 
 export interface ExclusiveGroupWidgetConfiguration {
   type: 'ExclusiveGroupWidget'
@@ -81,14 +82,16 @@ const ExclusiveGroupWidget = ({
  * Given the complete form configuration, group the ExclusiveGroupWidget children, and return a mapping between children names and their corresponding components.
  */
 type GetExclusiveGroupChildren = <
-  TFormConfiguration extends Record<string | 'type' | 'name', unknown>
+  TFormConfiguration extends Record<string | 'type' | 'name', unknown> // FIXME
 >(
   formConfiguration: TFormConfiguration[],
-  name: string
-) => unknown
+  name: string,
+  constraints?: Record<string, string[]>
+) => Record<string, (...props: any) => JSX.Element> | undefined
 const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
   formConfiguration,
-  name
+  name,
+  constraints
 ) => {
   const thisExclusiveGroup = formConfiguration.find(
     configuration =>
@@ -103,10 +106,19 @@ const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
   ) {
     return thisExclusiveGroup.children.reduce<
       Record<string, (...props: any) => JSX.Element>
-    >((prevValue, currentValue) => {
-      prevValue[currentValue] = () => <p>FIXME</p>
+    >((childMap, childName) => {
+      const childConfiguration = formConfiguration.find(
+        configuration => configuration.name === childName
+      )
 
-      return prevValue
+      if (!childConfiguration) return childMap
+      const childConstraints = constraints && constraints[childName]
+      const widget = createWidget(childConfiguration, childConstraints)
+
+      if (!widget) return childMap
+      childMap[childName] = () => widget // FIXME allow props
+
+      return childMap
     }, {})
   }
 }

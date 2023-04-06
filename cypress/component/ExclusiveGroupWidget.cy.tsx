@@ -54,6 +54,12 @@ describe('<ExclusiveGroupWidget/>', () => {
       }
     }
 
+    const formConfiguration = [
+      configuration,
+      getStringListArrayWidgetConfiguration(),
+      getTextWidgetConfiguration()
+    ]
+
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
     cy.viewport(800, 600)
@@ -62,18 +68,10 @@ describe('<ExclusiveGroupWidget/>', () => {
         <Form handleSubmit={stubbedHandleSubmit}>
           <ExclusiveGroupWidget
             configuration={configuration}
-            childrenGetter={{
-              // TODO getExclusiveGroupChildren
-              variable: ({ fieldsetDisabled }) => (
-                <StringListArrayWidget
-                  fieldsetDisabled={fieldsetDisabled}
-                  configuration={getStringListArrayWidgetConfiguration()}
-                />
-              ),
-              surface_help: () => (
-                <TextWidget configuration={getTextWidgetConfiguration()} />
-              )
-            }}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'checkbox_groups'
+            )}
           />
         </Form>
       </TooltipProvider>
@@ -103,6 +101,22 @@ describe('<ExclusiveGroupWidget/>', () => {
       }
     }
 
+    const formConfiguration = [
+      {
+        type: 'ExclusiveGroupWidget' as const,
+        label: 'Generic selections',
+        help: 'Select one choice from the widgets below',
+        name: 'checkbox_groups',
+        children: ['product_type', 'surface_help'],
+        details: {
+          default: 'product_type',
+          information: 'Select something ...'
+        }
+      },
+      getStringListWidgetConfiguration(),
+      getTextWidgetConfiguration()
+    ]
+
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
     cy.viewport(984, 597)
@@ -111,17 +125,10 @@ describe('<ExclusiveGroupWidget/>', () => {
         <Form handleSubmit={stubbedHandleSubmit}>
           <ExclusiveGroupWidget
             configuration={configuration}
-            childrenGetter={{
-              product_type: ({ fieldsetDisabled }) => (
-                <StringListWidget
-                  fieldsetDisabled={fieldsetDisabled}
-                  configuration={getStringListWidgetConfiguration()}
-                />
-              ),
-              surface_help: () => (
-                <TextWidget configuration={getTextWidgetConfiguration()} />
-              )
-            }}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'checkbox_groups'
+            )}
           />
         </Form>
       </TooltipProvider>
@@ -149,25 +156,26 @@ describe('<ExclusiveGroupWidget/>', () => {
         information: 'Select something ...'
       }
     }
+
+    const formConfiguration = [
+      configuration,
+      getStringListWidgetConfiguration(),
+      getStringListArrayWidgetConfiguration()
+    ]
+
     cy.mount(
       <TooltipProvider>
         <ExclusiveGroupWidget
           configuration={configuration}
-          childrenGetter={{
-            product_type: () => (
-              <StringListWidget
-                configuration={getStringListWidgetConfiguration()}
-              />
-            ),
-            variable: () => (
-              <StringListArrayWidget
-                configuration={getStringListArrayWidgetConfiguration()}
-              />
-            )
-          }}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups'
+          )}
         />
       </TooltipProvider>
     )
+
+    cy.findByLabelText('Skin temperature')
   })
 
   it('with GeographicExtentWidget and TextWidget', () => {
@@ -184,6 +192,23 @@ describe('<ExclusiveGroupWidget/>', () => {
       }
     }
 
+    const formConfiguration = [
+      configuration,
+      {
+        details: {
+          id: 1,
+          text: '<p>With this option selected the entire available area will be provided</p>'
+        },
+        label: 'Whole available region',
+        name: 'global',
+        type: 'FreeEditionWidget' as const
+      },
+      {
+        ...getGeographicExtentWidgetConfiguration(),
+        label: 'Sub-region extraction'
+      }
+    ]
+
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
     cy.viewport(1200, 900)
@@ -192,30 +217,10 @@ describe('<ExclusiveGroupWidget/>', () => {
         <Form handleSubmit={stubbedHandleSubmit}>
           <ExclusiveGroupWidget
             configuration={configuration}
-            childrenGetter={{
-              global: () => (
-                <TextWidget
-                  configuration={{
-                    details: {
-                      id: 1,
-                      text: '<p>With this option selected the entire available area will be provided</p>'
-                    },
-                    label: 'Whole available region',
-                    name: 'global',
-                    type: 'FreeEditionWidget' as const
-                  }}
-                />
-              ),
-              area: ({ fieldsetDisabled }) => (
-                <GeographicExtentWidget
-                  fieldsetDisabled={fieldsetDisabled}
-                  configuration={{
-                    ...getGeographicExtentWidgetConfiguration(),
-                    label: 'Sub-region extraction'
-                  }}
-                />
-              )
-            }}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'area_group'
+            )}
           />
         </Form>
       </TooltipProvider>
@@ -259,6 +264,12 @@ describe('<ExclusiveGroupWidget/>', () => {
       }
     }
 
+    const formConfiguration = [
+      configuration,
+      getStringChoiceWidgetConfiguration(),
+      getTextWidgetConfiguration()
+    ]
+
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
     cy.viewport(800, 600)
@@ -267,17 +278,10 @@ describe('<ExclusiveGroupWidget/>', () => {
         <Form handleSubmit={stubbedHandleSubmit}>
           <ExclusiveGroupWidget
             configuration={configuration}
-            childrenGetter={{
-              format: ({ fieldsetDisabled }) => (
-                <StringChoiceWidget
-                  fieldsetDisabled={fieldsetDisabled}
-                  configuration={getStringChoiceWidgetConfiguration()}
-                />
-              ),
-              surface_help: () => (
-                <TextWidget configuration={getTextWidgetConfiguration()} />
-              )
-            }}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'checkbox_groups'
+            )}
           />
         </Form>
       </TooltipProvider>
