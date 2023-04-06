@@ -66,19 +66,42 @@ describe('<ExclusiveGroupWidget/>', () => {
           />
         </Form>
       </TooltipProvider>
-    )
+    ).then(({ rerender }) => {
+      cy.findByLabelText('Lake shape factor').click()
+      cy.findByLabelText('Soil temperature level 3').click()
 
-    cy.findByLabelText('Lake shape factor').click()
-    cy.findByLabelText('Soil temperature level 3').click()
+      cy.findByText('submit').click()
 
-    cy.findByText('submit').click()
+      cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+        ['variable', 'soil_temperature_level_3'],
+        ['variable', 'lake_shape_factor']
+      ])
 
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
-      ['variable', 'soil_temperature_level_3'],
-      ['variable', 'lake_shape_factor']
-    ])
+      cy.log('Re-render with constraints.')
+      rerender(
+        <TooltipProvider>
+          <Form handleSubmit={stubbedHandleSubmit}>
+            <ExclusiveGroupWidget
+              configuration={configuration}
+              childrenGetter={getExclusiveGroupChildren(
+                formConfiguration,
+                'checkbox_groups',
+                {
+                  variable: [
+                    'lake_bottom_temperature',
+                    'lake_ice_depth',
+                    'lake_ice_temperature'
+                  ]
+                }
+              )}
+            />
+          </Form>
+        </TooltipProvider>
+      )
 
-    cy.findByLabelText('Surface data').click()
+      cy.findByLabelText('2m dewpoint temperature').should('be.disabled')
+      cy.findByLabelText('Lake bottom temperature').should('not.be.disabled')
+    })
   })
 
   it('with StringListWidget and TextWidget', () => {
