@@ -162,7 +162,11 @@ const StringListArrayWidget = ({
     <Widget data-stylizable='widget'>
       <WidgetHeader>
         <WidgetActionsWrapper data-stylizable='widget-action-wrapper'>
-          <WidgetTitle data-stylizable='widget-title' aria-hidden={true}>
+          <WidgetTitle
+            htmlFor={name}
+            data-stylizable='widget-title'
+            aria-hidden={true}
+          >
             {label}
           </WidgetTitle>
           <BulkSelectionTrigger
@@ -171,39 +175,41 @@ const StringListArrayWidget = ({
             ref={bulkSelectionTriggerRef}
             id='bulkSelectionTrigger'
           />
-          {constraints?.length === 0 ? null : isAllSelected({
-              availableSelection: allValues,
-              constraints,
-              currentSelection: selection[name]
-            }) ? (
-            <ClearAll
-              fieldset={name}
-              handleAction={state => {
-                setSelection(state)
-                // TODO: test with a functional test
-                /* istanbul ignore next */
-                if (!bulkSelectionTriggerRef.current) return
-                /* istanbul ignore next */
-                bulkSelectionTriggerRef.current.click()
-              }}
-            />
-          ) : (
-            <SelectAll
-              fieldset={name}
-              handleAction={state => {
-                setSelection(state)
-                // TODO: test with a functional test
-                /* istanbul ignore next */
-                if (!bulkSelectionTriggerRef.current) return
-                /* istanbul ignore next */
-                bulkSelectionTriggerRef.current.click()
-              }}
-              values={getPermittedBulkSelection({
+          <div {...(fieldsetDisabled && { inert: '' })}>
+            {constraints?.length === 0 ? null : isAllSelected({
+                availableSelection: allValues,
                 constraints,
-                availableSelection: allValues
-              })}
-            />
-          )}
+                currentSelection: selection[name]
+              }) ? (
+              <ClearAll
+                fieldset={name}
+                handleAction={state => {
+                  setSelection(state)
+                  // TODO: test with a functional test
+                  /* istanbul ignore next */
+                  if (!bulkSelectionTriggerRef.current) return
+                  /* istanbul ignore next */
+                  bulkSelectionTriggerRef.current.click()
+                }}
+              />
+            ) : (
+              <SelectAll
+                fieldset={name}
+                handleAction={state => {
+                  setSelection(state)
+                  // TODO: test with a functional test
+                  /* istanbul ignore next */
+                  if (!bulkSelectionTriggerRef.current) return
+                  /* istanbul ignore next */
+                  bulkSelectionTriggerRef.current.click()
+                }}
+                values={getPermittedBulkSelection({
+                  constraints,
+                  availableSelection: allValues
+                })}
+              />
+            )}
+          </div>
         </WidgetActionsWrapper>
         <WidgetTooltip
           helpText={help || null}

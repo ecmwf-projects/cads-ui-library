@@ -78,6 +78,8 @@ describe('<ExclusiveGroupWidget/>', () => {
       ['variable', 'soil_temperature_level_3'],
       ['variable', 'lake_shape_factor']
     ])
+
+    cy.findByLabelText('Surface data').click()
   })
 
   it('with StringListWidget and TextWidget', () => {

@@ -79,7 +79,11 @@ const StringListWidget = ({
     <Widget data-stylizable='widget'>
       <WidgetHeader>
         <WidgetActionsWrapper data-stylizable='widget-action-wrapper'>
-          <WidgetTitle data-stylizable='widget-title' aria-hidden={true}>
+          <WidgetTitle
+            htmlFor={name}
+            data-stylizable='widget-title'
+            aria-hidden={true}
+          >
             {label}
           </WidgetTitle>
           {constraints?.length === 0 ? null : isAllSelected({
