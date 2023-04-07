@@ -88,21 +88,23 @@ const GeographicExtentWidget = ({
   }
 
   const getFields = () => {
+    const areas = ['top', 'left', 'right', 'bottom']
+
     if (!details.extentLabels)
-      return Object.keys(getRange()).map(key => {
+      return Object.keys(getRange()).map((key, index) => {
         const k = key as unknown as keyof ReturnType<typeof getRange>
 
         return (
-          <Wrap key={key} area={key}>
+          <Wrap key={key} area={areas[index]}>
             <Label htmlFor={k}>{defaultMapping[k]}</Label>
             <input type='text' name={k} id={k} />
           </Wrap>
         )
       })
 
-    return Object.entries(details.extentLabels).map(([key, label]) => {
+    return Object.entries(details.extentLabels).map(([key, label], index) => {
       return (
-        <Wrap key={key} area={key}>
+        <Wrap key={key} area={areas[index]}>
           <Label htmlFor={key}>{label}</Label>
           <input type='text' name={key} id={key} />
         </Wrap>
@@ -113,7 +115,9 @@ const GeographicExtentWidget = ({
   return (
     <Widget data-stylizable='widget geographic-extent-widget'>
       <WidgetHeader>
-        <WidgetTitle htmlFor={name}>{label}</WidgetTitle>
+        <WidgetTitle data-stylizable='widget-title' htmlFor={name}>
+          {label}
+        </WidgetTitle>
         <WidgetTooltip
           helpText={help || null}
           triggerAriaLabel={`Get help about ${label}`}
@@ -121,7 +125,9 @@ const GeographicExtentWidget = ({
       </WidgetHeader>
       <Fieldset disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
-        <Inputs>{getFields()}</Inputs>
+        <Inputs data-stylizable='geographic-extent-widget-grid'>
+          {getFields()}
+        </Inputs>
       </Fieldset>
     </Widget>
   )
@@ -134,9 +140,9 @@ const Inputs = styled.div`
   column-gap: 4.375em;
   row-gap: 1em;
   grid-template-areas:
-    'n n n n'
-    'w w e e'
-    's s s s';
+    'top top top top'
+    'left left right right'
+    'bottom bottom bottom bottom';
 
   @media (min-width: 984px) {
     column-gap: 9.375em;
