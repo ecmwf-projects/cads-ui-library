@@ -51,7 +51,9 @@ const TextWidget = ({
   return (
     <Widget data-stylizable='widget'>
       <WidgetHeader>
-        <WidgetTitle htmlFor={name}>{label}</WidgetTitle>
+        <WidgetTitle data-stylizable='widget-title' htmlFor={name}>
+          {label}
+        </WidgetTitle>
       </WidgetHeader>
       <Markdown options={markdownParsingOptions} {...(inert && { inert: '' })}>
         {text}
