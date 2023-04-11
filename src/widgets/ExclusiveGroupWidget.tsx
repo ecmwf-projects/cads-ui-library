@@ -52,7 +52,10 @@ const ExclusiveGroupWidget = ({
   return (
     <Widget data-stylizable='widget'>
       <WidgetHeader>
-        <WidgetTitle data-stylizable='widget-title' aria-hidden={true}>
+        <WidgetTitle
+          data-stylizable='widget-title exclusive-group-widget'
+          aria-hidden={true}
+        >
           {label}
         </WidgetTitle>
         <WidgetTooltip
