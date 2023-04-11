@@ -244,10 +244,10 @@ describe('<ExclusiveGroupWidget/>', () => {
       'true'
     )
 
-    cy.findByLabelText('North').type('90')
-    cy.findByLabelText('West').type('-90')
-    cy.findByLabelText('East').type('144')
-    cy.findByLabelText('South').type('44')
+    cy.findByLabelText('North').clear().type('90')
+    cy.findByLabelText('West').clear().type('-90')
+    cy.findByLabelText('East').clear().type('144')
+    cy.findByLabelText('South').clear().type('44')
 
     cy.findByText('submit').click()
 

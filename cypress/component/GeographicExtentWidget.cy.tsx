@@ -13,9 +13,9 @@ describe('<GeographicExtentWidget/>', () => {
       </TooltipProvider>
     )
 
-    cy.findByLabelText('North').type('89')
-    cy.findByLabelText('West').type('-120')
-    cy.findByLabelText('East').type('170')
-    cy.findByLabelText('South').type('-89')
+    cy.findByLabelText('North').clear().type('89')
+    cy.findByLabelText('West').clear().type('-120')
+    cy.findByLabelText('East').clear().type('170')
+    cy.findByLabelText('South').clear().type('-89')
   })
 })

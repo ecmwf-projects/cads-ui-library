@@ -24,6 +24,7 @@ export interface GeographicExtentWidgetConfiguration {
       w: number
       e: number
       s: number
+      [key: string]: number
     }
   }
 }
@@ -88,8 +89,9 @@ const GeographicExtentWidget = ({
 
   if (type !== 'GeographicExtentWidget') return null
 
-  const getDefault = () => {
-    return details.default
+  const getDefault = (key: string) => {
+    if (!details.default) return ''
+    return details.default[key]
   }
 
   const getFields = () => {
@@ -102,7 +104,7 @@ const GeographicExtentWidget = ({
         return (
           <Wrap key={key} area={areas[index]}>
             <Label htmlFor={k}>{defaultMapping[k]}</Label>
-            <input type='number' name={k} id={k} />
+            <input type='number' name={k} id={k} defaultValue={getDefault(k)} />
           </Wrap>
         )
       })
@@ -111,7 +113,12 @@ const GeographicExtentWidget = ({
       return (
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={key}>{label}</Label>
-          <input type='number' name={key} id={key} />
+          <input
+            type='number'
+            name={key}
+            id={key}
+            defaultValue={getDefault(key)}
+          />
         </Wrap>
       )
     })
@@ -144,8 +151,7 @@ const GeographicExtentWidget = ({
 
 const Inputs = styled.div`
   display: grid;
-  grid-template-columns: repeat(4);
-  grid-template-rows: repeat(3);
+
   column-gap: 4.375em;
   row-gap: 1em;
   grid-template-areas:

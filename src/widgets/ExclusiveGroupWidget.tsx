@@ -71,7 +71,7 @@ const ExclusiveGroupWidget = ({
           {children.map(child => {
             if (!childrenGetter[child]) return null
             return (
-              <Group key={child}>
+              <Group key={child} data-stylizable='widget exclusive-group'>
                 <RadioGroupItem value={child} id={child}>
                   <RadioIndicator />
                 </RadioGroupItem>
