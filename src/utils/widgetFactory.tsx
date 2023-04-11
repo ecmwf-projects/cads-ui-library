@@ -7,7 +7,7 @@ import {
   TextWidget
 } from '../index'
 
-import type { FormConfiguration } from '../widgets/ExclusiveGroupWidget'
+import type { FormConfiguration } from '../types/Form'
 
 /**
  * A widget factory for exclusive group children

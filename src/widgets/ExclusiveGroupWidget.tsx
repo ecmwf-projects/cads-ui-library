@@ -10,12 +10,7 @@ import {
 } from '../index'
 import { createWidget } from '../index'
 
-import type { GeographicExtentWidgetConfiguration } from '../widgets/GeographicExtentWidget'
-import type { StringListWidgetConfiguration } from '../widgets/StringListWidget'
-import type { StringListArrayWidgetConfiguration } from '../widgets/StringListArrayWidget'
-import type { StringChoiceWidgetConfiguration } from '../widgets/StringChoiceWidget'
-import type { TextWidgetConfiguration } from '../widgets/TextWidget'
-import type { LicenceWidgetConfiguration } from '../widgets/LicenceWidget'
+import type { FormConfiguration } from '../types/Form'
 
 export interface ExclusiveGroupWidgetConfiguration {
   type: 'ExclusiveGroupWidget'
@@ -90,15 +85,6 @@ const ExclusiveGroupWidget = ({
     </Widget>
   )
 }
-
-export type FormConfiguration =
-  | ExclusiveGroupWidgetConfiguration
-  | StringListArrayWidgetConfiguration
-  | StringListWidgetConfiguration
-  | StringChoiceWidgetConfiguration
-  | GeographicExtentWidgetConfiguration
-  | TextWidgetConfiguration
-  | LicenceWidgetConfiguration
 
 /**
  * Given the complete form configuration, group the ExclusiveGroupWidget children, and return a mapping between children names and their corresponding components.
