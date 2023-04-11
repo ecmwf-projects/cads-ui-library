@@ -102,7 +102,7 @@ const GeographicExtentWidget = ({
         return (
           <Wrap key={key} area={areas[index]}>
             <Label htmlFor={k}>{defaultMapping[k]}</Label>
-            <input type='text' name={k} id={k} />
+            <input type='number' name={k} id={k} />
           </Wrap>
         )
       })
@@ -111,7 +111,7 @@ const GeographicExtentWidget = ({
       return (
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={key}>{label}</Label>
-          <input type='text' name={key} id={key} />
+          <input type='number' name={key} id={key} />
         </Wrap>
       )
     })
@@ -155,6 +155,16 @@ const Inputs = styled.div`
 
   @media (min-width: 984px) {
     column-gap: 9.375em;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type='number'] {
+    -moz-appearance: textfield;
   }
 `
 
