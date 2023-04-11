@@ -18,6 +18,7 @@ export interface GeographicExtentWidgetConfiguration {
       w: number
       e: number
       s: number
+      [key: string]: number
     }
     default?: {
       n: number
@@ -44,7 +45,7 @@ export interface GeographicExtentWidgetProps {
 /**
  * A default mapping to use in case the configuration is missing a default extentLabels.
  */
-const defaultMapping = {
+const defaultMapping: Record<string, string> = {
   n: 'North',
   w: 'West',
   e: 'East',
@@ -60,10 +61,6 @@ const GeographicExtentWidget = ({
   labelAriaHidden = true
 }: GeographicExtentWidgetProps) => {
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
-
-  const getRange = () => {
-    return details.range
-  }
 
   const injectWidgetPayload = (ev: FormDataEvent) => {
     const { formData } = ev
@@ -94,25 +91,24 @@ const GeographicExtentWidget = ({
     return details.default[key]
   }
 
+  const getRange = () => {
+    return details.range
+  }
+
+  const getLabel = (key: string) => {
+    if (!details.extentLabels) return defaultMapping[key]
+    return details.extentLabels[key]
+  }
+
   const getFields = () => {
     const areas = ['top', 'left', 'right', 'bottom']
 
-    if (!details.extentLabels)
-      return Object.keys(getRange()).map((key, index) => {
-        const k = key as unknown as keyof ReturnType<typeof getRange>
+    return Object.keys(getRange()).map((key, index) => {
+      const k = key as unknown as keyof ReturnType<typeof getRange>
 
-        return (
-          <Wrap key={key} area={areas[index]}>
-            <Label htmlFor={k}>{defaultMapping[k]}</Label>
-            <input type='number' name={k} id={k} defaultValue={getDefault(k)} />
-          </Wrap>
-        )
-      })
-
-    return Object.entries(details.extentLabels).map(([key, label], index) => {
       return (
         <Wrap key={key} area={areas[index]}>
-          <Label htmlFor={key}>{label}</Label>
+          <Label htmlFor={key}>{getLabel(key)}</Label>
           <input
             type='number'
             name={key}
