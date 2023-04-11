@@ -61,6 +61,10 @@ interface StringListArrayWidgetProps {
    * Whether the underlying fieldset should be functionally and visually disabled.
    */
   fieldsetDisabled?: boolean
+  /**
+   * Whether to hide the widget label from ARIA.
+   */
+  labelAriaHidden?: boolean
 }
 
 const getAllValues = (
@@ -110,7 +114,8 @@ const appendToFormData = (
 const StringListArrayWidget = ({
   configuration,
   constraints,
-  fieldsetDisabled
+  fieldsetDisabled,
+  labelAriaHidden
 }: StringListArrayWidgetProps) => {
   const {
     details: { groups, accordionOptions },
@@ -165,7 +170,7 @@ const StringListArrayWidget = ({
           <WidgetTitle
             htmlFor={name}
             data-stylizable='widget-title'
-            aria-hidden={true}
+            aria-hidden={labelAriaHidden || true}
           >
             {label}
           </WidgetTitle>

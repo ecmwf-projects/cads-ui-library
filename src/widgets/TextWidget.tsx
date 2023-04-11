@@ -26,6 +26,10 @@ interface TextWidgetProps {
    * Whether the widget should be functionally and visually disabled.
    */
   inert?: boolean
+  /**
+   * Whether to hide the widget label from ARIA.
+   */
+  labelAriaHidden?: boolean
 }
 
 /**
@@ -35,7 +39,8 @@ interface TextWidgetProps {
 const TextWidget = ({
   configuration,
   markdownParsingOptions,
-  inert
+  inert,
+  labelAriaHidden
 }: TextWidgetProps) => {
   if (!configuration) return null
 
@@ -51,7 +56,11 @@ const TextWidget = ({
   return (
     <Widget data-stylizable='widget'>
       <WidgetHeader>
-        <WidgetTitle data-stylizable='widget-title' htmlFor={name}>
+        <WidgetTitle
+          data-stylizable='widget-title'
+          htmlFor={name}
+          aria-hidden={labelAriaHidden || true}
+        >
           {label}
         </WidgetTitle>
       </WidgetHeader>

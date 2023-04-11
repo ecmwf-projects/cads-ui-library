@@ -10,6 +10,12 @@ import {
 } from '../index'
 import { createWidget } from '../index'
 
+import type { GeographicExtentWidgetConfiguration } from '../widgets/GeographicExtentWidget'
+import type { StringListWidgetConfiguration } from '../widgets/StringListWidget'
+import type { StringListArrayWidgetConfiguration } from '../widgets/StringListArrayWidget'
+import type { StringChoiceWidgetConfiguration } from '../widgets/StringChoiceWidget'
+import type { TextWidgetConfiguration } from '../widgets/TextWidget'
+
 export interface ExclusiveGroupWidgetConfiguration {
   type: 'ExclusiveGroupWidget'
   name: string
@@ -18,15 +24,20 @@ export interface ExclusiveGroupWidgetConfiguration {
   children: string[]
   details: {
     default: string
+    information?: string
   }
 }
+
+type ChildrenGetter =
+  | Record<string, (...props: any) => JSX.Element | null>
+  | undefined // FIXME remove undefined
 
 export interface ExclusiveGroupWidgetProps {
   configuration: ExclusiveGroupWidgetConfiguration
   /**
    * A mapping between children names and their corresponding components.
    */
-  childrenGetter: Record<string, (...props: any) => JSX.Element>
+  childrenGetter: ChildrenGetter
 }
 
 const ExclusiveGroupWidget = ({
@@ -82,13 +93,11 @@ const ExclusiveGroupWidget = ({
 /**
  * Given the complete form configuration, group the ExclusiveGroupWidget children, and return a mapping between children names and their corresponding components.
  */
-type GetExclusiveGroupChildren = <
-  TFormConfiguration extends Record<string | 'type' | 'name', unknown> // FIXME
->(
-  formConfiguration: TFormConfiguration[],
+type GetExclusiveGroupChildren = (
+  formConfiguration: FormConfiguration[],
   name: string,
   constraints?: Record<string, string[]>
-) => Record<string, (...props: any) => JSX.Element | null> | undefined
+) => ChildrenGetter
 const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
   formConfiguration,
   name,
@@ -121,6 +130,39 @@ const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
       return childMap
     }, {})
   }
+}
+
+export type FormConfiguration =
+  | ExclusiveGroupWidgetConfiguration
+  | StringListArrayWidgetConfiguration
+  | StringListWidgetConfiguration
+  | StringChoiceWidgetConfiguration
+  | GeographicExtentWidgetConfiguration
+  | TextWidgetConfiguration
+
+type IsChildOfExclusiveGroup = (
+  widgetConfiguration: Exclude<
+    FormConfiguration,
+    ExclusiveGroupWidgetConfiguration
+  >,
+  formConfiguration: FormConfiguration[]
+) => boolean
+const isChildOfExclusiveGroup: IsChildOfExclusiveGroup = (
+  widgetConfiguration,
+  formConfiguration
+) => {
+  if (
+    formConfiguration.find(configuration => {
+      return (
+        configuration.type === 'ExclusiveGroupWidget' &&
+        configuration.children.includes(widgetConfiguration.name)
+      )
+    })
+  ) {
+    return true
+  }
+
+  return false
 }
 
 const Group = styled.div`
@@ -157,4 +199,4 @@ const Group = styled.div`
 `
 
 export { ExclusiveGroupWidget }
-export { getExclusiveGroupChildren }
+export { getExclusiveGroupChildren, isChildOfExclusiveGroup }

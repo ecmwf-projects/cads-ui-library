@@ -34,6 +34,10 @@ export interface GeographicExtentWidgetProps {
    * Whether the underlying fieldset should be functionally and visually disabled.
    */
   fieldsetDisabled?: boolean
+  /**
+   * Whether to hide the widget label from ARIA.
+   */
+  labelAriaHidden?: boolean
 }
 
 /**
@@ -51,7 +55,8 @@ const defaultMapping = {
  */
 const GeographicExtentWidget = ({
   configuration,
-  fieldsetDisabled
+  fieldsetDisabled,
+  labelAriaHidden
 }: GeographicExtentWidgetProps) => {
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
 
@@ -115,7 +120,11 @@ const GeographicExtentWidget = ({
   return (
     <Widget data-stylizable='widget geographic-extent-widget'>
       <WidgetHeader>
-        <WidgetTitle data-stylizable='widget-title' htmlFor={name}>
+        <WidgetTitle
+          htmlFor={name}
+          data-stylizable='widget-title'
+          aria-hidden={labelAriaHidden || true}
+        >
           {label}
         </WidgetTitle>
         <WidgetTooltip

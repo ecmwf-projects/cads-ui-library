@@ -7,17 +7,13 @@ import {
   TextWidget
 } from '../index'
 
-import type { GeographicExtentWidgetConfiguration } from '../widgets/GeographicExtentWidget'
-import type { StringListArrayWidgetConfiguration } from '../widgets/StringListArrayWidget'
-import type { StringListWidgetConfiguration } from '../widgets/StringListWidget'
-import type { StringChoiceWidgetConfiguration } from '../widgets/StringChoiceWidget'
-import type { TextWidgetConfiguration } from '../widgets/TextWidget'
+import type { FormConfiguration } from '../widgets/ExclusiveGroupWidget'
 
 /**
  * A widget factory for exclusive group children
  */
-type CreateWidget = <TConfiguration extends Record<string | 'type', unknown>>(
-  configuration: TConfiguration,
+type CreateWidget = (
+  configuration: FormConfiguration,
   constraints?: string[]
 ) => (...props: any) => JSX.Element | null
 const createWidget: CreateWidget = (configuration, constraints) => {
@@ -25,20 +21,13 @@ const createWidget: CreateWidget = (configuration, constraints) => {
     case 'GeographicExtentWidget':
       // eslint-disable-next-line react/display-name
       return props => (
-        <GeographicExtentWidget
-          configuration={
-            configuration as unknown as GeographicExtentWidgetConfiguration
-          }
-          {...props}
-        />
+        <GeographicExtentWidget configuration={configuration} {...props} />
       )
     case 'StringListArrayWidget':
       // eslint-disable-next-line react/display-name
       return props => (
         <StringListArrayWidget
-          configuration={
-            configuration as unknown as StringListArrayWidgetConfiguration
-          }
+          configuration={configuration}
           constraints={constraints}
           {...props}
         />
@@ -47,9 +36,7 @@ const createWidget: CreateWidget = (configuration, constraints) => {
       // eslint-disable-next-line react/display-name
       return props => (
         <StringListWidget
-          configuration={
-            configuration as unknown as StringListWidgetConfiguration
-          }
+          configuration={configuration}
           constraints={constraints}
           {...props}
         />
@@ -58,21 +45,14 @@ const createWidget: CreateWidget = (configuration, constraints) => {
       // eslint-disable-next-line react/display-name
       return props => (
         <StringChoiceWidget
-          configuration={
-            configuration as unknown as StringChoiceWidgetConfiguration
-          }
+          configuration={configuration}
           constraints={constraints}
           {...props}
         />
       )
     case 'FreeEditionWidget':
       // eslint-disable-next-line react/display-name
-      return props => (
-        <TextWidget
-          configuration={configuration as unknown as TextWidgetConfiguration}
-          {...props}
-        />
-      )
+      return props => <TextWidget configuration={configuration} {...props} />
     default:
       return _props => null
   }

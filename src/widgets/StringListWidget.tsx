@@ -53,6 +53,10 @@ type StringListWidgetProps = {
    * Whether the underlying fieldset should be functionally and visually disabled.
    */
   fieldsetDisabled?: boolean
+  /**
+   * Whether to hide the widget label from ARIA.
+   */
+  labelAriaHidden?: boolean
 }
 
 const getAllValues = (labels: StringListWidgetDetails['labels']) => {
@@ -62,7 +66,8 @@ const getAllValues = (labels: StringListWidgetDetails['labels']) => {
 const StringListWidget = ({
   configuration,
   constraints,
-  fieldsetDisabled
+  fieldsetDisabled,
+  labelAriaHidden
 }: StringListWidgetProps) => {
   const { details, label, help, name, required } = configuration
   const {
@@ -82,7 +87,7 @@ const StringListWidget = ({
           <WidgetTitle
             htmlFor={name}
             data-stylizable='widget-title'
-            aria-hidden={true}
+            aria-hidden={labelAriaHidden || true}
           >
             {label}
           </WidgetTitle>

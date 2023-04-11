@@ -52,12 +52,17 @@ interface StringChoiceWidgetProps {
    * Whether the underlying fieldset should be functionally and visually disabled.
    */
   fieldsetDisabled?: boolean
+  /**
+   * Whether to hide the widget label from ARIA.
+   */
+  labelAriaHidden?: boolean
 }
 
 const StringChoiceWidget = ({
   configuration,
   constraints,
-  fieldsetDisabled
+  fieldsetDisabled,
+  labelAriaHidden
 }: StringChoiceWidgetProps) => {
   const [selection, setSelection] = useState<string[]>([])
   const persistedSelection = useReadLocalStorage<{
@@ -107,7 +112,7 @@ const StringChoiceWidget = ({
           <WidgetTitle
             data-stylizable='widget-title'
             htmlFor={name}
-            aria-hidden={true}
+            aria-hidden={labelAriaHidden || true}
           >
             {label}
           </WidgetTitle>

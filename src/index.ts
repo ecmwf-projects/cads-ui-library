@@ -21,6 +21,9 @@ export { StringChoiceWidget } from './widgets/StringChoiceWidget'
 /**
  * Widget utils.
  */
-export { getExclusiveGroupChildren } from './widgets/ExclusiveGroupWidget'
+export {
+  getExclusiveGroupChildren,
+  isChildOfExclusiveGroup
+} from './widgets/ExclusiveGroupWidget'
 
 export { createWidget } from './utils/widgetFactory'
