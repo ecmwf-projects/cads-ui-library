@@ -56,7 +56,7 @@ const defaultMapping = {
 const GeographicExtentWidget = ({
   configuration,
   fieldsetDisabled,
-  labelAriaHidden
+  labelAriaHidden = true
 }: GeographicExtentWidgetProps) => {
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
 
@@ -123,7 +123,7 @@ const GeographicExtentWidget = ({
         <WidgetTitle
           htmlFor={name}
           data-stylizable='widget-title'
-          aria-hidden={labelAriaHidden || true}
+          aria-hidden={labelAriaHidden}
         >
           {label}
         </WidgetTitle>

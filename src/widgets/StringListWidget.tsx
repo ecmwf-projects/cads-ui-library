@@ -67,7 +67,7 @@ const StringListWidget = ({
   configuration,
   constraints,
   fieldsetDisabled,
-  labelAriaHidden
+  labelAriaHidden = true
 }: StringListWidgetProps) => {
   const { details, label, help, name, required } = configuration
   const {
@@ -87,26 +87,28 @@ const StringListWidget = ({
           <WidgetTitle
             htmlFor={name}
             data-stylizable='widget-title'
-            aria-hidden={labelAriaHidden || true}
+            aria-hidden={labelAriaHidden}
           >
             {label}
           </WidgetTitle>
-          {constraints?.length === 0 ? null : isAllSelected({
-              availableSelection: allValues,
-              constraints,
-              currentSelection: selection[name]
-            }) ? (
-            <ClearAll fieldset={name} handleAction={setSelection} />
-          ) : (
-            <SelectAll
-              fieldset={name}
-              handleAction={setSelection}
-              values={getPermittedBulkSelection({
+          <div {...(fieldsetDisabled && { inert: '' })}>
+            {constraints?.length === 0 ? null : isAllSelected({
+                availableSelection: allValues,
                 constraints,
-                availableSelection: allValues
-              })}
-            />
-          )}
+                currentSelection: selection[name]
+              }) ? (
+              <ClearAll fieldset={name} handleAction={setSelection} />
+            ) : (
+              <SelectAll
+                fieldset={name}
+                handleAction={setSelection}
+                values={getPermittedBulkSelection({
+                  constraints,
+                  availableSelection: allValues
+                })}
+              />
+            )}
+          </div>
         </WidgetActionsWrapper>
         <WidgetTooltip
           helpText={help || null}

@@ -52,7 +52,9 @@ const ExclusiveGroupWidget = ({
   return (
     <Widget data-stylizable='widget'>
       <WidgetHeader>
-        <WidgetTitle data-stylizable='widget-title'>{label}</WidgetTitle>
+        <WidgetTitle data-stylizable='widget-title' aria-hidden={true}>
+          {label}
+        </WidgetTitle>
         <WidgetTooltip
           helpText={help || null}
           triggerAriaLabel={`Get help about ${label}`}
@@ -75,7 +77,8 @@ const ExclusiveGroupWidget = ({
                 </RadioGroupItem>
                 {childrenGetter[child]({
                   fieldsetDisabled: child !== selection,
-                  inert: child !== selection
+                  inert: child !== selection,
+                  labelAriaHidden: false
                 })}
               </Group>
             )
@@ -179,7 +182,8 @@ const Group = styled.div`
     }
   }
 
-  &:has(fieldset[disabled]) {
+  &:has(fieldset[disabled]),
+  &:has([inert]) {
     label {
       color: #bcc0cc;
     }

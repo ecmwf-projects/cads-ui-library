@@ -40,7 +40,7 @@ const TextWidget = ({
   configuration,
   markdownParsingOptions,
   inert,
-  labelAriaHidden
+  labelAriaHidden = true
 }: TextWidgetProps) => {
   if (!configuration) return null
 
@@ -59,7 +59,7 @@ const TextWidget = ({
         <WidgetTitle
           data-stylizable='widget-title'
           htmlFor={name}
-          aria-hidden={labelAriaHidden || true}
+          aria-hidden={labelAriaHidden}
         >
           {label}
         </WidgetTitle>

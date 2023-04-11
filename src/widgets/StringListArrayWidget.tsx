@@ -115,7 +115,7 @@ const StringListArrayWidget = ({
   configuration,
   constraints,
   fieldsetDisabled,
-  labelAriaHidden
+  labelAriaHidden = true
 }: StringListArrayWidgetProps) => {
   const {
     details: { groups, accordionOptions },
@@ -170,7 +170,7 @@ const StringListArrayWidget = ({
           <WidgetTitle
             htmlFor={name}
             data-stylizable='widget-title'
-            aria-hidden={labelAriaHidden || true}
+            aria-hidden={labelAriaHidden}
           >
             {label}
           </WidgetTitle>

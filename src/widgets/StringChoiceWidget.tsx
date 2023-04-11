@@ -62,7 +62,7 @@ const StringChoiceWidget = ({
   configuration,
   constraints,
   fieldsetDisabled,
-  labelAriaHidden
+  labelAriaHidden = true
 }: StringChoiceWidgetProps) => {
   const [selection, setSelection] = useState<string[]>([])
   const persistedSelection = useReadLocalStorage<{
@@ -112,7 +112,7 @@ const StringChoiceWidget = ({
           <WidgetTitle
             data-stylizable='widget-title'
             htmlFor={name}
-            aria-hidden={labelAriaHidden || true}
+            aria-hidden={labelAriaHidden}
           >
             {label}
           </WidgetTitle>
