@@ -22,15 +22,25 @@ interface TextWidgetProps {
    * Pass-through configuration parameters for Markdown parser.
    */
   markdownParsingOptions?: TMarkdownToJSX.Options
+  /**
+   * Whether the widget should be functionally and visually disabled.
+   */
+  inert?: boolean
+  /**
+   * Whether to hide the widget label from ARIA.
+   */
+  labelAriaHidden?: boolean
 }
 
 /**
  * TextWidget, also known as FreeEditionWidget.
- * Widget to display a block of text. Markdown supported.
+ * Widget to display a block of text. Supports markdown.
  */
 const TextWidget = ({
   configuration,
-  markdownParsingOptions
+  markdownParsingOptions,
+  inert,
+  labelAriaHidden = true
 }: TextWidgetProps) => {
   if (!configuration) return null
 
@@ -44,11 +54,24 @@ const TextWidget = ({
   if (type !== 'FreeEditionWidget') return null
 
   return (
-    <Widget id={name}>
+    <Widget data-stylizable='widget'>
       <WidgetHeader>
-        <WidgetTitle>{label}</WidgetTitle>
+        <WidgetTitle
+          data-stylizable='widget-title'
+          htmlFor={name}
+          aria-hidden={labelAriaHidden}
+        >
+          {label}
+        </WidgetTitle>
       </WidgetHeader>
-      <Markdown options={markdownParsingOptions}>{text}</Markdown>
+      <div data-stylizable='widget text-widget-text'>
+        <Markdown
+          options={markdownParsingOptions}
+          {...(inert && { inert: '' })}
+        >
+          {text}
+        </Markdown>
+      </div>
     </Widget>
   )
 }

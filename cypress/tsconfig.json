@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["es5", "dom"],
+    "lib": ["es5", "dom", "dom.iterable"],
     "types": ["cypress", "node", "@testing-library/cypress"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "downlevelIteration": true,
+    "esModuleInterop": true
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }

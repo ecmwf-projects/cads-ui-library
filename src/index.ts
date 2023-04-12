@@ -12,3 +12,18 @@ export { SingleSelect } from './common/Select'
 export { LicenceWidget } from './widgets/LicenceWidget'
 export { TextWidget } from './widgets/TextWidget'
 export { KeywordSearchWidget } from './widgets/KeywordSearchWidget'
+export { GeographicExtentWidget } from './widgets/GeographicExtentWidget'
+export { ExclusiveGroupWidget } from './widgets/ExclusiveGroupWidget'
+export { StringListArrayWidget } from './widgets/StringListArrayWidget'
+export { StringListWidget } from './widgets/StringListWidget'
+export { StringChoiceWidget } from './widgets/StringChoiceWidget'
+
+/**
+ * Widget utils.
+ */
+export {
+  getExclusiveGroupChildren,
+  isChildOfExclusiveGroup
+} from './widgets/ExclusiveGroupWidget'
+
+export { createWidget } from './utils/widgetFactory'

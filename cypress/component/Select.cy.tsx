@@ -1,5 +1,3 @@
-import './workaround-cypress-10-0-2-process-issue'
-
 import styled from 'styled-components'
 
 import { SingleSelect, Label } from '../../src'
