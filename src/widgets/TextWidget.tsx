@@ -64,9 +64,14 @@ const TextWidget = ({
           {label}
         </WidgetTitle>
       </WidgetHeader>
-      <Markdown options={markdownParsingOptions} {...(inert && { inert: '' })}>
-        {text}
-      </Markdown>
+      <div data-stylizable='widget text-widget-text'>
+        <Markdown
+          options={markdownParsingOptions}
+          {...(inert && { inert: '' })}
+        >
+          {text}
+        </Markdown>
+      </div>
     </Widget>
   )
 }
