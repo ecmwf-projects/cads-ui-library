@@ -7,7 +7,7 @@ import {
   Label,
   RadioGroup,
   RadioGroupItem,
-  RadioIndicator as Indicator,
+  RadioIndicator,
   WidgetTooltip
 } from '../index'
 import {
@@ -131,17 +131,20 @@ const StringChoiceWidget = ({
             onValueChange: value => setSelection([value])
           }}
         >
-          <InputsGrid columns={columns}>
+          <InputsGrid
+            columns={columns}
+            data-stylizable='widget inputs-grid string-choice-grid'
+          >
             {details.values.map(value => {
               return (
                 <Radio key={value}>
-                  <RadioItem
+                  <RadioGroupItem
                     id={value}
                     value={value}
                     disabled={isDisabled({ constraints, key: value })}
                   >
                     <RadioIndicator />
-                  </RadioItem>
+                  </RadioGroupItem>
                   <LabelWrapper
                     disabled={isDisabled({ constraints, key: value })}
                   >
@@ -168,47 +171,6 @@ const Radio = styled.div`
   display: flex;
   gap: 0.5em;
   margin-bottom: 2em;
-`
-
-const RadioItem = styled(RadioGroupItem)`
-  all: unset;
-  background-color: #ffffff;
-  border-radius: 100%;
-  border: 1px solid #9599a6;
-  height: 1em;
-  width: 1em;
-
-  &[data-disabled] {
-    background-color: #ffffff;
-    border: 1px solid #bcc0cc;
-  }
-`
-
-const RadioIndicator = styled(Indicator)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  &::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    background-color: #ffffff;
-    position: absolute;
-    border-radius: 100%;
-  }
-
-  &::after {
-    content: '';
-    width: 16px;
-    height: 16px;
-    display: block;
-    background-color: #25408f;
-    border-radius: 100%;
-  }
 `
 
 export { StringChoiceWidget }
