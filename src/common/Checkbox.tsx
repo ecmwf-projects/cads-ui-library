@@ -34,8 +34,8 @@ const StyledCheckbox = styled(CheckboxPrimitive)`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 1em;
-  min-height: 1em;
+  width: 1em;
+  height: 1em;
   background-color: #ffffff;
   border: 1px solid #9599a6;
   border-radius: 2px;
@@ -47,8 +47,8 @@ const StyledCheckbox = styled(CheckboxPrimitive)`
 
 const StyledIndicator = styled(IndicatorPrimitive)`
   all: unset;
-  width: 16px;
-  height: 16px;
+  width: 1em;
+  height: 1em;
 
   svg {
     color: #ffffff;

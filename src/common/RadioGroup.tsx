@@ -19,8 +19,8 @@ const RadioGroupItem = styled(Item)`
   background-color: #fff;
   border-radius: 100%;
   border: 1px solid #9599a6;
-  min-width: 1em;
-  min-height: 1em;
+  width: 1em;
+  height: 1em;
 
   &[data-disabled] {
     background-color: #fff;
@@ -37,8 +37,8 @@ const RadioIndicator = styled(Indicator)`
 
   &::before {
     content: '';
-    width: 8px;
-    height: 8px;
+    width: 0.5em;
+    height: 0.5em;
     background-color: #fff;
     position: absolute;
     border-radius: 100%;
@@ -46,8 +46,8 @@ const RadioIndicator = styled(Indicator)`
 
   &::after {
     content: '';
-    width: 16px;
-    height: 16px;
+    width: 1em;
+    height: 1em;
     display: block;
     background-color: #25408f;
     border-radius: 100%;
