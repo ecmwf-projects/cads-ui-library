@@ -122,7 +122,10 @@ const StringListWidget = ({
       </ReservedSpace>
       <Fieldset name={name} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
-        <InputsGrid columns={columns}>
+        <InputsGrid
+          columns={columns}
+          data-stylizable='widget inputs-grid string-list-grid'
+        >
           {details.values.map(value => {
             return (
               <InputGroup

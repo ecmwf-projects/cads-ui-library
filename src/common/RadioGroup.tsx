@@ -19,8 +19,8 @@ const RadioGroupItem = styled(Item)`
   background-color: #fff;
   border-radius: 100%;
   border: 1px solid #9599a6;
-  height: 1em;
-  width: 1em;
+  min-width: 1em;
+  min-height: 1em;
 
   &[data-disabled] {
     background-color: #fff;

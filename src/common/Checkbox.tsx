@@ -34,8 +34,8 @@ const StyledCheckbox = styled(CheckboxPrimitive)`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  min-width: 1em;
+  min-height: 1em;
   background-color: #ffffff;
   border: 1px solid #9599a6;
   border-radius: 2px;

@@ -246,7 +246,11 @@ const StringListArrayWidget = ({
                   )
                 }}
               >
-                <InputsGrid key={groupLabel} columns={columns}>
+                <InputsGrid
+                  key={groupLabel}
+                  columns={columns}
+                  data-stylizable='widget inputs-grid string-listarray-grid'
+                >
                   {Object.keys(labels).map(label => {
                     return (
                       <InputGroup
