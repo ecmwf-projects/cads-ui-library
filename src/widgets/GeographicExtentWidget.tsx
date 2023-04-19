@@ -60,8 +60,6 @@ const GeographicExtentWidget = ({
   fieldsetDisabled,
   labelAriaHidden = true
 }: GeographicExtentWidgetProps) => {
-  const fieldSetRef = useRef<HTMLFieldSetElement>(null)
-
   const injectWidgetPayload = (ev: FormDataEvent) => {
     const { formData } = ev
     /**
@@ -78,7 +76,7 @@ const GeographicExtentWidget = ({
     }
   }
 
-  useEventListener('formdata', injectWidgetPayload, fieldSetRef)
+  useEventListener('formdata', injectWidgetPayload)
 
   if (!configuration) return null
 

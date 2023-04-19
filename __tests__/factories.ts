@@ -55,7 +55,7 @@ export const getStringListArrayWidgetConfiguration = () => {
       ],
       id: 1
     },
-    help: 'Please, consult the product user guide in the documentation section for more information on these variables.',
+    help: null,
     label: 'Variable',
     name: 'variable',
     required: true,
