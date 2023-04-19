@@ -119,7 +119,7 @@ export const getStringListWidgetConfiguration = () => {
         'monthly_averaged_reanalysis_by_hour_of_day'
       ]
     },
-    help: 'Monthly averaged reanalysis data are produced by averaging all daily data. Monthly averages by hour of day constitute the average over all data within the calendar month for every hour (UTC) of the day.',
+    help: null,
     label: 'Product type',
     name: 'product_type',
     required: true,

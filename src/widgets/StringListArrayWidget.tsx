@@ -68,9 +68,9 @@ interface StringListArrayWidgetProps {
    */
   labelAriaHidden?: boolean
   /**
-   * When true, bypasses the required attribute if all options are made unavailable by constraints
+   * When true, bypass the required attribute if all options are made unavailable by constraints
    */
-  bypassRequired?: boolean
+  bypassRequiredForConstraints?: boolean
 }
 
 const getAllValues = (
@@ -122,7 +122,7 @@ const StringListArrayWidget = ({
   constraints,
   fieldsetDisabled,
   labelAriaHidden = true,
-  bypassRequired
+  bypassRequiredForConstraints
 }: StringListArrayWidgetProps) => {
   const {
     details: { groups, accordionOptions },
@@ -136,7 +136,11 @@ const StringListArrayWidget = ({
   const bulkSelectionTriggerRef = useRef<HTMLInputElement>(null)
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
 
-  const bypassed = useBypassRequired(fieldSetRef, bypassRequired, constraints)
+  const bypassed = useBypassRequired(
+    fieldSetRef,
+    bypassRequiredForConstraints,
+    constraints
+  )
 
   const formDataListener = (ev: FormDataEvent) => {
     const { formData } = ev

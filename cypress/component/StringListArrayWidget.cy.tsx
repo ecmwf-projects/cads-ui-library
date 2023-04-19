@@ -74,7 +74,7 @@ describe('<StringListArrayWidget/>', () => {
     cy.mount(
       <Form handleSubmit={stubbedHandleSubmit}>
         <StringListArrayWidget
-          bypassRequired={true}
+          bypassRequiredForConstraints={true}
           constraints={[]}
           configuration={getStringListArrayWidgetConfiguration()}
         />

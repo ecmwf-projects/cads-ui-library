@@ -57,7 +57,7 @@ const useBypassRequired: UseBypassRequired = (
     if (!bypass) return
     if (!elementRef.current) return
     if (!elementRef.current.name) return
-    if (constraints?.length) return
+    if (!constraints || constraints?.length) return
 
     const { formData } = ev
 

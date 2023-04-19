@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 import { Checkbox, Label, WidgetTooltip } from '../index'
 
@@ -20,6 +20,7 @@ import {
   isDisabled,
   getPermittedBulkSelection,
   isAllSelected,
+  useBypassRequired,
   useWidgetSelection,
   ClearAll,
   SelectAll
@@ -57,6 +58,10 @@ type StringListWidgetProps = {
    * Whether to hide the widget label from ARIA.
    */
   labelAriaHidden?: boolean
+  /**
+   * When true, bypass the required attribute if all options are made unavailable by constraints
+   */
+  bypassRequiredForConstraints?: boolean
 }
 
 const getAllValues = (labels: StringListWidgetDetails['labels']) => {
@@ -67,14 +72,22 @@ const StringListWidget = ({
   configuration,
   constraints,
   fieldsetDisabled,
-  labelAriaHidden = true
+  labelAriaHidden = true,
+  bypassRequiredForConstraints
 }: StringListWidgetProps) => {
+  const fieldSetRef = useRef<HTMLFieldSetElement>(null)
   const { details, label, help, name, required } = configuration
   const {
     details: { columns, labels }
   } = configuration
 
   const { selection, setSelection } = useWidgetSelection(name)
+
+  const bypassed = useBypassRequired(
+    fieldSetRef,
+    bypassRequiredForConstraints,
+    constraints
+  )
 
   if (!configuration) return null
 
@@ -116,11 +129,11 @@ const StringListWidget = ({
         />
       </WidgetHeader>
       <ReservedSpace>
-        {required && !selection[name]?.length ? (
+        {!bypassed && required && !selection[name]?.length ? (
           <Error>At least one selection must be made</Error>
         ) : null}
       </ReservedSpace>
-      <Fieldset name={name} disabled={fieldsetDisabled}>
+      <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
         <InputsGrid
           columns={columns}
