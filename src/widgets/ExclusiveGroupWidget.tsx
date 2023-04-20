@@ -98,12 +98,19 @@ const ExclusiveGroupWidget = ({
 type GetExclusiveGroupChildren = (
   formConfiguration: FormConfiguration[],
   name: string,
-  constraints?: Record<string, string[]>
+  constraints?: Record<string, string[]>,
+  opts?: {
+    /**
+     * When true, bypass the required attribute if all options are made unavailable by constraints.
+     */
+    bypassRequiredForConstraints?: boolean
+  }
 ) => ChildrenGetter
 const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
   formConfiguration,
   name,
-  constraints
+  constraints,
+  opts
 ) => {
   const thisExclusiveGroup = formConfiguration.find(
     configuration =>
@@ -125,7 +132,11 @@ const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
 
       if (!childConfiguration) return childMap
       const childConstraints = constraints && constraints[childName]
-      const childWidget = createWidget(childConfiguration, childConstraints)
+      const childWidget = createWidget(
+        childConfiguration,
+        childConstraints,
+        opts
+      )
 
       childMap[childName] = props => childWidget(props)
 

@@ -14,9 +14,15 @@ import type { FormConfiguration } from '../types/Form'
  */
 type CreateWidget = (
   configuration: FormConfiguration,
-  constraints?: string[]
+  constraints?: string[],
+  opts?: {
+    /**
+     * When true, bypass the required attribute if all options are made unavailable by constraints.
+     */
+    bypassRequiredForConstraints?: boolean
+  }
 ) => (...props: any) => JSX.Element | null
-const createWidget: CreateWidget = (configuration, constraints) => {
+const createWidget: CreateWidget = (configuration, constraints, opts) => {
   switch (configuration.type) {
     case 'GeographicExtentWidget':
       // eslint-disable-next-line react/display-name
@@ -28,6 +34,7 @@ const createWidget: CreateWidget = (configuration, constraints) => {
       return props => (
         <StringListArrayWidget
           configuration={configuration}
+          bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
           constraints={constraints}
           {...props}
         />
@@ -37,6 +44,7 @@ const createWidget: CreateWidget = (configuration, constraints) => {
       return props => (
         <StringListWidget
           configuration={configuration}
+          bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
           constraints={constraints}
           {...props}
         />
@@ -46,6 +54,7 @@ const createWidget: CreateWidget = (configuration, constraints) => {
       return props => (
         <StringChoiceWidget
           configuration={configuration}
+          bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
           constraints={constraints}
           {...props}
         />

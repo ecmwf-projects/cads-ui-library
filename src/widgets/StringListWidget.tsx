@@ -59,7 +59,7 @@ type StringListWidgetProps = {
    */
   labelAriaHidden?: boolean
   /**
-   * When true, bypass the required attribute if all options are made unavailable by constraints
+   * When true, bypass the required attribute if all options are made unavailable by constraints.
    */
   bypassRequiredForConstraints?: boolean
 }
