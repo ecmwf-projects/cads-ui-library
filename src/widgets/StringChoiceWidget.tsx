@@ -21,7 +21,7 @@ import {
   WidgetTitle
 } from './Widget'
 
-import { isDisabled } from '../utils'
+import { isDisabled, useBypassRequired } from '../utils'
 
 export interface StringChoiceWidgetDetails {
   columns: number
@@ -56,14 +56,20 @@ interface StringChoiceWidgetProps {
    * Whether to hide the widget label from ARIA.
    */
   labelAriaHidden?: boolean
+  /**
+   * When true, bypass the required attribute if all options are made unavailable by constraints
+   */
+  bypassRequiredForConstraints?: boolean
 }
 
 const StringChoiceWidget = ({
   configuration,
   constraints,
   fieldsetDisabled,
-  labelAriaHidden = true
+  labelAriaHidden = true,
+  bypassRequiredForConstraints
 }: StringChoiceWidgetProps) => {
+  const fieldSetRef = useRef<HTMLFieldSetElement>(null)
   const [selection, setSelection] = useState<string[]>([])
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
@@ -73,6 +79,8 @@ const StringChoiceWidget = ({
    * Cache persisted selection, so we don't need to pass it as an effect dependency.
    */
   const persistedSelectionRef = useRef(persistedSelection)
+
+  useBypassRequired(fieldSetRef, bypassRequiredForConstraints, constraints)
 
   const { details, label, help, name } = configuration
   const {
@@ -122,7 +130,7 @@ const StringChoiceWidget = ({
           triggerAriaLabel={`Get help for ${label}`}
         />
       </WidgetHeader>
-      <Fieldset name={name} disabled={fieldsetDisabled}>
+      <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
         <RadioGroup
           rootProps={{
