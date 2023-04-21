@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef } from 'react'
+import { useEventListener } from 'usehooks-ts'
 import styled from 'styled-components'
 
 import { AccordionSingle, Checkbox, Label, WidgetTooltip } from '../index'
@@ -21,6 +22,7 @@ import {
   isDisabled,
   getPermittedBulkSelection,
   isAllSelected,
+  useBypassRequired,
   useWidgetSelection,
   ClearAll,
   SelectAll
@@ -65,6 +67,10 @@ interface StringListArrayWidgetProps {
    * Whether to hide the widget label from ARIA.
    */
   labelAriaHidden?: boolean
+  /**
+   * When true, bypass the required attribute if all options are made unavailable by constraints.
+   */
+  bypassRequiredForConstraints?: boolean
 }
 
 const getAllValues = (
@@ -115,7 +121,8 @@ const StringListArrayWidget = ({
   configuration,
   constraints,
   fieldsetDisabled,
-  labelAriaHidden = true
+  labelAriaHidden = true,
+  bypassRequiredForConstraints
 }: StringListArrayWidgetProps) => {
   const {
     details: { groups, accordionOptions },
@@ -129,31 +136,26 @@ const StringListArrayWidget = ({
   const bulkSelectionTriggerRef = useRef<HTMLInputElement>(null)
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
 
-  // TODO: test with a functional test
-  /* istanbul ignore next */
-  useEffect(() => {
-    if (!fieldSetRef?.current?.form) return
-    const form = fieldSetRef.current.form
+  const bypassed = useBypassRequired(
+    fieldSetRef,
+    bypassRequiredForConstraints,
+    constraints
+  )
 
-    const formDataListener = (ev: FormDataEvent) => {
-      const { formData } = ev
+  const formDataListener = (ev: FormDataEvent) => {
+    const { formData } = ev
 
-      appendToFormData(
-        formData,
-        {
-          currentSelection: selection,
-          name
-        },
-        constraints
-      )
-    }
+    appendToFormData(
+      formData,
+      {
+        currentSelection: selection,
+        name
+      },
+      constraints
+    )
+  }
 
-    form.addEventListener('formdata', formDataListener)
-
-    return () => {
-      form.removeEventListener('formdata', formDataListener)
-    }
-  }, [selection, name, constraints])
+  useEventListener('formdata', formDataListener)
 
   if (!configuration) return null
 
@@ -222,7 +224,7 @@ const StringListArrayWidget = ({
         />
       </WidgetHeader>
       <ReservedSpace>
-        {required && !selection[name]?.length ? (
+        {!bypassed && required && !selection[name]?.length ? (
           <Error>At least one selection must be made</Error>
         ) : null}
       </ReservedSpace>

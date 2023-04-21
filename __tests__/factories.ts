@@ -55,7 +55,7 @@ export const getStringListArrayWidgetConfiguration = () => {
       ],
       id: 1
     },
-    help: 'Please, consult the product user guide in the documentation section for more information on these variables.',
+    help: null,
     label: 'Variable',
     name: 'variable',
     required: true,
@@ -119,7 +119,7 @@ export const getStringListWidgetConfiguration = () => {
         'monthly_averaged_reanalysis_by_hour_of_day'
       ]
     },
-    help: 'Monthly averaged reanalysis data are produced by averaging all daily data. Monthly averages by hour of day constitute the average over all data within the calendar month for every hour (UTC) of the day.',
+    help: null,
     label: 'Product type',
     name: 'product_type',
     required: true,

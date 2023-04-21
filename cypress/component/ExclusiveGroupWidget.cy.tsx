@@ -37,7 +37,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     const configuration = {
       type: 'ExclusiveGroupWidget' as const,
       label: 'Generic selections',
-      help: 'Select one choice from the widgets below',
+      help: null,
       name: 'checkbox_groups',
       children: ['variable', 'surface_help'],
       details: {
@@ -55,17 +55,15 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     cy.viewport(800, 600)
     cy.mount(
-      <TooltipProvider>
-        <Form handleSubmit={stubbedHandleSubmit}>
-          <ExclusiveGroupWidget
-            configuration={configuration}
-            childrenGetter={getExclusiveGroupChildren(
-              formConfiguration,
-              'checkbox_groups'
-            )}
-          />
-        </Form>
-      </TooltipProvider>
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups'
+          )}
+        />
+      </Form>
     ).then(({ rerender }) => {
       cy.findByLabelText('Lake shape factor').click()
       cy.findByLabelText('Soil temperature level 3').click()
@@ -108,7 +106,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     const configuration = {
       type: 'ExclusiveGroupWidget' as const,
       label: 'Generic selections',
-      help: 'Select one choice from the widgets below',
+      help: null,
       name: 'checkbox_groups',
       children: ['product_type', 'surface_help'],
       details: {
@@ -136,17 +134,15 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     cy.viewport(984, 597)
     cy.mount(
-      <TooltipProvider>
-        <Form handleSubmit={stubbedHandleSubmit}>
-          <ExclusiveGroupWidget
-            configuration={configuration}
-            childrenGetter={getExclusiveGroupChildren(
-              formConfiguration,
-              'checkbox_groups'
-            )}
-          />
-        </Form>
-      </TooltipProvider>
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups'
+          )}
+        />
+      </Form>
     )
 
     cy.findByLabelText('Monthly averaged reanalysis').click()
@@ -163,7 +159,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     const configuration = {
       type: 'ExclusiveGroupWidget' as const,
       label: 'Generic selections',
-      help: 'Select one choice from the widgets below',
+      help: null,
       name: 'checkbox_groups',
       children: ['product_type', 'variable'],
       details: {
@@ -178,15 +174,13 @@ describe('<ExclusiveGroupWidget/>', () => {
     ]
 
     cy.mount(
-      <TooltipProvider>
-        <ExclusiveGroupWidget
-          configuration={configuration}
-          childrenGetter={getExclusiveGroupChildren(
-            formConfiguration,
-            'checkbox_groups'
-          )}
-        />
-      </TooltipProvider>
+      <ExclusiveGroupWidget
+        configuration={configuration}
+        childrenGetter={getExclusiveGroupChildren(
+          formConfiguration,
+          'checkbox_groups'
+        )}
+      />
     )
 
     cy.findByLabelText('Skin temperature')
@@ -196,7 +190,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     const configuration = {
       type: 'ExclusiveGroupWidget' as const,
       label: 'Geographical area',
-      help: 'Select one choice from the widgets below',
+      help: null,
       name: 'area_group',
       children: ['global', 'area'],
       details: {
@@ -217,6 +211,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       },
       {
         ...getGeographicExtentWidgetConfiguration(),
+        help: null,
         label: 'Sub-region extraction'
       }
     ]
@@ -225,17 +220,15 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     cy.viewport(1200, 900)
     cy.mount(
-      <TooltipProvider>
-        <Form handleSubmit={stubbedHandleSubmit}>
-          <ExclusiveGroupWidget
-            configuration={configuration}
-            childrenGetter={getExclusiveGroupChildren(
-              formConfiguration,
-              'area_group'
-            )}
-          />
-        </Form>
-      </TooltipProvider>
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'area_group'
+          )}
+        />
+      </Form>
     )
 
     cy.findByLabelText('Sub-region extraction').should(
@@ -267,7 +260,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     const configuration = {
       type: 'ExclusiveGroupWidget' as const,
       label: 'Generic selections',
-      help: 'Select one choice from the widgets below',
+      help: null,
       name: 'checkbox_groups',
       children: ['format', 'surface_help'],
       details: {
@@ -285,17 +278,15 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     cy.viewport(800, 600)
     cy.mount(
-      <TooltipProvider>
-        <Form handleSubmit={stubbedHandleSubmit}>
-          <ExclusiveGroupWidget
-            configuration={configuration}
-            childrenGetter={getExclusiveGroupChildren(
-              formConfiguration,
-              'checkbox_groups'
-            )}
-          />
-        </Form>
-      </TooltipProvider>
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups'
+          )}
+        />
+      </Form>
     )
 
     cy.findByLabelText('NetCDF (experimental)').click()
@@ -311,7 +302,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     const thisExclusive = {
       type: 'ExclusiveGroupWidget' as const,
       label: 'This exclusive',
-      help: 'This exclusive',
+      help: null,
       name: 'this_exclusive',
       children: ['format', 'surface_help'],
       details: {
@@ -322,7 +313,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     const otherExclusive = {
       type: 'ExclusiveGroupWidget' as const,
       label: 'Other exclusive',
-      help: 'Other exclusive',
+      help: null,
       name: 'other_exclusive',
       children: ['product_type'],
       details: {
@@ -368,25 +359,23 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     cy.viewport(800, 600)
     cy.mount(
-      <TooltipProvider>
-        <Form handleSubmit={stubbedHandleSubmit}>
-          <ExclusiveGroupWidget
-            configuration={thisExclusive}
-            childrenGetter={getExclusiveGroupChildren(
-              formConfiguration,
-              'this_exclusive'
-            )}
-          />
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <ExclusiveGroupWidget
+          configuration={thisExclusive}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'this_exclusive'
+          )}
+        />
 
-          <ExclusiveGroupWidget
-            configuration={otherExclusive}
-            childrenGetter={getExclusiveGroupChildren(
-              formConfiguration,
-              'other_exclusive'
-            )}
-          />
-        </Form>
-      </TooltipProvider>
+        <ExclusiveGroupWidget
+          configuration={otherExclusive}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'other_exclusive'
+          )}
+        />
+      </Form>
     )
 
     cy.findByLabelText(/netcdf/i)
@@ -398,6 +387,50 @@ describe('<ExclusiveGroupWidget/>', () => {
     cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
       ['format', 'grib'],
       ['product_type', 'monthly_averaged_reanalysis']
+    ])
+  })
+
+  it('bypasses the required attribute if all options are made unavailable by constraints', () => {
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Generic selections',
+      help: null,
+      name: 'checkbox_groups',
+      children: ['product_type', 'variable', 'format'],
+      details: {
+        default: 'product_type'
+      }
+    }
+
+    const formConfiguration = [
+      configuration,
+      getStringListWidgetConfiguration(),
+      getStringListArrayWidgetConfiguration(),
+      getStringChoiceWidgetConfiguration()
+    ]
+
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.mount(
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups',
+            { product_type: [], variable: [], format: [] },
+            { bypassRequiredForConstraints: true }
+          )}
+        />
+      </Form>
+    )
+
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+      ['bypassRequired', 'product_type'],
+      ['bypassRequired', 'variable'],
+      ['bypassRequired', 'format']
     ])
   })
 })
