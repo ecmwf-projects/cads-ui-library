@@ -183,13 +183,16 @@ const StringListArrayWidget = ({
   const getActiveSelectionsCounts = (
     groups: StringListArrayWidgetConfiguration['details']['groups'],
     groupLabel: string,
-    selection: Record<string, string[]>
+    selection: Record<string, string[]>,
+    constraints?: string[]
   ) => {
     const ownGroup = groups.find(group => group.label === groupLabel)
 
     if (ownGroup) {
       const activeSelections = [
-        ...new Set(selection[name]).intersection(new Set(ownGroup.values))
+        ...new Set(selection[name])
+          .intersection(new Set(ownGroup.values))
+          .intersection(new Set(constraints || selection[name]))
       ].length
 
       return activeSelections > 1 ? (
@@ -288,7 +291,8 @@ const StringListArrayWidget = ({
                             ? getActiveSelectionsCounts(
                                 groups,
                                 groupLabel,
-                                selection
+                                selection,
+                                constraints
                               )
                             : null}
                         </AccordionTriggerContent>

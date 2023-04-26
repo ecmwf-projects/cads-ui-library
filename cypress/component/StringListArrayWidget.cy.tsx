@@ -164,11 +164,31 @@ describe('<StringListArrayWidget/>', () => {
         }}
         renderActiveSelectionsCount={true}
       />
-    )
+    ).then(({ rerender }) => {
+      cy.findByText('Select all').click()
+      cy.findByText('Lake total layer temperature').click()
+      cy.findAllByText('7 selected items')
+      cy.findAllByText('6 selected items')
 
-    cy.findByText('Select all').click()
-    cy.findByText('Lake total layer temperature').click()
-    cy.findAllByText('7 selected items')
-    cy.findAllByText('6 selected items')
+      cy.log('Re-render with constraints')
+      rerender(
+        <StringListArrayWidget
+          constraints={['2m_dewpoint_temperature', '2m_temperature']}
+          configuration={{
+            ...getStringListArrayWidgetConfiguration(),
+            details: {
+              ...getStringListArrayWidgetConfiguration().details,
+              accordionOptions: {
+                openGroups: ['Lakes'],
+                searchable: false
+              }
+            }
+          }}
+          renderActiveSelectionsCount={true}
+        />
+      )
+
+      cy.findAllByText('2 selected items')
+    })
   })
 })
