@@ -97,6 +97,7 @@
     "styled-components": "^5.3.5"
   },
   "resolutions": {
-    "json5": "2.2.3"
+    "json5": "2.2.3",
+    "yaml": "2.2.2"
   }
 }
