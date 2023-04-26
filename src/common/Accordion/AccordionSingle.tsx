@@ -20,7 +20,17 @@ import type {
 
 type Props = {
   rootProps?: Except<AccordionSingleProps, 'type'>
-  itemProps: AccordionItemProps & { trigger: () => React.ReactNode }
+  itemProps: AccordionItemProps & {
+    /**
+     * A trigger for the accordion.
+     * Ignored if provided alongside with customTrigger.
+     */
+    trigger?: () => React.ReactNode
+    /**
+     * If present, replaces the whole accordion trigger.
+     */
+    customTrigger?: () => React.ReactNode
+  }
   children: React.ReactNode
 }
 
@@ -28,7 +38,7 @@ type Props = {
  * An uncontrolled AccordionSingle component.
  */
 const AccordionSingle = ({ rootProps, itemProps, children }: Props) => {
-  const { trigger, ...restOfItemProps } = itemProps
+  const { trigger, customTrigger, ...restOfItemProps } = itemProps
 
   return (
     <StyledRoot
@@ -39,10 +49,14 @@ const AccordionSingle = ({ rootProps, itemProps, children }: Props) => {
     >
       <AccordionItemPrimitive {...restOfItemProps}>
         <StyledHeader>
-          <StyledTrigger data-stylizable='accordion-single-trigger'>
-            {trigger()}
-            <StyledChevron />
-          </StyledTrigger>
+          {customTrigger ? (
+            customTrigger()
+          ) : (
+            <StyledTrigger data-stylizable='accordion-single-trigger'>
+              {trigger ? trigger() : null}
+              <StyledChevron />
+            </StyledTrigger>
+          )}
         </StyledHeader>
         <AccordionContentPrimitive>{children}</AccordionContentPrimitive>
       </AccordionItemPrimitive>
@@ -84,4 +98,4 @@ const StyledTrigger = styled(AccordionTriggerPrimitive)`
 `
 
 const StyledChevron = styled(ChevronDownIcon)``
-export { AccordionSingle }
+export { AccordionSingle, StyledChevron }

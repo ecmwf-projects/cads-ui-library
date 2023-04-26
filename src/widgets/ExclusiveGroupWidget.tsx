@@ -104,6 +104,11 @@ type GetExclusiveGroupChildren = (
      * When true, bypass the required attribute if all options are made unavailable by constraints.
      */
     bypassRequiredForConstraints?: boolean
+
+    /**
+     * When true, shows the active selection count for closed accordions.
+     */
+    renderActiveSelectionsCount?: boolean
   }
 ) => ChildrenGetter
 const getExclusiveGroupChildren: GetExclusiveGroupChildren = (

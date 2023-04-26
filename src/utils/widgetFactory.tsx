@@ -20,6 +20,11 @@ type CreateWidget = (
      * When true, bypass the required attribute if all options are made unavailable by constraints.
      */
     bypassRequiredForConstraints?: boolean
+
+    /**
+     * When true, shows the active selection count for closed accordions.
+     */
+    renderActiveSelectionsCount?: boolean
   }
 ) => (...props: any) => JSX.Element | null
 const createWidget: CreateWidget = (configuration, constraints, opts) => {
@@ -35,6 +40,7 @@ const createWidget: CreateWidget = (configuration, constraints, opts) => {
         <StringListArrayWidget
           configuration={configuration}
           bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
+          renderActiveSelectionsCount={opts?.renderActiveSelectionsCount}
           constraints={constraints}
           {...props}
         />

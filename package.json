@@ -1,6 +1,6 @@
 {
   "name": "@ecmwf-projects/cads-ui-library",
-  "version": "5.1.0",
+  "version": "5.3.0",
   "description": "Common UI kit library",
   "repository": {
     "type": "git",
@@ -83,6 +83,7 @@
     "@radix-ui/react-select": "^1.2.1",
     "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.5",
+    "core-js": "^3.30.1",
     "markdown-to-jsx": "^7.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -96,6 +97,7 @@
     "styled-components": "^5.3.5"
   },
   "resolutions": {
-    "json5": "2.2.3"
+    "json5": "2.2.3",
+    "yaml": "2.2.2"
   }
 }

@@ -60,7 +60,11 @@ describe('<ExclusiveGroupWidget/>', () => {
           configuration={configuration}
           childrenGetter={getExclusiveGroupChildren(
             formConfiguration,
-            'checkbox_groups'
+            'checkbox_groups',
+            null,
+            {
+              renderActiveSelectionsCount: true
+            }
           )}
         />
       </Form>
@@ -90,6 +94,9 @@ describe('<ExclusiveGroupWidget/>', () => {
                     'lake_ice_depth',
                     'lake_ice_temperature'
                   ]
+                },
+                {
+                  renderActiveSelectionsCount: true
                 }
               )}
             />
@@ -99,6 +106,10 @@ describe('<ExclusiveGroupWidget/>', () => {
 
       cy.findByLabelText('2m dewpoint temperature').should('be.disabled')
       cy.findByLabelText('Lake bottom temperature').should('not.be.disabled')
+
+      cy.findByLabelText('Lake ice depth').click()
+      cy.findByText('Lakes').click()
+      cy.findByText('1 selected item')
     })
   })
 
