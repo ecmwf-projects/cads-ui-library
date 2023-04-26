@@ -1,6 +1,10 @@
 import React, { useRef } from 'react'
+import { Trigger as AccordionTriggerPrimitive } from '@radix-ui/react-accordion'
+import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { useEventListener } from 'usehooks-ts'
 import styled from 'styled-components'
+
+import 'core-js/actual/set/intersection.js'
 
 import { AccordionSingle, Checkbox, Label, WidgetTooltip } from '../index'
 
@@ -27,6 +31,12 @@ import {
   ClearAll,
   SelectAll
 } from '../utils'
+
+declare global {
+  interface Set<T> {
+    intersection(other: Set<T>): Set<T>
+  }
+}
 
 export interface StringListArrayWidgetDetails {
   accordionGroups: boolean
@@ -71,6 +81,11 @@ interface StringListArrayWidgetProps {
    * When true, bypass the required attribute if all options are made unavailable by constraints.
    */
   bypassRequiredForConstraints?: boolean
+
+  /**
+   * When true, shows the active selection count for closed accordions.
+   */
+  renderActiveSelectionsCount?: boolean
 }
 
 const getAllValues = (
@@ -108,21 +123,15 @@ const appendToFormData = (
 }
 
 /**
- *
- * StringListArrayWidget renders a list of accordions, where each accordion contains checkboxes.
- *
- * Note: Closed radix-ui accordions do not render any children. This makes impossible to trigger a change event when the accordion is closed, or to include the current selection for closed accordions. To work around this, we employ two approaches:
- *
- * - by intercepting the formdata event we directly inject the current selection into the FormData object
- *
- * - To cover the case where a user selected or deselected all the checkboxes of a group of closed accordions, we programmatically click the input BulkSelectionTrigger. This triggers the change event that the parent form later intercepts.
+ * StringListArrayWidget: widget to render accordionable set of checkboxes.
  */
 const StringListArrayWidget = ({
   configuration,
   constraints,
   fieldsetDisabled,
   labelAriaHidden = true,
-  bypassRequiredForConstraints
+  bypassRequiredForConstraints,
+  renderActiveSelectionsCount
 }: StringListArrayWidgetProps) => {
   const {
     details: { groups, accordionOptions },
@@ -142,6 +151,12 @@ const StringListArrayWidget = ({
     constraints
   )
 
+  /**
+   * Closed radix-ui accordions do not render any children. This makes impossible to trigger a change event when the accordion is closed, or to include the current selection for closed accordions. To work around this, we employ two approaches:
+   *
+   * - by intercepting the formdata event we directly inject the current selection into the FormData object
+   * - To cover the case where a user selects or deselects all the checkboxes of a group of closed accordions, we programmatically click the input BulkSelectionTrigger. This triggers the change event that the parent form later intercepts.
+   */
   const formDataListener = (ev: FormDataEvent) => {
     const { formData } = ev
 
@@ -164,6 +179,31 @@ const StringListArrayWidget = ({
   }
 
   const allValues = getAllValues(groups)
+
+  const getActiveSelectionsCounts = (
+    groups: StringListArrayWidgetConfiguration['details']['groups'],
+    groupLabel: string,
+    selection: Record<string, string[]>
+  ) => {
+    const ownGroup = groups.find(group => group.label === groupLabel)
+
+    if (ownGroup) {
+      const activeSelections = [
+        ...new Set(selection[name]).intersection(new Set(ownGroup.values))
+      ].length
+
+      return activeSelections > 1 ? (
+        <ActiveSelections data-stylizable='string-listarray-active-selections'>
+          {activeSelections} selected items
+        </ActiveSelections>
+      ) : activeSelections == 1 ? (
+        <ActiveSelections data-stylizable='string-listarray-active-selections'>
+          {activeSelections} selected item
+        </ActiveSelections>
+      ) : null
+    }
+    return null
+  }
 
   return (
     <Widget data-stylizable='widget'>
@@ -192,10 +232,7 @@ const StringListArrayWidget = ({
                 fieldset={name}
                 handleAction={state => {
                   setSelection(state)
-                  // TODO: test with a functional test
-                  /* istanbul ignore next */
                   if (!bulkSelectionTriggerRef.current) return
-                  /* istanbul ignore next */
                   bulkSelectionTriggerRef.current.click()
                 }}
               />
@@ -204,10 +241,7 @@ const StringListArrayWidget = ({
                 fieldset={name}
                 handleAction={state => {
                   setSelection(state)
-                  // TODO: test with a functional test
-                  /* istanbul ignore next */
                   if (!bulkSelectionTriggerRef.current) return
-                  /* istanbul ignore next */
                   bulkSelectionTriggerRef.current.click()
                 }}
                 values={getPermittedBulkSelection({
@@ -243,8 +277,24 @@ const StringListArrayWidget = ({
                 }}
                 itemProps={{
                   value: groupLabel,
-                  trigger: () => (
-                    <AccordionTrigger>{groupLabel}</AccordionTrigger>
+                  customTrigger: () => (
+                    <StyledTrigger>
+                      <AccordionTrigger>
+                        <AccordionTriggerContent data-stylizable='widget string-listarray accordion-header'>
+                          <AccordionTriggerHeader>
+                            {groupLabel}
+                          </AccordionTriggerHeader>
+                          {renderActiveSelectionsCount
+                            ? getActiveSelectionsCounts(
+                                groups,
+                                groupLabel,
+                                selection
+                              )
+                            : null}
+                        </AccordionTriggerContent>
+                      </AccordionTrigger>
+                      <ChevronDownIcon />
+                    </StyledTrigger>
                   )
                 }}
               >
@@ -309,11 +359,51 @@ const BulkSelectionTrigger = styled.input`
   display: none;
 `
 
-const AccordionTrigger = styled.h5`
+const ActiveSelections = styled.p`
+  margin: 0 1.2em 0 0;
+  color: #25408f;
+`
+
+const StyledTrigger = styled(AccordionTriggerPrimitive)`
+  all: unset;
+  color: #39393a;
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 1.125em;
+  line-height: 22px;
+  justify-content: space-between;
+  margin-top: 0 !important;
+
+  &[data-state='open'] {
+    svg {
+      transform: rotate(180deg);
+    }
+
+    margin-bottom: 0.75em;
+
+    ${ActiveSelections} {
+      display: none;
+    }
+  }
+`
+
+const AccordionTrigger = styled.div`
+  width: 100%;
+`
+
+const AccordionTriggerHeader = styled.h5`
   font-size: 1.125rem;
   font-weight: 700;
   margin: unset;
   margin-bottom: 1.125em;
+`
+
+const AccordionTriggerContent = styled.div`
+  display: flex;
+  justify-content: space-between;
 `
 
 const Margin = styled.div`
