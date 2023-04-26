@@ -9,7 +9,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Added
 
-- active selected items in `StringListArrayWidget` accordions.
+- ability to show active selected items in `StringListArrayWidget` accordions.
 
 ## [5.1.0] 2023-04-21
 
