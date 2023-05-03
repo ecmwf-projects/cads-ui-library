@@ -17,7 +17,7 @@ const WidgetTooltip = ({ helpText, triggerAriaLabel }: Props) => {
       triggerProps={{
         asChild: true,
         child: () => (
-          <Trigger aria-label={triggerAriaLabel}>
+          <Trigger aria-label={triggerAriaLabel} type='button'>
             <StyledQuestionMarkCircledIcon
               focusable={false}
               aria-hidden={true}
