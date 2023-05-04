@@ -118,7 +118,7 @@ const GeographicExtentWidget = ({
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={key}>{getLabel(key)}</Label>
           <input
-            type='number'
+            type='text'
             name={key}
             id={key}
             defaultValue={getDefault(key)}

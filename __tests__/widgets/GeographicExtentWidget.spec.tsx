@@ -36,10 +36,10 @@ describe('<GeographicExtentWidget/>', () => {
 
     screen.getByRole('group', { name: 'Area' })
 
-    expect(screen.getByLabelText('North')).toHaveValue(90)
-    expect(screen.getByLabelText('West')).toHaveValue(-180)
-    expect(screen.getByLabelText('East')).toHaveValue(180)
-    expect(screen.getByLabelText('South')).toHaveValue(-90)
+    expect(screen.getByLabelText('North')).toHaveValue('90')
+    expect(screen.getByLabelText('West')).toHaveValue('-180')
+    expect(screen.getByLabelText('East')).toHaveValue('180')
+    expect(screen.getByLabelText('South')).toHaveValue('-90')
   })
 
   it('renders from configuration - without extentLabels', () => {
@@ -68,9 +68,9 @@ describe('<GeographicExtentWidget/>', () => {
 
     screen.getByRole('group', { name: 'Area' })
 
-    expect(screen.getByLabelText('North')).toHaveValue(90)
-    expect(screen.getByLabelText('West')).toHaveValue(-180)
-    expect(screen.getByLabelText('East')).toHaveValue(180)
-    expect(screen.getByLabelText('South')).toHaveValue(-90)
+    expect(screen.getByLabelText('North')).toHaveValue('90')
+    expect(screen.getByLabelText('West')).toHaveValue('-180')
+    expect(screen.getByLabelText('East')).toHaveValue('180')
+    expect(screen.getByLabelText('South')).toHaveValue('-90')
   })
 })
