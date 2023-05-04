@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, RefObject } from 'react'
-import { useReadLocalStorage, useEventListener } from 'usehooks-ts'
+import { useReadLocalStorage } from 'usehooks-ts'
 
 const useWidgetSelection = (fieldset: string) => {
   const [selection, setSelection] = useState<Record<string, string[]>>({
@@ -51,21 +51,6 @@ const useBypassRequired: UseBypassRequired = (
   bypass = false,
   constraints
 ) => {
-  const form = useRef(elementRef.current?.form || null)
-
-  const injectBypassRequired = (ev: FormDataEvent) => {
-    if (!bypass) return
-    if (!elementRef.current) return
-    if (!elementRef.current.name) return
-    if (!constraints || constraints?.length) return
-
-    const { formData } = ev
-
-    formData.append('bypassRequired', elementRef.current.name)
-  }
-
-  useEventListener('formdata', injectBypassRequired, form)
-
   if (!constraints) return false
 
   return !constraints.length && bypass

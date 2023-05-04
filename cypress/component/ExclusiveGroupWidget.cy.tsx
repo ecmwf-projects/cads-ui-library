@@ -436,12 +436,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       </Form>
     )
 
-    cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
-      ['bypassRequired', 'product_type'],
-      ['bypassRequired', 'variable'],
-      ['bypassRequired', 'format']
-    ])
+    cy.findByText('At least one selection must be made').should('not.exist')
   })
 })

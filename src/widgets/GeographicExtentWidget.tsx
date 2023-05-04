@@ -18,7 +18,6 @@ export interface GeographicExtentWidgetConfiguration {
       w: number
       e: number
       s: number
-      [key: string]: number
     }
     default?: {
       n: number
@@ -40,6 +39,14 @@ export interface GeographicExtentWidgetProps {
    * Whether to hide the widget label from ARIA.
    */
   labelAriaHidden?: boolean
+
+  /**
+   * An object of key/validator pairs to apply to each input.
+   */
+  validators?: Record<
+    keyof GeographicExtentWidgetConfiguration['details']['range'],
+    () => any
+  >
 }
 
 /**
@@ -58,7 +65,8 @@ const defaultMapping: Record<string, string> = {
 const GeographicExtentWidget = ({
   configuration,
   fieldsetDisabled,
-  labelAriaHidden = true
+  labelAriaHidden = true,
+  validators
 }: GeographicExtentWidgetProps) => {
   const injectWidgetPayload = (ev: FormDataEvent) => {
     const { formData } = ev
@@ -76,7 +84,7 @@ const GeographicExtentWidget = ({
     }
   }
 
-  useEventListener('formdata', injectWidgetPayload)
+  useEventListener('formdata', injectWidgetPayload) // TODO verify
 
   if (!configuration) return null
 
@@ -104,6 +112,8 @@ const GeographicExtentWidget = ({
     return Object.keys(getRange()).map((key, index) => {
       const k = key as unknown as keyof ReturnType<typeof getRange>
 
+      const validator = validators ? validators[k] : null
+
       return (
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={key}>{getLabel(key)}</Label>
@@ -112,6 +122,7 @@ const GeographicExtentWidget = ({
             name={key}
             id={key}
             defaultValue={getDefault(key)}
+            {...(typeof validator === 'function' ? validator() : {})}
           />
         </Wrap>
       )

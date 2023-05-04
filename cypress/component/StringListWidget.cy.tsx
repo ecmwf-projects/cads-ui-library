@@ -57,12 +57,6 @@ describe('<StringListWidget/>', () => {
       </Form>
     )
 
-    cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
-      ['bypassRequired', 'product_type']
-    ])
-
     cy.findByText(/at least one selection must be made/i).should('not.exist')
   })
 })

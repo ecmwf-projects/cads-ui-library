@@ -57,11 +57,5 @@ describe('<StringChoiceWidget/>', () => {
         />
       </Form>
     )
-
-    cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
-      ['bypassRequired', 'format']
-    ])
   })
 })
