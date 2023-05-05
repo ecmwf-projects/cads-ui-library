@@ -8,31 +8,44 @@ import {
 } from '../index'
 
 import type { FormConfiguration } from '../types/Form'
+import type { GeographicExtentWidgetProps } from '../widgets/GeographicExtentWidget'
 
+export type CreateWidgetOpts = {
+  /**
+   * When true, bypass the required attribute if all options are made unavailable by constraints.
+   */
+  bypassRequiredForConstraints?: boolean
+
+  /**
+   * When true, shows the active selection count for closed accordions.
+   */
+  renderActiveSelectionsCount?: boolean
+
+  /**
+   * An object of key/validator pairs to apply to each child.
+   */
+  validators?: {
+    geographicExtentWidgetValidators?: GeographicExtentWidgetProps['validators']
+  }
+}
 /**
- * A widget factory for exclusive group children
+ * A widget factory for exclusive group children.
  */
 type CreateWidget = (
   configuration: FormConfiguration,
   constraints?: string[],
-  opts?: {
-    /**
-     * When true, bypass the required attribute if all options are made unavailable by constraints.
-     */
-    bypassRequiredForConstraints?: boolean
-
-    /**
-     * When true, shows the active selection count for closed accordions.
-     */
-    renderActiveSelectionsCount?: boolean
-  }
+  opts?: CreateWidgetOpts
 ) => (...props: any) => JSX.Element | null
 const createWidget: CreateWidget = (configuration, constraints, opts) => {
   switch (configuration.type) {
     case 'GeographicExtentWidget':
       // eslint-disable-next-line react/display-name
       return props => (
-        <GeographicExtentWidget configuration={configuration} {...props} />
+        <GeographicExtentWidget
+          configuration={configuration}
+          validators={opts?.validators?.geographicExtentWidgetValidators}
+          {...props}
+        />
       )
     case 'StringListArrayWidget':
       // eslint-disable-next-line react/display-name

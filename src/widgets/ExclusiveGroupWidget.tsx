@@ -11,6 +11,7 @@ import {
 import { createWidget } from '../index'
 
 import type { FormConfiguration } from '../types/Form'
+import type { CreateWidgetOpts } from '../utils/widgetFactory'
 
 export interface ExclusiveGroupWidgetConfiguration {
   type: 'ExclusiveGroupWidget'
@@ -99,17 +100,7 @@ type GetExclusiveGroupChildren = (
   formConfiguration: FormConfiguration[],
   name: string,
   constraints?: Record<string, string[]>,
-  opts?: {
-    /**
-     * When true, bypass the required attribute if all options are made unavailable by constraints.
-     */
-    bypassRequiredForConstraints?: boolean
-
-    /**
-     * When true, shows the active selection count for closed accordions.
-     */
-    renderActiveSelectionsCount?: boolean
-  }
+  opts?: CreateWidgetOpts
 ) => ChildrenGetter
 const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
   formConfiguration,

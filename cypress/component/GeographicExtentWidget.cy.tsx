@@ -31,21 +31,25 @@ describe('<GeographicExtentWidget/>', () => {
         <GeographicExtentWidget
           configuration={getGeographicExtentWidgetConfiguration()}
           validators={{
-            n: () => register('n', { pattern: /\d{4}/, required: true }),
+            n: () => register('n', { pattern: '\\d{4}', required: true }),
             s: () =>
               register('s', {
-                pattern: /\d{1}/,
+                pattern: '\\d{1}',
                 required: true,
-                maxlength: 33
+                maxLength: 33
               }),
             w: () =>
               register('w', {
-                pattern: /\d{1}/,
+                pattern: '\\d{1}',
                 required: true,
-                maxlength: 33
+                maxLength: 33
               }),
             e: () =>
-              register('e', { pattern: /\d{1}/, required: true, maxlength: 33 })
+              register('e', {
+                pattern: '\\d{1}',
+                required: true,
+                maxLength: 33
+              })
           }}
         />
       </TooltipProvider>

@@ -229,6 +229,10 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
+    const register = (name: string, rules: Record<string, any>) => {
+      return rules
+    }
+
     cy.viewport(1200, 900)
     cy.mount(
       <Form handleSubmit={stubbedHandleSubmit}>
@@ -236,7 +240,33 @@ describe('<ExclusiveGroupWidget/>', () => {
           configuration={configuration}
           childrenGetter={getExclusiveGroupChildren(
             formConfiguration,
-            'area_group'
+            'area_group',
+            null,
+            {
+              validators: {
+                geographicExtentWidgetValidators: {
+                  n: () => register('n', { pattern: '\\d{2}', required: true }),
+                  s: () =>
+                    register('s', {
+                      pattern: '\\d{2}',
+                      required: true,
+                      maxLength: 33
+                    }),
+                  w: () =>
+                    register('w', {
+                      pattern: '\\d{2}',
+                      required: true,
+                      maxLength: 33
+                    }),
+                  e: () =>
+                    register('e', {
+                      pattern: '\\d{2}',
+                      required: true,
+                      maxLength: 33
+                    })
+                }
+              }
+            }
           )}
         />
       </Form>
@@ -248,23 +278,33 @@ describe('<ExclusiveGroupWidget/>', () => {
       'true'
     )
 
-    cy.findByLabelText('North').clear().type('90')
-    cy.findByLabelText('West').clear().type('-90')
-    cy.findByLabelText('East').clear().type('144')
+    cy.findByLabelText('North').clear().type('11')
+    cy.findByLabelText('West').clear().type('90')
+    cy.findByLabelText('East').clear().type('14')
     cy.findByLabelText('South').clear().type('44')
 
     cy.findByText('submit').click()
 
     cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
+      ['area', '11'],
       ['area', '90'],
-      ['area', '-90'],
-      ['area', '144'],
+      ['area', '14'],
       ['area', '44']
     ])
 
     cy.findByLabelText('Whole available region').click()
     cy.findByText('submit').click()
     cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [])
+
+    /**
+     * Test GeographicExtentWidget validation as a child of ExclusiveGroupWidget
+     */
+    cy.findByLabelText('North').should('have.attr', 'required')
+    cy.findByLabelText('North').should('have.attr', 'pattern')
+
+    cy.findByLabelText('South').should('have.attr', 'required')
+    cy.findByLabelText('South').should('have.attr', 'pattern')
+    cy.findByLabelText('South').should('have.attr', 'maxlength', '33')
   })
 
   it('with StringChoiceWidget and TextWidget', () => {
