@@ -29,18 +29,26 @@ type ChildrenGetter =
   | Record<string, (...props: any) => JSX.Element | null>
   | undefined // FIXME remove undefined
 
-export interface ExclusiveGroupWidgetProps {
+export interface ExclusiveGroupWidgetProps<TErrors> {
   configuration: ExclusiveGroupWidgetConfiguration
   /**
    * A mapping between children names and their corresponding components.
    */
   childrenGetter: ChildrenGetter
+
+  /**
+   * An object of field errors for form-validated sub-widgets.
+   */
+  errors?: TErrors
 }
 
-const ExclusiveGroupWidget = ({
+const ExclusiveGroupWidget = <
+  TErrors extends Record<string, { message?: string }>
+>({
   configuration,
-  childrenGetter
-}: ExclusiveGroupWidgetProps) => {
+  childrenGetter,
+  errors
+}: ExclusiveGroupWidgetProps<TErrors>) => {
   const { type, name, label, help, children, details } = configuration
 
   const [selection, setSelection] = useState<string>(details.default)
@@ -82,7 +90,8 @@ const ExclusiveGroupWidget = ({
                 {childrenGetter[child]({
                   fieldsetDisabled: child !== selection,
                   inert: child !== selection,
-                  labelAriaHidden: false
+                  labelAriaHidden: false,
+                  errors: errors
                 })}
               </Group>
             )
@@ -189,13 +198,6 @@ const Group = styled.div`
   fieldset[disabled] {
     input {
       background-color: #e6e9f2;
-    }
-  }
-
-  &:has(fieldset[disabled]),
-  &:has([inert]) {
-    label {
-      color: #bcc0cc;
     }
   }
 `

@@ -1,9 +1,31 @@
+import React from 'react'
 import { useForm } from 'react-hook-form'
 
 import { GeographicExtentWidget } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 import { getGeographicExtentWidgetConfiguration } from '../../__tests__/factories'
+
+const Form = ({
+  children,
+  handleSubmit
+}: {
+  children: React.ReactNode
+  handleSubmit: (...args: any) => void
+}) => {
+  return (
+    <form
+      onSubmit={ev => {
+        ev.preventDefault()
+        const formData = new FormData(ev.currentTarget)
+        handleSubmit([...formData.entries()])
+      }}
+    >
+      {children}
+      <button>submit</button>
+    </form>
+  )
+}
 
 describe('<GeographicExtentWidget/>', () => {
   it('renders', () => {
@@ -19,6 +41,52 @@ describe('<GeographicExtentWidget/>', () => {
     cy.findByLabelText('West').clear().type('-120')
     cy.findByLabelText('East').clear().type('170')
     cy.findByLabelText('South').clear().type('-89')
+  })
+
+  it('multiple geo extents', () => {
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.mount(
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <GeographicExtentWidget
+          configuration={{
+            ...getGeographicExtentWidgetConfiguration(),
+            help: null
+          }}
+        />
+        <GeographicExtentWidget
+          configuration={{
+            ...getGeographicExtentWidgetConfiguration(),
+            help: null,
+            label: 'Area 1',
+            name: 'area_1'
+          }}
+        />
+      </Form>
+    )
+
+    cy.findAllByLabelText('North').eq(0).clear().type('11')
+    cy.findAllByLabelText('South').eq(0).clear().type('12')
+    cy.findAllByLabelText('West').eq(0).clear().type('13')
+    cy.findAllByLabelText('East').eq(0).clear().type('14')
+
+    cy.findAllByLabelText('North').eq(1).clear().type('51')
+    cy.findAllByLabelText('South').eq(1).clear().type('64')
+    cy.findAllByLabelText('West').eq(1).clear().type('33')
+    cy.findAllByLabelText('East').eq(1).clear().type('11')
+
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
+      ['area', '11'],
+      ['area', '13'],
+      ['area', '14'],
+      ['area', '12'],
+      ['area_1', '51'],
+      ['area_1', '33'],
+      ['area_1', '11'],
+      ['area_1', '64']
+    ])
   })
 
   it('applies validation - standard validation attributes', () => {
@@ -74,7 +142,7 @@ describe('<GeographicExtentWidget/>', () => {
       const {
         register,
         formState: { errors }
-      } = useForm<{ n: string; s: string; w: string; e: string }>({
+      } = useForm({
         mode: 'onChange'
       })
 
@@ -90,41 +158,39 @@ describe('<GeographicExtentWidget/>', () => {
             <GeographicExtentWidget
               configuration={getGeographicExtentWidgetConfiguration()}
               validators={{
-                n: () =>
-                  register('n', {
+                n: (internalName, { details: { precision: _todo } }) =>
+                  register(internalName, {
                     required: {
                       value: true,
                       message: 'Please insert North input'
                     }
                   }),
-                s: () =>
-                  register('s', {
+                s: (internalName, { details: { precision: _todo } }) =>
+                  register(internalName, {
                     required: {
                       value: true,
                       message: 'Please insert South input'
                     }
                   }),
-                w: () =>
-                  register('w', {
+                w: (internalName, { details: { precision: _todo } }) =>
+                  register(internalName, {
                     required: {
                       value: true,
                       message: 'Please insert West input'
                     }
                   }),
-                e: () =>
-                  register('e', {
+                e: (internalName, { details: { precision: _todo } }) =>
+                  register(internalName, {
                     required: {
                       value: true,
                       message: 'Please insert East input'
                     }
                   })
               }}
+              errors={errors}
             />
           </TooltipProvider>
-          <p>{errors?.n?.message}</p>
-          <p>{errors?.s?.message}</p>
-          <p>{errors?.w?.message}</p>
-          <p>{errors?.e?.message}</p>
+
           <button>submit</button>
         </form>
       )
@@ -132,21 +198,16 @@ describe('<GeographicExtentWidget/>', () => {
 
     cy.mount(<Form handleSubmit={stubbedHandleSubmit} />)
 
-    cy.findByLabelText('North').should('have.attr', 'name', 'n')
-    cy.findByLabelText('South').should('have.attr', 'name', 's')
-    cy.findByLabelText('West').should('have.attr', 'name', 'w')
-    cy.findByLabelText('East').should('have.attr', 'name', 'e')
-
     cy.findByLabelText('North').clear()
-    cy.findByText('Please insert North input')
+    cy.findByText('Please select coordinates within range')
 
     cy.findByLabelText('South').clear()
-    cy.findByText('Please insert South input')
+    cy.findByText('Please select coordinates within range')
 
     cy.findByLabelText('West').clear()
-    cy.findByText('Please insert West input')
+    cy.findByText('Please select coordinates within range')
 
     cy.findByLabelText('East').clear()
-    cy.findByText('Please insert East input')
+    cy.findByText('Please select coordinates within range')
   })
 })

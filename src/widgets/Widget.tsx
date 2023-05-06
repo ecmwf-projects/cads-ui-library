@@ -47,8 +47,6 @@ const Legend = styled.legend`
   white-space: nowrap;
 `
 
-const Input = styled.input``
-
 const InputGroup = styled.div<{ disabled?: boolean }>`
   display: flex;
   flex-flow: row nowrap;
@@ -67,7 +65,7 @@ const InputGroup = styled.div<{ disabled?: boolean }>`
 `
 
 const LabelWrapper = styled.div<{ disabled?: boolean }>`
-  color: ${({ theme, disabled }) => (disabled ? '#bcc0cc' : 'inherit')};
+  color: ${({ disabled }) => (disabled ? '#bcc0cc' : 'inherit')};
 `
 
 const InputsGrid = styled.div<{ columns: number }>`
@@ -103,7 +101,6 @@ const ReservedSpace = styled.div`
 
 export {
   Fieldset,
-  Input,
   InputGroup,
   InputsGrid,
   LabelWrapper,
