@@ -42,9 +42,7 @@ export interface ExclusiveGroupWidgetProps<TErrors> {
   errors?: TErrors
 }
 
-const ExclusiveGroupWidget = <
-  TErrors extends Record<string, { message?: string }>
->({
+const ExclusiveGroupWidget = <TErrors,>({
   configuration,
   childrenGetter,
   errors

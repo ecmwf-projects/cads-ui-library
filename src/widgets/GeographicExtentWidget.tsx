@@ -82,9 +82,7 @@ const defaultMapping: Record<string, string> = {
 /**
  * GeographicExtentWidget: select a geographic area by specifying a bounding box with North, West, South and East coordinates.
  */
-const GeographicExtentWidget = <
-  TErrors extends Record<string, { message?: string }>
->({
+const GeographicExtentWidget = <TErrors,>({
   configuration,
   fieldsetDisabled,
   labelAriaHidden = true,
@@ -201,7 +199,7 @@ const GeographicExtentWidget = <
           {getFields()}
         </Inputs>
         <ReservedErrorSpace data-stylizable='widget geographic-extent reserved-error-space'>
-          {getOwnErrors(errors, getRange())}
+          {getOwnErrors(errors || {}, getRange())}
         </ReservedErrorSpace>
       </Fieldset>
     </Widget>
