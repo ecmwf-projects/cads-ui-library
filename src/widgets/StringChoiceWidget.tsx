@@ -25,12 +25,11 @@ import { isDisabled, useBypassRequired } from '../utils'
 
 export interface StringChoiceWidgetDetails {
   columns: number
-  id: number
   labels: {
     [value: string]: string
   }
   values: string[]
-  default: string[]
+  default?: string[]
 }
 
 export interface StringChoiceWidgetConfiguration {
@@ -70,7 +69,7 @@ const StringChoiceWidget = ({
   bypassRequiredForConstraints
 }: StringChoiceWidgetProps) => {
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
-  const [selection, setSelection] = useState<string[]>([])
+  const [selection, setSelection] = useState<string[] | undefined>([])
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
     inputs: { [k: string]: string[] }
@@ -88,7 +87,7 @@ const StringChoiceWidget = ({
   } = configuration
   /**
    * Hydrate the widget selection from local storage, if present.
-   * The useEffect is necessary to prevent SSR hydration mismatches.
+   * useEffect is necessary to prevent SSR hydration mismatches.
    */
   useEffect(() => {
     const getInitialSelection = () => {
@@ -111,7 +110,7 @@ const StringChoiceWidget = ({
 
   if (!configuration) return null
 
-  const [defaultValue] = selection
+  const [defaultValue] = selection || []
 
   return (
     <Widget data-stylizable='widget'>
