@@ -129,7 +129,7 @@ const GeographicExtentWidget = <TErrors,>({
     return details.extentLabels[key]
   }
 
-  const getFields = () => {
+  const getFields = (errors: GeographicExtentWidgetProps['errors'] = {}) => {
     const areas = ['top', 'left', 'right', 'bottom']
 
     return Object.keys(getRange()).map((key, index) => {
@@ -139,6 +139,8 @@ const GeographicExtentWidget = <TErrors,>({
 
       const validator = validators ? validators[k] : null
 
+      const isInvalid = _name in errors
+
       return (
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={_name}>{getLabel(key)}</Label>
@@ -147,6 +149,7 @@ const GeographicExtentWidget = <TErrors,>({
             name={_name}
             id={_name}
             defaultValue={getDefault(key)}
+            aria-invalid={isInvalid ? 'true' : 'false'}
             {...(typeof validator === 'function'
               ? validator(_name, configuration)
               : {})}
@@ -196,7 +199,7 @@ const GeographicExtentWidget = <TErrors,>({
       <Fieldset name={name} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
         <Inputs data-stylizable='geographic-extent-widget-grid'>
-          {getFields()}
+          {getFields(errors || {})}
         </Inputs>
         <ReservedErrorSpace data-stylizable='widget geographic-extent reserved-error-space'>
           {getOwnErrors(errors || {}, getRange())}
@@ -229,6 +232,10 @@ const Inputs = styled.div`
   input[type='number'] {
     -moz-appearance: textfield;
   }
+
+  input[aria-invalid='true'] {
+    border: 2px solid #f44336;
+  }
 `
 
 const Wrap = styled.div<{ area: string }>`
@@ -253,7 +260,7 @@ const Wrap = styled.div<{ area: string }>`
 
 const ReservedErrorSpace = styled(ReservedSpace)`
   margin-bottom: unset;
-  margin-top: 0.75em;
+  margin-top: 2em;
 `
 
 export { GeographicExtentWidget }

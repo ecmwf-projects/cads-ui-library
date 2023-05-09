@@ -87,10 +87,11 @@ const WidgetActionsWrapper = styled.div`
 `
 
 const Error = ({ children }: { children: React.ReactNode }) => {
-  return <StyledText>{children}</StyledText>
+  return <StyledText role='alert'>{children}</StyledText>
 }
 
-const StyledText = styled.p`
+const StyledText = styled.span`
+  display: block;
   color: #f44336;
 `
 

@@ -199,15 +199,21 @@ describe('<GeographicExtentWidget/>', () => {
     cy.mount(<Form handleSubmit={stubbedHandleSubmit} />)
 
     cy.findByLabelText('North').clear()
+    cy.findByLabelText('North').should('have.attr', 'aria-invalid', 'true')
     cy.findByText('Please select coordinates within range')
 
     cy.findByLabelText('South').clear()
+    cy.findByLabelText('South').should('have.attr', 'aria-invalid', 'true')
     cy.findByText('Please select coordinates within range')
 
     cy.findByLabelText('West').clear()
+    cy.findByLabelText('West').should('have.attr', 'aria-invalid', 'true')
     cy.findByText('Please select coordinates within range')
 
     cy.findByLabelText('East').clear()
+    cy.findByLabelText('East').should('have.attr', 'aria-invalid', 'true')
     cy.findByText('Please select coordinates within range')
+
+    cy.findByRole('alert')
   })
 })
