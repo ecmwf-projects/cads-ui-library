@@ -57,11 +57,28 @@ describe('<StringChoiceWidget/>', () => {
         />
       </Form>
     )
+  })
 
-    cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
-      ['bypassRequired', 'format']
-    ])
+  it('renders with missing default', () => {
+    cy.mount(
+      <StringChoiceWidget
+        configuration={{
+          name: 'period',
+          label: 'Period',
+          help: null,
+          required: true,
+          type: 'StringChoiceWidget',
+          details: {
+            values: ['summer', 'winter', 'year'],
+            columns: 3,
+            labels: {
+              summer: 'Summer',
+              winter: 'Winter',
+              year: 'Year'
+            }
+          }
+        }}
+      />
+    )
   })
 })

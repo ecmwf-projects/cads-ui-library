@@ -1,9 +1,17 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import { useEventListener } from 'usehooks-ts'
 
-import { Widget, WidgetHeader, WidgetTitle, Fieldset, Legend } from './Widget'
+import {
+  Widget,
+  WidgetHeader,
+  WidgetTitle,
+  Fieldset,
+  Legend,
+  ReservedSpace,
+  Error
+} from './Widget'
 import { Label, WidgetTooltip } from '../index'
 
 export interface GeographicExtentWidgetConfiguration {
@@ -13,12 +21,12 @@ export interface GeographicExtentWidgetConfiguration {
   help?: string | null
   details: {
     extentLabels?: Record<string, string> | null
+    precision: number
     range: {
       n: number
       w: number
       e: number
       s: number
-      [key: string]: number
     }
     default?: {
       n: number
@@ -30,7 +38,9 @@ export interface GeographicExtentWidgetConfiguration {
   }
 }
 
-export interface GeographicExtentWidgetProps {
+export interface GeographicExtentWidgetProps<
+  TErrors = Record<string, { message?: string }>
+> {
   configuration: GeographicExtentWidgetConfiguration
   /**
    * Whether the underlying fieldset should be functionally and visually disabled.
@@ -40,6 +50,23 @@ export interface GeographicExtentWidgetProps {
    * Whether to hide the widget label from ARIA.
    */
   labelAriaHidden?: boolean
+
+  /**
+   * An object of key/validator pairs to apply to each input.
+   * Each validator gets passed the widget configuration, and the internal name of the field.
+   */
+  validators?: Record<
+    keyof GeographicExtentWidgetConfiguration['details']['range'],
+    (
+      internalName: string,
+      configuration: GeographicExtentWidgetConfiguration
+    ) => any
+  >
+
+  /**
+   * An object of field errors.
+   */
+  errors?: TErrors
 }
 
 /**
@@ -55,22 +82,26 @@ const defaultMapping: Record<string, string> = {
 /**
  * GeographicExtentWidget: select a geographic area by specifying a bounding box with North, West, South and East coordinates.
  */
-const GeographicExtentWidget = ({
+const GeographicExtentWidget = <TErrors,>({
   configuration,
   fieldsetDisabled,
-  labelAriaHidden = true
-}: GeographicExtentWidgetProps) => {
+  labelAriaHidden = true,
+  validators,
+  errors
+}: GeographicExtentWidgetProps<TErrors>) => {
   const injectWidgetPayload = (ev: FormDataEvent) => {
     const { formData } = ev
     /**
-     * Remove the original keys from the form data object, that is, any n, s, o, w, and replace them with the fieldset name.
+     * Remove the original keys from the form data object, and replace them with the fieldset name.
      * This is required for the request payload utils to properly assemble the request object.
      */
 
     for (const extent of Object.keys(getRange())) {
-      if (formData.has(extent)) {
-        const value = formData.get(extent) as unknown as string
-        formData.delete(extent)
+      const _name = `${name}_${extent}`
+
+      if (formData.has(_name)) {
+        const value = formData.get(_name) as unknown as string
+        formData.delete(_name)
         formData.append(name, value)
       }
     }
@@ -104,18 +135,47 @@ const GeographicExtentWidget = ({
     return Object.keys(getRange()).map((key, index) => {
       const k = key as unknown as keyof ReturnType<typeof getRange>
 
+      const _name = `${name}_${key}`
+
+      const validator = validators ? validators[k] : null
+
       return (
         <Wrap key={key} area={areas[index]}>
-          <Label htmlFor={key}>{getLabel(key)}</Label>
+          <Label htmlFor={_name}>{getLabel(key)}</Label>
           <input
-            type='number'
-            name={key}
-            id={key}
+            type='text'
+            name={_name}
+            id={_name}
             defaultValue={getDefault(key)}
+            {...(typeof validator === 'function'
+              ? validator(_name, configuration)
+              : {})}
           />
         </Wrap>
       )
     })
+  }
+
+  const getOwnErrors = (
+    errors: GeographicExtentWidgetProps['errors'],
+    range: GeographicExtentWidgetConfiguration['details']['range']
+  ) => {
+    if (!errors) return null
+
+    const { error } = Object.keys(range).reduce(
+      (acc, key) => {
+        const _name = `${name}_${key}`
+        if (_name in errors) {
+          acc['error'] = 'Please select coordinates within range'
+
+          return acc
+        }
+        return acc
+      },
+      { error: '' }
+    )
+
+    return <Error>{error}</Error>
   }
 
   return (
@@ -133,11 +193,14 @@ const GeographicExtentWidget = ({
           triggerAriaLabel={`Get help about ${label}`}
         />
       </WidgetHeader>
-      <Fieldset disabled={fieldsetDisabled}>
+      <Fieldset name={name} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
         <Inputs data-stylizable='geographic-extent-widget-grid'>
           {getFields()}
         </Inputs>
+        <ReservedErrorSpace data-stylizable='widget geographic-extent reserved-error-space'>
+          {getOwnErrors(errors || {}, getRange())}
+        </ReservedErrorSpace>
       </Fieldset>
     </Widget>
   )
@@ -186,6 +249,11 @@ const Wrap = styled.div<{ area: string }>`
     max-width: 100px;
     padding: 1em;
   }
+`
+
+const ReservedErrorSpace = styled(ReservedSpace)`
+  margin-bottom: unset;
+  margin-top: 0.75em;
 `
 
 export { GeographicExtentWidget }

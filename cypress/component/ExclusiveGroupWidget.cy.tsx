@@ -1,4 +1,5 @@
 import React from 'react'
+import { useForm } from 'react-hook-form'
 
 import { ExclusiveGroupWidget, getExclusiveGroupChildren } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
@@ -203,7 +204,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       label: 'Geographical area',
       help: null,
       name: 'area_group',
-      children: ['global', 'area'],
+      children: ['global', 'area', 'area_1'],
       details: {
         default: 'area'
       }
@@ -224,23 +225,84 @@ describe('<ExclusiveGroupWidget/>', () => {
         ...getGeographicExtentWidgetConfiguration(),
         help: null,
         label: 'Sub-region extraction'
+      },
+      {
+        ...getGeographicExtentWidgetConfiguration(),
+        help: null,
+        label: 'Area 1',
+        name: 'area_1'
       }
     ]
 
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
+    const Form = () => {
+      const {
+        register,
+        formState: { errors }
+      } = useForm({
+        mode: 'onChange'
+      })
+
+      return (
+        <form
+          onSubmit={ev => {
+            ev.preventDefault()
+            const formData = new FormData(ev.currentTarget)
+            stubbedHandleSubmit([...formData.entries()])
+          }}
+        >
+          <ExclusiveGroupWidget
+            configuration={configuration}
+            errors={errors}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'area_group',
+              null,
+              {
+                validators: {
+                  geographicExtentWidgetValidators: {
+                    n: (internalName, { label }) =>
+                      register(internalName, {
+                        required: {
+                          value: true,
+                          message: `Please insert ${label} North input`
+                        }
+                      }),
+                    s: (internalName, { label }) =>
+                      register(internalName, {
+                        required: {
+                          value: true,
+                          message: `Please insert ${label} South input`
+                        }
+                      }),
+                    w: (internalName, { label }) =>
+                      register(internalName, {
+                        required: {
+                          value: true,
+                          message: `Please insert ${label} West input`
+                        }
+                      }),
+                    e: (internalName, { label }) =>
+                      register(internalName, {
+                        required: {
+                          value: true,
+                          message: `Please insert ${label} East input`
+                        }
+                      })
+                  }
+                }
+              }
+            )}
+          />
+
+          <button>submit</button>
+        </form>
+      )
+    }
+
     cy.viewport(1200, 900)
-    cy.mount(
-      <Form handleSubmit={stubbedHandleSubmit}>
-        <ExclusiveGroupWidget
-          configuration={configuration}
-          childrenGetter={getExclusiveGroupChildren(
-            formConfiguration,
-            'area_group'
-          )}
-        />
-      </Form>
-    )
+    cy.mount(<Form />)
 
     cy.findByLabelText('Sub-region extraction').should(
       'have.attr',
@@ -248,23 +310,39 @@ describe('<ExclusiveGroupWidget/>', () => {
       'true'
     )
 
-    cy.findByLabelText('North').clear().type('90')
-    cy.findByLabelText('West').clear().type('-90')
-    cy.findByLabelText('East').clear().type('144')
-    cy.findByLabelText('South').clear().type('44')
+    cy.findAllByLabelText('North').eq(0).clear().type('11')
+    cy.findAllByLabelText('West').eq(0).clear().type('90')
+    cy.findAllByLabelText('East').eq(0).clear().type('14')
+    cy.findAllByLabelText('South').eq(0).clear().type('44')
 
     cy.findByText('submit').click()
 
     cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
+      ['area', '11'],
       ['area', '90'],
-      ['area', '-90'],
-      ['area', '144'],
+      ['area', '14'],
       ['area', '44']
     ])
 
     cy.findByLabelText('Whole available region').click()
     cy.findByText('submit').click()
     cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [])
+
+    /**
+     * Test GeographicExtentWidget validation as a child of ExclusiveGroupWidget
+     */
+    cy.findByLabelText('Area 1').click()
+    cy.findAllByLabelText('North').eq(1).clear()
+    cy.findAllByLabelText('South').eq(1).clear()
+
+    cy.findByLabelText('Sub-region extraction').click()
+    cy.findAllByLabelText('West').eq(0).clear()
+    cy.findAllByLabelText('East').eq(0).clear()
+
+    cy.findAllByText('Please select coordinates within range').should(
+      'have.length',
+      2
+    )
   })
 
   it('with StringChoiceWidget and TextWidget', () => {
@@ -436,12 +514,6 @@ describe('<ExclusiveGroupWidget/>', () => {
       </Form>
     )
 
-    cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
-      ['bypassRequired', 'product_type'],
-      ['bypassRequired', 'variable'],
-      ['bypassRequired', 'format']
-    ])
+    cy.findByText('At least one selection must be made').should('not.exist')
   })
 })

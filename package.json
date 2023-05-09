@@ -1,6 +1,6 @@
 {
   "name": "@ecmwf-projects/cads-ui-library",
-  "version": "5.3.1",
+  "version": "6.0.0",
   "description": "Common UI kit library",
   "repository": {
     "type": "git",
@@ -66,6 +66,7 @@
     "lint-staged": "^13.2.1",
     "nyc": "^15.1.0",
     "prettier": "^2.8.7",
+    "react-hook-form": "^7.43.9",
     "rimraf": "^5.0.0",
     "styled-components": "^5.3.9",
     "ts-jest": "^29.1.0",

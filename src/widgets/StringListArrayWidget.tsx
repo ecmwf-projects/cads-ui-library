@@ -260,7 +260,7 @@ const StringListArrayWidget = ({
           triggerAriaLabel={`Get help for ${label}`}
         />
       </WidgetHeader>
-      <ReservedSpace>
+      <ReservedSpace data-stylizable='widget string-listarray reserved-error-space'>
         {!bypassed && required && !selection[name]?.length ? (
           <Error>At least one selection must be made</Error>
         ) : null}

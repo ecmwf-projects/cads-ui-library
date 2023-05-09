@@ -5,43 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [6.0.0] 2023-05-09
+
+### Added
+
+- support for widget validation
+- initial validation for `GeographicExtentWidget`
+
 ## [5.3.1] 2023-05-03
 
-## Fixed
+### Fixed
 
 - prevent form submission when `WidgetTooltip` is used inside a form
 
 ## [5.3.0] 2023-04-26
 
-## Added
+### Added
 
 - ability to show active selected items in `StringListArrayWidget` accordions.
 
 ## [5.1.0] 2023-04-21
 
-## Added
+### Added
 
 - ability to bypass the `required` attribute for `StringListArrayWidget`, `StringListWidget`, `StringChoiceWidget`, and `ExclusiveGroupWidget` children.
 
 ## [5.0.2] - 2023-04-18
 
-## Fixed
+### Fixed
 
 - visual regression in radio and checkbox
 
 ## [5.0.1] - 2023-04-18
 
-## Fixed
+### Fixed
 
 - visual regression in radio and checkbox
 
-## Added
+### Added
 
 - ability to override CSS for inputs grid
 
 ## [5.0.0] - 2023-04-12
 
-## Added
+### Added
 
 - `ExclusiveGroupWidget`
 - `GeographicExtentWidget` initial
@@ -51,37 +58,37 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [3.4.0] - 2023-03-24
 
-## Changed
+### Changed
 
 - refined accessibility for `WidgetTooltip`
 
 ## [3.3.1] - 2023-03-10
 
-## Changed
+### Changed
 
 - fixed a typo in `KeywordSearchWidget`
 
 ## [3.3.0] - 2023-03-09
 
-## Changed
+### Changed
 
 - refine default selections for `KeywordSearchWidget`
 
 ## [3.2.2] - 2023-02-14
 
-## Changed
+### Changed
 
 - mandatory default selections for `KeywordSearchWidget`
 
 ## [3.2.1] - 2023-02-14
 
-## Fixed
+### Fixed
 
 - dead code in `KeywordSearchWidget`
 
 ## [3.2.0] - 2023-02-14
 
-## Added
+### Added
 
 - ability to pass default selections to `KeywordSearchWidget`
 
@@ -89,29 +96,29 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [3.0.3-0] (beta) - 2023-02-13
 
-## Added
+### Added
 
 - ability to pass form props to `KeywordSearchWidget`
 
 ## [3.0.2-0] (beta) - 2023-02-13
 
-## Added
+### Added
 
 - ability to override query params transformer to `KeywordSearchWidget` via `keywordQueryParamTransformer`
 
 ## [3.0.1-0] (beta) - 2023-02-13
 
-## Added
+### Added
 
 - `keywordQueryParam` to `KeywordSearchWidget` component (initial)
 
 ## [3.0.0-0] (beta) - 2023-02-13
 
-## Added
+### Added
 
 - `KeywordSearchWidget` component (initial)
 
-## Changed
+### Changed
 
 `AccordionSingle`:
 

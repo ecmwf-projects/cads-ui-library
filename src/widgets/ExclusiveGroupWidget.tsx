@@ -11,6 +11,7 @@ import {
 import { createWidget } from '../index'
 
 import type { FormConfiguration } from '../types/Form'
+import type { CreateWidgetOpts } from '../utils/widgetFactory'
 
 export interface ExclusiveGroupWidgetConfiguration {
   type: 'ExclusiveGroupWidget'
@@ -28,18 +29,24 @@ type ChildrenGetter =
   | Record<string, (...props: any) => JSX.Element | null>
   | undefined // FIXME remove undefined
 
-export interface ExclusiveGroupWidgetProps {
+export interface ExclusiveGroupWidgetProps<TErrors> {
   configuration: ExclusiveGroupWidgetConfiguration
   /**
    * A mapping between children names and their corresponding components.
    */
   childrenGetter: ChildrenGetter
+
+  /**
+   * An object of field errors for form-validated sub-widgets.
+   */
+  errors?: TErrors
 }
 
-const ExclusiveGroupWidget = ({
+const ExclusiveGroupWidget = <TErrors,>({
   configuration,
-  childrenGetter
-}: ExclusiveGroupWidgetProps) => {
+  childrenGetter,
+  errors
+}: ExclusiveGroupWidgetProps<TErrors>) => {
   const { type, name, label, help, children, details } = configuration
 
   const [selection, setSelection] = useState<string>(details.default)
@@ -81,7 +88,8 @@ const ExclusiveGroupWidget = ({
                 {childrenGetter[child]({
                   fieldsetDisabled: child !== selection,
                   inert: child !== selection,
-                  labelAriaHidden: false
+                  labelAriaHidden: false,
+                  errors: errors
                 })}
               </Group>
             )
@@ -99,17 +107,7 @@ type GetExclusiveGroupChildren = (
   formConfiguration: FormConfiguration[],
   name: string,
   constraints?: Record<string, string[]>,
-  opts?: {
-    /**
-     * When true, bypass the required attribute if all options are made unavailable by constraints.
-     */
-    bypassRequiredForConstraints?: boolean
-
-    /**
-     * When true, shows the active selection count for closed accordions.
-     */
-    renderActiveSelectionsCount?: boolean
-  }
+  opts?: CreateWidgetOpts
 ) => ChildrenGetter
 const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
   formConfiguration,
@@ -198,13 +196,6 @@ const Group = styled.div`
   fieldset[disabled] {
     input {
       background-color: #e6e9f2;
-    }
-  }
-
-  &:has(fieldset[disabled]),
-  &:has([inert]) {
-    label {
-      color: #bcc0cc;
     }
   }
 `
