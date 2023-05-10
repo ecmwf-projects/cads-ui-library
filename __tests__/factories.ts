@@ -140,10 +140,10 @@ export const getStringChoiceWidgetConfiguration = () => {
       },
       values: ['grib', 'netcdf']
     },
+    required: true,
     help: null,
     label: 'Format',
     name: 'format',
-    required: true,
     type: 'StringChoiceWidget' as const
   }
 }

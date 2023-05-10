@@ -60,6 +60,9 @@ describe('<StringChoiceWidget/>', () => {
   })
 
   it('renders with missing default', () => {
+    /**
+     * Note: rendering without a default is not a requirement. The default is always enforced in Gecko JSON configuration level in Gecko.
+     */
     cy.mount(
       <StringChoiceWidget
         configuration={{
@@ -68,6 +71,7 @@ describe('<StringChoiceWidget/>', () => {
           help: null,
           required: true,
           type: 'StringChoiceWidget',
+          // @ts-expect-error
           details: {
             values: ['summer', 'winter', 'year'],
             columns: 3,
