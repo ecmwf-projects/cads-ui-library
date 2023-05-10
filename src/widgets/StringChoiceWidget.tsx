@@ -37,6 +37,7 @@ export interface StringChoiceWidgetConfiguration {
   name: string
   label: string
   help?: string | null
+  required: boolean
   details: StringChoiceWidgetDetails
 }
 
