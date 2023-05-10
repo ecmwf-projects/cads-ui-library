@@ -29,7 +29,7 @@ export interface StringChoiceWidgetDetails {
     [value: string]: string
   }
   values: string[]
-  default?: string[]
+  default: string[]
 }
 
 export interface StringChoiceWidgetConfiguration {
@@ -37,7 +37,6 @@ export interface StringChoiceWidgetConfiguration {
   name: string
   label: string
   help?: string | null
-  required: boolean
   details: StringChoiceWidgetDetails
 }
 

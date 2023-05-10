@@ -143,7 +143,6 @@ export const getStringChoiceWidgetConfiguration = () => {
     help: null,
     label: 'Format',
     name: 'format',
-    required: true,
     type: 'StringChoiceWidget' as const
   }
 }
