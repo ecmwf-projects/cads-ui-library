@@ -4,6 +4,36 @@ import { render, screen } from '@testing-library/react'
 import { LicenceWidget } from '../../src'
 
 describe('<LicenceWidget/>', () => {
+  it('does not render with empty or missing licences', () => {
+    render(
+      <>
+        <LicenceWidget
+          configuration={{
+            type: 'LicenceWidget' as const,
+            name: 'licences',
+            label: 'Terms of use A',
+            details: {
+              licences: []
+            }
+          }}
+        />
+        <LicenceWidget
+          configuration={{
+            type: 'LicenceWidget' as const,
+            name: 'licences',
+            label: 'Terms of use B',
+            details: {}
+          }}
+        />
+      </>
+    )
+
+    // @ts-ignore
+    expect(screen.queryByText('Terms of use A')).not.toBeInTheDocument()
+    // @ts-ignore
+    expect(screen.queryByText('Terms of use B')).not.toBeInTheDocument()
+  })
+
   it('renders from configuration - falls back to licence id', () => {
     const configuration = {
       type: 'LicenceWidget' as const,
@@ -13,7 +43,7 @@ describe('<LicenceWidget/>', () => {
         licences: [
           {
             id: 'licence-xyz',
-            revision: '3',
+            revision: 3,
             contents_url: '',
             attachment_url: ''
           }
@@ -35,7 +65,7 @@ describe('<LicenceWidget/>', () => {
         licences: [
           {
             id: 'licence-xyz',
-            revision: '3',
+            revision: 3,
             label: 'Licence to use Copernicus products',
             contents_url: '',
             attachment_url: ''
@@ -58,7 +88,7 @@ describe('<LicenceWidget/>', () => {
         licences: [
           {
             id: 'licence-xyz',
-            revision: '3',
+            revision: 3,
             label: 'Licence to use Copernicus products',
             contents_url: '',
             attachment_url: '',
@@ -66,7 +96,7 @@ describe('<LicenceWidget/>', () => {
           },
           {
             id: 'licence-abc',
-            revision: '3',
+            revision: 3,
             label: 'Additional licence to use non European contributions',
             contents_url: '',
             attachment_url: '',
@@ -86,6 +116,4 @@ describe('<LicenceWidget/>', () => {
     )
     screen.getByText(/accept terms/i)
   })
-
-  it.todo('enforces constraints')
 })

@@ -26,6 +26,30 @@ const Form = ({
 }
 
 describe('<StringListArrayWidget/>', () => {
+  it('handles selection', () => {
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.mount(
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <StringListArrayWidget
+          configuration={getStringListArrayWidgetConfiguration()}
+        />
+      </Form>
+    )
+
+    cy.findByRole('alert').should(
+      'have.text',
+      'At least one selection must be made'
+    )
+
+    cy.findByText('2m dewpoint temperature').click()
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+      ['variable', '2m_dewpoint_temperature']
+    ])
+  })
+
   it('appends current selection for closed accordions - select all/clear all', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
@@ -144,7 +168,7 @@ describe('<StringListArrayWidget/>', () => {
 
     cy.findByText('submit').click()
 
-    cy.findByText(/at least one selection must be made/i).should('not.exist')
+    cy.findByRole('alert').should('not.exist')
   })
 
   it('shows active selection count', () => {

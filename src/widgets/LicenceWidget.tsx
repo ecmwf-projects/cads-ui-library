@@ -17,7 +17,7 @@ export type Licence = {
   /**
    * The licence revision.
    */
-  revision: string
+  revision: number
   /**
    * The licence label.
    */
@@ -41,7 +41,7 @@ export interface LicenceWidgetConfiguration {
   label: string
   help?: string
   details: {
-    licences: Licence[]
+    licences?: Licence[] | []
   }
 }
 
@@ -123,6 +123,8 @@ const LicenceWidget = ({
       </div>
     )
   }
+
+  if (!licences || !licences.length) return null
 
   return (
     <Widget data-stylizable='widget'>

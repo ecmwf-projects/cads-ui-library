@@ -26,6 +26,34 @@ const Form = ({
 }
 
 describe('<StringChoiceWidget/>', () => {
+  it('no default, required selection', () => {
+    cy.mount(
+      <StringChoiceWidget
+        configuration={{
+          name: 'period',
+          label: 'Period',
+          help: null,
+          required: true,
+          type: 'StringChoiceWidget',
+          details: {
+            values: ['summer', 'winter', 'year'],
+            columns: 3,
+            labels: {
+              summer: 'Summer',
+              winter: 'Winter',
+              year: 'Year'
+            }
+          }
+        }}
+      />
+    )
+
+    cy.findByRole('alert').should(
+      'have.text',
+      'At least one selection must be made'
+    )
+  })
+
   it('handles selection', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
@@ -53,36 +81,25 @@ describe('<StringChoiceWidget/>', () => {
         <StringChoiceWidget
           bypassRequiredForConstraints={true}
           constraints={[]}
-          configuration={getStringChoiceWidgetConfiguration()}
+          configuration={{
+            details: {
+              columns: 2,
+              labels: {
+                grib: 'GRIB',
+                netcdf: 'NetCDF (experimental)'
+              },
+              values: ['grib', 'netcdf']
+            },
+            required: true,
+            help: null,
+            label: 'Format',
+            name: 'format',
+            type: 'StringChoiceWidget' as const
+          }}
         />
       </Form>
     )
-  })
 
-  it('renders with missing default', () => {
-    /**
-     * Note: rendering without a default is not a requirement. The default is always enforced in Gecko JSON configuration level in Gecko.
-     */
-    cy.mount(
-      <StringChoiceWidget
-        configuration={{
-          name: 'period',
-          label: 'Period',
-          help: null,
-          required: true,
-          type: 'StringChoiceWidget',
-          // @ts-expect-error
-          details: {
-            values: ['summer', 'winter', 'year'],
-            columns: 3,
-            labels: {
-              summer: 'Summer',
-              winter: 'Winter',
-              year: 'Year'
-            }
-          }
-        }}
-      />
-    )
+    cy.findByRole('alert').should('not.exist')
   })
 })
