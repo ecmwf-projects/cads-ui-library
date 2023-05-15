@@ -35,6 +35,11 @@ describe('<StringListWidget/>', () => {
       </Form>
     )
 
+    cy.findByRole('alert').should(
+      'have.text',
+      'At least one selection must be made'
+    )
+
     cy.findByLabelText('Monthly averaged reanalysis').click()
 
     cy.findByText('submit').click()
@@ -57,6 +62,6 @@ describe('<StringListWidget/>', () => {
       </Form>
     )
 
-    cy.findByText(/at least one selection must be made/i).should('not.exist')
+    cy.findByRole('alert').should('not.exist')
   })
 })

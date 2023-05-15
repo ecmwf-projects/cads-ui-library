@@ -16,9 +16,11 @@ import {
   Widget,
   Fieldset as BaseFieldset,
   Legend,
+  ReservedSpace,
   WidgetActionsWrapper,
   WidgetHeader,
-  WidgetTitle
+  WidgetTitle,
+  Error
 } from './Widget'
 
 import { isDisabled, useBypassRequired } from '../utils'
@@ -29,7 +31,7 @@ export interface StringChoiceWidgetDetails {
     [value: string]: string
   }
   values: string[]
-  default: string[]
+  default?: string[]
 }
 
 export interface StringChoiceWidgetConfiguration {
@@ -79,9 +81,13 @@ const StringChoiceWidget = ({
    */
   const persistedSelectionRef = useRef(persistedSelection)
 
-  useBypassRequired(fieldSetRef, bypassRequiredForConstraints, constraints)
+  const bypassed = useBypassRequired(
+    fieldSetRef,
+    bypassRequiredForConstraints,
+    constraints
+  )
 
-  const { details, label, help, name } = configuration
+  const { details, label, help, name, required } = configuration
   const {
     details: { columns }
   } = configuration
@@ -129,6 +135,11 @@ const StringChoiceWidget = ({
           triggerAriaLabel={`Get help for ${label}`}
         />
       </WidgetHeader>
+      <ReservedSpace data-stylizable='widget string-choice reserved-error-space'>
+        {!bypassed && required && !selection?.length ? (
+          <Error>At least one selection must be made</Error>
+        ) : null}
+      </ReservedSpace>
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
         <RadioGroup
