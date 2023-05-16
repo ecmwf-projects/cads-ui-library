@@ -231,7 +231,24 @@ const isWithinRange = ({
   }
 
   /**
-   * Validate south edge.
+   * Validate North edge.
+   */
+  if (`${name}_n` === fieldName) {
+    const _value = Number(value)
+
+    /**
+     * Reject North less than South.
+     */
+    if (_value < Number(fields[`${name}_s`])) return false
+
+    /**
+     * Reject North greater than its permitted range.
+     */
+    if (_value > _range[`${name}_n`]) return false
+  }
+
+  /**
+   * Validate South edge.
    */
   if (`${name}_s` === fieldName) {
     const _value = Number(value)
@@ -239,7 +256,7 @@ const isWithinRange = ({
     /**
      * Reject South greater than North.
      */
-    if (_value > Number(fields[`${name}_n`])) return false
+    if (_value >= Number(fields[`${name}_n`])) return false
 
     /**
      * Reject South less than its permitted range.
@@ -262,6 +279,13 @@ const isWithinRange = ({
      * Reject West less than its permitted range.
      */
     if (_value < _range[`${name}_w`]) return false
+  }
+
+  /**
+   * Validate East edge.
+   */
+  if (`${name}_e` === fieldName) {
+    const _value = Number(value)
   }
 
   return true
