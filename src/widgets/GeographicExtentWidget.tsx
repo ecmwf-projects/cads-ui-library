@@ -211,13 +211,13 @@ const GeographicExtentWidget = <TErrors,>({
 
 const isWithinRange = ({
   name,
-  field: _field,
-  fields: _fields,
-  value: _value,
+  fieldName,
+  fields,
+  value,
   range
 }: {
   name: string
-  field: string
+  fieldName: string
   fields: Record<string, string>
   value: string
   range: GeographicExtentWidgetConfiguration['details']['range']
@@ -230,7 +230,41 @@ const isWithinRange = ({
     [`${name}_s`]: s
   }
 
-  return false
+  /**
+   * Validate south edge.
+   */
+  if (`${name}_s` === fieldName) {
+    const _value = Number(value)
+
+    /**
+     * Reject South greater than North.
+     */
+    if (_value > Number(fields[`${name}_n`])) return false
+
+    /**
+     * Reject South less than its permitted range.
+     */
+    if (_value < _range[`${name}_s`]) return false
+  }
+
+  /**
+   * Validate West edge.
+   */
+  if (`${name}_w` === fieldName) {
+    const _value = Number(value)
+
+    /**
+     * Reject West greater than East.
+     */
+    if (_value > Number(fields[`${name}_e`])) return false
+
+    /**
+     * Reject West less than its permitted range.
+     */
+    if (_value < _range[`${name}_w`]) return false
+  }
+
+  return true
 }
 
 const Inputs = styled.div`
