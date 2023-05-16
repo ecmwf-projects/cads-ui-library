@@ -209,6 +209,30 @@ const GeographicExtentWidget = <TErrors,>({
   )
 }
 
+const isWithinRange = ({
+  name,
+  field: _field,
+  fields: _fields,
+  value: _value,
+  range
+}: {
+  name: string
+  field: string
+  fields: Record<string, string>
+  value: string
+  range: GeographicExtentWidgetConfiguration['details']['range']
+}) => {
+  const { n, s, w, e } = range
+  const _range = {
+    [`${name}_n`]: n,
+    [`${name}_w`]: w,
+    [`${name}_e`]: e,
+    [`${name}_s`]: s
+  }
+
+  return false
+}
+
 const Inputs = styled.div`
   display: grid;
 
@@ -264,3 +288,4 @@ const ReservedErrorSpace = styled(ReservedSpace)`
 `
 
 export { GeographicExtentWidget }
+export { isWithinRange }
