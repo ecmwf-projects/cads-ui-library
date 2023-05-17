@@ -54,23 +54,41 @@ describe('<GeographicExtentWidget/>', () => {
         isWithinRange({
           name: 'area',
           fieldName: 'area_n',
-          value: '11',
+          value: '89',
           fields: {
-            area_n: '11',
+            area_n: '89',
             area_e: '180',
-            area_s: '10',
+            area_s: '15',
             area_w: '-179'
           },
           range
         })
       ).toBeTruthy()
+
+      /**
+       * Reject North less than South range.
+       */
+      expect(
+        isWithinRange({
+          name: 'area_1',
+          fieldName: 'area_1_n',
+          value: '-95',
+          fields: {
+            area_n: '-95',
+            area_e: '180',
+            area_s: '-180',
+            area_w: '-181'
+          },
+          range
+        })
+      ).toBeFalsy()
     })
 
     it('validates South edge', () => {
       const range = { n: 90, e: 180, s: -90, w: -180 }
 
       /**
-       * Reject South greater than North.
+       * Reject South greater than North range.
        */
       expect(
         isWithinRange({
@@ -146,7 +164,7 @@ describe('<GeographicExtentWidget/>', () => {
       const range = { n: 90, e: 180, s: -90, w: -180 }
 
       /**
-       * West greater than East.
+       * Reject West greater than East range.
        */
       expect(
         isWithinRange({
@@ -198,6 +216,46 @@ describe('<GeographicExtentWidget/>', () => {
           range
         })
       ).toBeTruthy()
+    })
+
+    it('validates East edge', () => {
+      const range = { n: 90, e: 180, s: -90, w: -180 }
+
+      /**
+       * Reject East less than West range.
+       */
+      expect(
+        isWithinRange({
+          name: 'area_2',
+          fieldName: 'area_2_e',
+          value: '-181',
+          fields: {
+            area_n: '11',
+            area_e: '-179',
+            area_s: '12',
+            area_w: '-181'
+          },
+          range
+        })
+      ).toBeFalsy()
+
+      /**
+       * Reject East greater than its permitted range.
+       */
+      expect(
+        isWithinRange({
+          name: 'area_2',
+          fieldName: 'area_2_e',
+          value: '250',
+          fields: {
+            area_n: '11',
+            area_e: '250',
+            area_s: '12',
+            area_w: '-181'
+          },
+          range
+        })
+      ).toBeFalsy()
     })
   })
 })
