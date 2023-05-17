@@ -56,7 +56,7 @@ export interface GeographicExtentWidgetProps<
    * Each validator gets passed the widget configuration, and the internal name of the field.
    */
   validators?: Record<
-    keyof GeographicExtentWidgetConfiguration['details']['range'],
+    string,
     (
       internalName: string,
       configuration: GeographicExtentWidgetConfiguration
@@ -132,12 +132,10 @@ const GeographicExtentWidget = <TErrors,>({
   const getFields = (errors: GeographicExtentWidgetProps['errors'] = {}) => {
     const areas = ['top', 'left', 'right', 'bottom']
 
-    return Object.keys(getRange()).map((key, index) => {
-      const k = key as unknown as keyof ReturnType<typeof getRange>
-
+    return ['n', 'w', 'e', 's'].map((key, index) => {
       const _name = `${name}_${key}`
 
-      const validator = validators ? validators[k] : null
+      const validator = validators ? validators[key] : null
 
       const isInvalid = _name in errors
 
@@ -165,20 +163,21 @@ const GeographicExtentWidget = <TErrors,>({
   ) => {
     if (!errors) return null
 
-    const { error } = Object.keys(range).reduce(
-      (acc, key) => {
-        const _name = `${name}_${key}`
-        if (_name in errors) {
-          acc['error'] = 'Please select coordinates within range'
+    const ownFields = Object.keys(getRange()).map(key => `${name}_${key}`)
 
+    const { error } = Object.keys(errors).reduce<{ error: string | null }>(
+      (acc, key) => {
+        if (ownFields.includes(key)) {
+          acc['error'] = errors[key].message || null
           return acc
         }
+
         return acc
       },
-      { error: '' }
+      { error: null }
     )
 
-    return <Error>{error}</Error>
+    return error ? <Error>{error}</Error> : null
   }
 
   return (
@@ -308,7 +307,6 @@ const isSouthLessThanNorth = ({
 }) => {
   if (`${name}_n` === fieldName) {
     const _value = Number(value)
-
     if (_value <= Number(fields[`${name}_s`])) {
       return 'South edge must be less than North edge'
     }
@@ -316,7 +314,6 @@ const isSouthLessThanNorth = ({
 
   if (`${name}_s` === fieldName) {
     const _value = Number(value)
-
     if (_value >= Number(fields[`${name}_n`])) {
       return 'South edge must be less than North edge'
     }

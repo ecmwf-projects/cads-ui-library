@@ -78,10 +78,10 @@ export const getGeographicExtentWidgetConfiguration = () => {
         s: 'South'
       },
       range: {
-        n: 90,
+        s: -90,
         w: -180,
-        e: 180,
-        s: -90
+        n: 90,
+        e: 180
       },
       default: {
         n: 90,
