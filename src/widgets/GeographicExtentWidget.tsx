@@ -276,6 +276,14 @@ const isWestLessThanEast = ({
   fields: Record<string, string>
   value: string
 }) => {
+  if (`${name}_e` === fieldName) {
+    const _value = Number(value)
+
+    if (_value == Number(fields[`${name}_w`])) {
+      return 'West edge must be less than East edge'
+    }
+  }
+
   if (`${name}_w` === fieldName) {
     const _value = Number(value)
 
@@ -298,6 +306,14 @@ const isSouthLessThanNorth = ({
   fields: Record<string, string>
   value: string
 }) => {
+  if (`${name}_n` === fieldName) {
+    const _value = Number(value)
+
+    if (_value <= Number(fields[`${name}_s`])) {
+      return 'South edge must be less than North edge'
+    }
+  }
+
   if (`${name}_s` === fieldName) {
     const _value = Number(value)
 

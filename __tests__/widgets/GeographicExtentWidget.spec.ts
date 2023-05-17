@@ -103,6 +103,20 @@ describe('<GeographicExtentWidget/>', () => {
         })
       ).toEqual('South edge must be less than North edge')
 
+      expect(
+        isSouthLessThanNorth({
+          name: 'area',
+          fieldName: 'area_n',
+          value: '88',
+          fields: {
+            area_n: '88',
+            area_e: '180',
+            area_s: '89',
+            area_w: '-181'
+          }
+        })
+      ).toEqual('South edge must be less than North edge')
+
       /**
        * Reject South greater than North range.
        */
@@ -237,6 +251,20 @@ describe('<GeographicExtentWidget/>', () => {
         isWestLessThanEast({
           name: 'area',
           fieldName: 'area_w',
+          value: '5',
+          fields: {
+            area_n: '2',
+            area_e: '5',
+            area_s: '12',
+            area_w: '5'
+          }
+        })
+      ).toEqual('West edge must be less than East edge')
+
+      expect(
+        isWestLessThanEast({
+          name: 'area',
+          fieldName: 'area_e',
           value: '5',
           fields: {
             area_n: '2',
