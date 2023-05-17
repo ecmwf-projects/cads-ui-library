@@ -48,11 +48,6 @@ export interface LicenceWidgetConfiguration {
 export interface LicenceWidgetProps {
   configuration: LicenceWidgetConfiguration
   /**
-   * Pass-through configuration parameters for Markdown parser.
-   * TODO: this will change in the future. The licence content is handled externally from the widget.
-   */
-  markdownParsingOptions?: TMarkdownToJSX.Options
-  /**
    * Permitted selections for the widget.
    */
   constraints?: string[]
@@ -71,7 +66,6 @@ export interface LicenceWidgetProps {
  */
 const LicenceWidget = ({
   configuration,
-  markdownParsingOptions: _markdownParsingOptions,
   constraints: _constraints,
   onLicenceAccept,
   onLicenceClick
