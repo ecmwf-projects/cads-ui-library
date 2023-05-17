@@ -3,31 +3,16 @@
  */
 import { expect } from '@jest/globals'
 
-import { isWithinRange } from '../../src'
+import {
+  isWithinRange,
+  isWestLessThanEast,
+  isSouthLessThanNorth
+} from '../../src'
 
 describe('<GeographicExtentWidget/>', () => {
   describe('Validation', () => {
     it('validates North edge', () => {
       const range = { n: 90, e: 180, s: -90, w: -180 }
-
-      /**
-       * Reject North less than South.
-       * TODO: this should produce "South edge must be less than North edge"
-       */
-      expect(
-        isWithinRange({
-          name: 'area',
-          fieldName: 'area_n',
-          value: '-17',
-          fields: {
-            area_n: '-17',
-            area_e: '180',
-            area_s: '-16',
-            area_w: '-181'
-          },
-          range
-        })
-      ).toBeFalsy()
 
       /**
        * Reject North greater than its permitted range.
@@ -86,6 +71,37 @@ describe('<GeographicExtentWidget/>', () => {
 
     it('validates South edge', () => {
       const range = { n: 90, e: 180, s: -90, w: -180 }
+
+      /**
+       * Reject South greater than, or equal to North.
+       */
+      expect(
+        isSouthLessThanNorth({
+          name: 'area',
+          fieldName: 'area_s',
+          value: '88',
+          fields: {
+            area_n: '-3',
+            area_e: '180',
+            area_s: '88',
+            area_w: '-181'
+          }
+        })
+      ).toEqual('South edge must be less than North edge')
+
+      expect(
+        isSouthLessThanNorth({
+          name: 'area',
+          fieldName: 'area_s',
+          value: '88',
+          fields: {
+            area_n: '88',
+            area_e: '180',
+            area_s: '88',
+            area_w: '-181'
+          }
+        })
+      ).toEqual('South edge must be less than North edge')
 
       /**
        * Reject South greater than North range.
@@ -216,6 +232,20 @@ describe('<GeographicExtentWidget/>', () => {
           range
         })
       ).toBeTruthy()
+
+      expect(
+        isWestLessThanEast({
+          name: 'area',
+          fieldName: 'area_w',
+          value: '5',
+          fields: {
+            area_n: '2',
+            area_e: '5',
+            area_s: '12',
+            area_w: '5'
+          }
+        })
+      ).toEqual('West edge must be less than East edge')
     })
 
     it('validates East edge', () => {

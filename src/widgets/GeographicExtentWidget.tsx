@@ -233,8 +233,6 @@ const isWithinRange = ({
   if (`${name}_n` === fieldName) {
     const _value = Number(value)
 
-    if (_value < Number(fields[`${name}_s`])) return false
-
     if (_value > _range[`${name}_n`]) return false
 
     if (_value < _range[`${name}_s`]) return false
@@ -262,6 +260,50 @@ const isWithinRange = ({
     if (_value < _range[`${name}_w`]) return false
 
     if (_value > _range[`${name}_e`]) return false
+  }
+
+  return true
+}
+
+const isWestLessThanEast = ({
+  name,
+  fieldName,
+  fields,
+  value
+}: {
+  name: string
+  fieldName: string
+  fields: Record<string, string>
+  value: string
+}) => {
+  if (`${name}_w` === fieldName) {
+    const _value = Number(value)
+
+    if (_value == Number(fields[`${name}_e`])) {
+      return 'West edge must be less than East edge'
+    }
+  }
+
+  return true
+}
+
+const isSouthLessThanNorth = ({
+  name,
+  fieldName,
+  fields,
+  value
+}: {
+  name: string
+  fieldName: string
+  fields: Record<string, string>
+  value: string
+}) => {
+  if (`${name}_s` === fieldName) {
+    const _value = Number(value)
+
+    if (_value >= Number(fields[`${name}_n`])) {
+      return 'South edge must be less than North edge'
+    }
   }
 
   return true
@@ -322,4 +364,4 @@ const ReservedErrorSpace = styled(ReservedSpace)`
 `
 
 export { GeographicExtentWidget }
-export { isWithinRange }
+export { isWithinRange, isWestLessThanEast, isSouthLessThanNorth }

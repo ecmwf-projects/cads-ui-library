@@ -26,6 +26,10 @@ export {
   isChildOfExclusiveGroup
 } from './widgets/ExclusiveGroupWidget'
 
-export { isWithinRange } from './widgets/GeographicExtentWidget'
+export {
+  isWithinRange,
+  isWestLessThanEast,
+  isSouthLessThanNorth
+} from './widgets/GeographicExtentWidget'
 
 export { createWidget } from './utils/widgetFactory'
