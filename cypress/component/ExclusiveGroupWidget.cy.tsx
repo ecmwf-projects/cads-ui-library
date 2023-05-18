@@ -320,8 +320,8 @@ describe('<ExclusiveGroupWidget/>', () => {
     cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
       ['area', '11'],
       ['area', '90'],
-      ['area', '14'],
-      ['area', '44']
+      ['area', '44'],
+      ['area', '14']
     ])
 
     cy.findByLabelText('Whole available region').click()
@@ -339,10 +339,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     cy.findAllByLabelText('West').eq(0).clear()
     cy.findAllByLabelText('East').eq(0).clear()
 
-    cy.findAllByText('Please select coordinates within range').should(
-      'have.length',
-      2
-    )
+    cy.findByText('Please insert Sub-region extraction East input')
   })
 
   it('with StringChoiceWidget and TextWidget', () => {

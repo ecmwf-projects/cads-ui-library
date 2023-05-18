@@ -14,6 +14,8 @@ import {
 } from './Widget'
 import { Label, WidgetTooltip } from '../index'
 
+import { useReadOnlyPersistedSelection } from '../utils'
+
 export interface GeographicExtentWidgetConfiguration {
   type: 'GeographicExtentWidget'
   name: string
@@ -89,19 +91,28 @@ const GeographicExtentWidget = <TErrors,>({
   validators,
   errors
 }: GeographicExtentWidgetProps<TErrors>) => {
+  const { type, name, label, help, details } = configuration
+
+  /**
+   * The default payload order expected by the adaptor is: North, West, South, East.
+   * We might make this configurable in the near future.
+   */
+  const defaultOrder = [`${name}_n`, `${name}_w`, `${name}_s`, `${name}_e`]
+
+  const selection = useReadOnlyPersistedSelection(name)
+
   const injectWidgetPayload = (ev: FormDataEvent) => {
     const { formData } = ev
+
     /**
      * Remove the original keys from the form data object, and replace them with the fieldset name.
      * This is required for the request payload utils to properly assemble the request object.
      */
 
-    for (const extent of Object.keys(getRange())) {
-      const _name = `${name}_${extent}`
-
-      if (formData.has(_name)) {
-        const value = formData.get(_name) as unknown as string
-        formData.delete(_name)
+    for (const field of defaultOrder) {
+      if (formData.has(field)) {
+        const value = formData.get(field) as unknown as string
+        formData.delete(field)
         formData.append(name, value)
       }
     }
@@ -109,16 +120,7 @@ const GeographicExtentWidget = <TErrors,>({
 
   useEventListener('formdata', injectWidgetPayload)
 
-  if (!configuration) return null
-
-  const { type, name, label, help, details } = configuration
-
   if (type !== 'GeographicExtentWidget') return null
-
-  const getDefault = (key: string) => {
-    if (!details.default) return ''
-    return details.default[key]
-  }
 
   const getRange = () => {
     return details.range
@@ -127,6 +129,17 @@ const GeographicExtentWidget = <TErrors,>({
   const getLabel = (key: string) => {
     if (!details.extentLabels) return defaultMapping[key]
     return details.extentLabels[key]
+  }
+
+  const getDefaultValue = <TSelection extends string[] | null>(
+    selection: TSelection,
+    defaultValueIndex: number,
+    key: string
+  ) => {
+    if (!selection && !details.default) return ''
+    if (!selection && details.default) return details.default[key]
+    if (!selection) return ''
+    return selection[defaultValueIndex]
   }
 
   const getFields = (errors: GeographicExtentWidgetProps['errors'] = {}) => {
@@ -139,6 +152,8 @@ const GeographicExtentWidget = <TErrors,>({
 
       const isInvalid = _name in errors
 
+      const defaultValueIndex = defaultOrder.findIndex(item => item === _name)
+
       return (
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={_name}>{getLabel(key)}</Label>
@@ -146,7 +161,7 @@ const GeographicExtentWidget = <TErrors,>({
             type='text'
             name={_name}
             id={_name}
-            defaultValue={getDefault(key)}
+            defaultValue={getDefaultValue(selection, defaultValueIndex, key)}
             aria-invalid={isInvalid ? 'true' : 'false'}
             {...(typeof validator === 'function'
               ? validator(_name, configuration)
@@ -211,13 +226,11 @@ const GeographicExtentWidget = <TErrors,>({
 const isWithinRange = ({
   name,
   fieldName,
-  fields,
   value,
   range
 }: {
   name: string
   fieldName: string
-  fields: Record<string, string>
   value: string
   range: GeographicExtentWidgetConfiguration['details']['range']
 }) => {

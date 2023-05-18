@@ -22,12 +22,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_n',
           value: '500',
-          fields: {
-            area_n: '500',
-            area_e: '180',
-            area_s: '-180',
-            area_w: '-181'
-          },
           range
         })
       ).toBeFalsy()
@@ -40,12 +34,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_n',
           value: '89',
-          fields: {
-            area_n: '89',
-            area_e: '180',
-            area_s: '15',
-            area_w: '-179'
-          },
           range
         })
       ).toBeTruthy()
@@ -58,12 +46,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area_1',
           fieldName: 'area_1_n',
           value: '-95',
-          fields: {
-            area_n: '-95',
-            area_e: '180',
-            area_s: '-180',
-            area_w: '-181'
-          },
           range
         })
       ).toBeFalsy()
@@ -125,12 +107,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_s',
           value: '95',
-          fields: {
-            area_n: '90',
-            area_e: '180',
-            area_s: '95',
-            area_w: '-181'
-          },
           range
         })
       ).toBeFalsy()
@@ -143,12 +119,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_s',
           value: '95',
-          fields: {
-            area_n: '95',
-            area_e: '180',
-            area_s: '95',
-            area_w: '-181'
-          },
           range
         })
       ).toBeFalsy()
@@ -161,12 +131,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_s',
           value: '-180',
-          fields: {
-            area_n: '90',
-            area_e: '180',
-            area_s: '-180',
-            area_w: '-181'
-          },
           range
         })
       ).toBeFalsy()
@@ -179,12 +143,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_s',
           value: '11',
-          fields: {
-            area_n: '15',
-            area_e: '180',
-            area_s: '11',
-            area_w: '-179'
-          },
           range
         })
       ).toBeTruthy()
@@ -201,12 +159,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_w',
           value: '189',
-          fields: {
-            area_n: '11',
-            area_e: '180',
-            area_s: '12',
-            area_w: '189'
-          },
           range
         })
       ).toBeFalsy()
@@ -219,12 +171,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_w',
           value: '-181',
-          fields: {
-            area_n: '11',
-            area_e: '180',
-            area_s: '12',
-            area_w: '-181'
-          },
           range
         })
       ).toBeFalsy()
@@ -237,12 +183,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area',
           fieldName: 'area_w',
           value: '-179',
-          fields: {
-            area_n: '11',
-            area_e: '180',
-            area_s: '12',
-            area_w: '-179'
-          },
           range
         })
       ).toBeTruthy()
@@ -287,12 +227,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area_2',
           fieldName: 'area_2_e',
           value: '-181',
-          fields: {
-            area_n: '11',
-            area_e: '-179',
-            area_s: '12',
-            area_w: '-181'
-          },
           range
         })
       ).toBeFalsy()
@@ -305,12 +239,6 @@ describe('<GeographicExtentWidget/>', () => {
           name: 'area_2',
           fieldName: 'area_2_e',
           value: '250',
-          fields: {
-            area_n: '11',
-            area_e: '250',
-            area_s: '12',
-            area_w: '-181'
-          },
           range
         })
       ).toBeFalsy()

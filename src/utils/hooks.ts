@@ -1,6 +1,20 @@
 import { useState, useRef, useEffect, RefObject } from 'react'
 import { useReadLocalStorage } from 'usehooks-ts'
 
+const useReadOnlyPersistedSelection = (fieldset: string) => {
+  const persistedSelection = useReadLocalStorage<{
+    dataset: { id: string }
+    inputs: { [k: string]: string[] }
+  }>('formSelection')
+
+  if (!persistedSelection) return null
+
+  if (fieldset in persistedSelection.inputs)
+    return persistedSelection.inputs[fieldset]
+
+  return null
+}
+
 const useWidgetSelection = (fieldset: string) => {
   const [selection, setSelection] = useState<Record<string, string[]>>({
     [fieldset]: []
@@ -56,4 +70,4 @@ const useBypassRequired: UseBypassRequired = (
   return !constraints.length && bypass
 }
 
-export { useWidgetSelection, useBypassRequired }
+export { useWidgetSelection, useReadOnlyPersistedSelection, useBypassRequired }

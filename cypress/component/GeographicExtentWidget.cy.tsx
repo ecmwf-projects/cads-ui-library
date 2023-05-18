@@ -33,6 +33,39 @@ const Form = ({
 }
 
 describe('<GeographicExtentWidget/>', () => {
+  it('hydrates its default selection', () => {
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: { id: 'cems-glofas-seasonal-reforecast' },
+        inputs: {
+          leadtime_hour: ['672'],
+          month: ['04'],
+          area: [89.11, -179.95, -51.95, 179.13],
+          area_1: [90, -180, -70, 180]
+        }
+      })
+    )
+
+    cy.mount(
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <GeographicExtentWidget
+          configuration={{
+            ...getGeographicExtentWidgetConfiguration(),
+            help: null
+          }}
+        />
+      </Form>
+    )
+
+    cy.findAllByLabelText('North').should('have.value', '89.11')
+    cy.findAllByLabelText('South').should('have.value', '-51.95')
+    cy.findAllByLabelText('West').should('have.value', '-179.95')
+    cy.findAllByLabelText('East').should('have.value', '179.13')
+  })
+
   it('multiple geo extents', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
@@ -55,6 +88,11 @@ describe('<GeographicExtentWidget/>', () => {
       </Form>
     )
 
+    cy.findAllByLabelText('North').eq(0).should('have.value', '90')
+    cy.findAllByLabelText('South').eq(0).should('have.value', '-90')
+    cy.findAllByLabelText('West').eq(0).should('have.value', '-180')
+    cy.findAllByLabelText('East').eq(0).should('have.value', '180')
+
     cy.findAllByLabelText('North').eq(0).clear().type('11')
     cy.findAllByLabelText('South').eq(0).clear().type('12')
     cy.findAllByLabelText('West').eq(0).clear().type('13')
@@ -67,15 +105,18 @@ describe('<GeographicExtentWidget/>', () => {
 
     cy.findByText('submit').click()
 
+    /**
+     * Testing the default payload order expected by the adaptor: North, West, South, East.
+     */
     cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
       ['area', '11'],
       ['area', '13'],
-      ['area', '14'],
       ['area', '12'],
+      ['area', '14'],
       ['area_1', '51'],
       ['area_1', '33'],
-      ['area_1', '11'],
-      ['area_1', '64']
+      ['area_1', '64'],
+      ['area_1', '11']
     ])
   })
 
@@ -190,21 +231,19 @@ describe('<GeographicExtentWidget/>', () => {
 
     cy.findByLabelText('North').clear()
     cy.findByLabelText('North').should('have.attr', 'aria-invalid', 'true')
-    cy.findByText('Please select coordinates within range')
+    cy.findByText('Please insert North input')
 
     cy.findByLabelText('South').clear()
     cy.findByLabelText('South').should('have.attr', 'aria-invalid', 'true')
-    cy.findByText('Please select coordinates within range')
+    cy.findByText('Please insert South input')
 
     cy.findByLabelText('West').clear()
     cy.findByLabelText('West').should('have.attr', 'aria-invalid', 'true')
-    cy.findByText('Please select coordinates within range')
+    cy.findByText('Please insert West input')
 
     cy.findByLabelText('East').clear()
     cy.findByLabelText('East').should('have.attr', 'aria-invalid', 'true')
-    cy.findByText('Please select coordinates within range')
-
-    cy.findByRole('alert')
+    cy.findByText('Please insert East input')
   })
 
   it('applies validation - range, w/e, n/s validation', () => {
@@ -249,12 +288,11 @@ describe('<GeographicExtentWidget/>', () => {
                           fieldName
                         })
                       },
-                      range: (value, fields) => {
+                      range: value => {
                         return (
                           isWithinRange({
                             name,
                             value,
-                            fields,
                             fieldName,
                             range
                           }) || 'Please select coordinates within range'
@@ -277,12 +315,11 @@ describe('<GeographicExtentWidget/>', () => {
                           fieldName
                         })
                       },
-                      range: (value, fields) => {
+                      range: value => {
                         return (
                           isWithinRange({
                             name,
                             value,
-                            fields,
                             fieldName,
                             range
                           }) || 'Please select coordinates within range'
@@ -305,12 +342,11 @@ describe('<GeographicExtentWidget/>', () => {
                           fieldName
                         })
                       },
-                      range: (value, fields) => {
+                      range: value => {
                         return (
                           isWithinRange({
                             name,
                             value,
-                            fields,
                             fieldName,
                             range
                           }) || 'Please select coordinates within range'
@@ -333,12 +369,11 @@ describe('<GeographicExtentWidget/>', () => {
                           fieldName
                         })
                       },
-                      range: (value, fields) => {
+                      range: value => {
                         return (
                           isWithinRange({
                             name,
                             value,
-                            fields,
                             fieldName,
                             range
                           }) || 'Please select coordinates within range'
