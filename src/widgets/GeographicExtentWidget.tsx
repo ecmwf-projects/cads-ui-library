@@ -291,7 +291,7 @@ const isWestLessThanEast = ({
   if (`${name}_e` === fieldName) {
     const _value = Number(value)
 
-    if (_value == Number(fields[`${name}_w`])) {
+    if (_value <= Number(fields[`${name}_w`])) {
       return false
     }
   }
@@ -299,7 +299,7 @@ const isWestLessThanEast = ({
   if (`${name}_w` === fieldName) {
     const _value = Number(value)
 
-    if (_value == Number(fields[`${name}_e`])) {
+    if (_value >= Number(fields[`${name}_e`])) {
       return false
     }
   }

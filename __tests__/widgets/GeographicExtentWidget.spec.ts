@@ -187,6 +187,24 @@ describe('<GeographicExtentWidget/>', () => {
         })
       ).toBeTruthy()
 
+      /**
+       * Reject West greater than or equal to East.
+       */
+
+      expect(
+        isWestLessThanEast({
+          name: 'area',
+          fieldName: 'area_w',
+          value: '15',
+          fields: {
+            area_n: '2',
+            area_e: '5',
+            area_s: '12',
+            area_w: '5'
+          }
+        })
+      ).toBeFalsy()
+
       expect(
         isWestLessThanEast({
           name: 'area',
@@ -211,6 +229,20 @@ describe('<GeographicExtentWidget/>', () => {
             area_e: '5',
             area_s: '12',
             area_w: '5'
+          }
+        })
+      ).toBeFalsy()
+
+      expect(
+        isWestLessThanEast({
+          name: 'area',
+          fieldName: 'area_e',
+          value: '5',
+          fields: {
+            area_n: '2',
+            area_e: '5',
+            area_s: '12',
+            area_w: '15'
           }
         })
       ).toBeFalsy()
