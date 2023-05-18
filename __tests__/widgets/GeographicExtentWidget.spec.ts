@@ -164,7 +164,7 @@ describe('<GeographicExtentWidget/>', () => {
       ).toBeFalsy()
 
       /**
-       * West less than its permitted range.
+       * West outside its permitted range.
        */
       expect(
         isWithinRange({
@@ -172,6 +172,34 @@ describe('<GeographicExtentWidget/>', () => {
           fieldName: 'area_w',
           value: '-181',
           range
+        })
+      ).toBeFalsy()
+
+      expect(
+        isWithinRange({
+          name: 'area',
+          fieldName: 'area_w',
+          value: '180',
+          range: {
+            e: 179.95,
+            n: 89.95,
+            s: -59.95,
+            w: -179.95
+          }
+        })
+      ).toBeFalsy()
+
+      expect(
+        isWithinRange({
+          name: 'area',
+          fieldName: 'area_w',
+          value: '-189',
+          range: {
+            e: 180,
+            n: 90,
+            s: -90,
+            w: -180
+          }
         })
       ).toBeFalsy()
 
@@ -184,6 +212,34 @@ describe('<GeographicExtentWidget/>', () => {
           fieldName: 'area_w',
           value: '-179',
           range
+        })
+      ).toBeTruthy()
+
+      expect(
+        isWithinRange({
+          name: 'area',
+          fieldName: 'area_w',
+          value: '-17',
+          range: {
+            e: 179.95,
+            n: 89.95,
+            s: -59.95,
+            w: -179.95
+          }
+        })
+      ).toBeTruthy()
+
+      expect(
+        isWithinRange({
+          name: 'area',
+          fieldName: 'area_w',
+          value: '-18',
+          range: {
+            e: 180,
+            n: 90,
+            s: -90,
+            w: -180
+          }
         })
       ).toBeTruthy()
 

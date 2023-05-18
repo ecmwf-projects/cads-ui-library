@@ -448,8 +448,6 @@ describe('<GeographicExtentWidget/>', () => {
       'have.text',
       'South edge must be less than North edge'
     )
-    cy.findByLabelText('North').clear().type('90')
-    cy.findByRole('alert').should('not.exist')
 
     cy.findByLabelText('West').clear().type('180')
     cy.findByRole('alert').should(
