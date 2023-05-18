@@ -4,13 +4,15 @@ import { useReadLocalStorage } from 'usehooks-ts'
 const useReadOnlyPersistedSelection = (fieldset: string) => {
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
-    inputs: { [k: string]: string[] }
+    inputs?: { [k: string]: string[] }
   }>('formSelection')
 
   if (!persistedSelection) return null
 
-  if (fieldset in persistedSelection.inputs)
-    return persistedSelection.inputs[fieldset]
+  if (persistedSelection.inputs) {
+    if (fieldset in persistedSelection.inputs)
+      return persistedSelection.inputs[fieldset]
+  }
 
   return null
 }

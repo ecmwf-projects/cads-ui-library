@@ -33,6 +33,33 @@ const Form = ({
 }
 
 describe('<GeographicExtentWidget/>', () => {
+  it('renders', () => {
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: { id: 'cems-glofas-seasonal-reforecast' }
+      })
+    )
+
+    cy.mount(
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <GeographicExtentWidget
+          configuration={{
+            ...getGeographicExtentWidgetConfiguration(),
+            help: null
+          }}
+        />
+      </Form>
+    )
+
+    cy.findAllByLabelText('North').should('have.value', '90')
+    cy.findAllByLabelText('South').should('have.value', '-90')
+    cy.findAllByLabelText('West').should('have.value', '-180')
+    cy.findAllByLabelText('East').should('have.value', '180')
+  })
+
   it('hydrates its default selection', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
