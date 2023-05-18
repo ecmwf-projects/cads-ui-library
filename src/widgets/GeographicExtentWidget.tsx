@@ -292,7 +292,7 @@ const isWestLessThanEast = ({
     const _value = Number(value)
 
     if (_value == Number(fields[`${name}_w`])) {
-      return 'West edge must be less than East edge'
+      return false
     }
   }
 
@@ -300,7 +300,7 @@ const isWestLessThanEast = ({
     const _value = Number(value)
 
     if (_value == Number(fields[`${name}_e`])) {
-      return 'West edge must be less than East edge'
+      return false
     }
   }
 
@@ -321,14 +321,14 @@ const isSouthLessThanNorth = ({
   if (`${name}_n` === fieldName) {
     const _value = Number(value)
     if (_value <= Number(fields[`${name}_s`])) {
-      return 'South edge must be less than North edge'
+      return false
     }
   }
 
   if (`${name}_s` === fieldName) {
     const _value = Number(value)
     if (_value >= Number(fields[`${name}_n`])) {
-      return 'South edge must be less than North edge'
+      return false
     }
   }
 

@@ -69,7 +69,7 @@ describe('<GeographicExtentWidget/>', () => {
             area_w: '-181'
           }
         })
-      ).toEqual('South edge must be less than North edge')
+      ).toBeFalsy()
 
       expect(
         isSouthLessThanNorth({
@@ -83,7 +83,7 @@ describe('<GeographicExtentWidget/>', () => {
             area_w: '-181'
           }
         })
-      ).toEqual('South edge must be less than North edge')
+      ).toBeFalsy()
 
       expect(
         isSouthLessThanNorth({
@@ -97,7 +97,7 @@ describe('<GeographicExtentWidget/>', () => {
             area_w: '-181'
           }
         })
-      ).toEqual('South edge must be less than North edge')
+      ).toBeFalsy()
 
       /**
        * Reject South greater than North range.
@@ -199,7 +199,7 @@ describe('<GeographicExtentWidget/>', () => {
             area_w: '5'
           }
         })
-      ).toEqual('West edge must be less than East edge')
+      ).toBeFalsy()
 
       expect(
         isWestLessThanEast({
@@ -213,7 +213,7 @@ describe('<GeographicExtentWidget/>', () => {
             area_w: '5'
           }
         })
-      ).toEqual('West edge must be less than East edge')
+      ).toBeFalsy()
     })
 
     it('validates East edge', () => {

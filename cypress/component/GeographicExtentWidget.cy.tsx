@@ -308,12 +308,14 @@ describe('<GeographicExtentWidget/>', () => {
                     },
                     validate: {
                       southLessThanNorth: (value, fields) => {
-                        return isSouthLessThanNorth({
-                          name,
-                          value,
-                          fields,
-                          fieldName
-                        })
+                        return (
+                          isSouthLessThanNorth({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'South edge must be less than North edge'
+                        )
                       },
                       range: value => {
                         return (
@@ -335,12 +337,14 @@ describe('<GeographicExtentWidget/>', () => {
                     },
                     validate: {
                       southLessThanNorth: (value, fields) => {
-                        return isSouthLessThanNorth({
-                          name,
-                          value,
-                          fields,
-                          fieldName
-                        })
+                        return (
+                          isSouthLessThanNorth({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'South edge must be less than North edge'
+                        )
                       },
                       range: value => {
                         return (
@@ -362,12 +366,14 @@ describe('<GeographicExtentWidget/>', () => {
                     },
                     validate: {
                       westLessThanEast: (value, fields) => {
-                        return isWestLessThanEast({
-                          name,
-                          value,
-                          fields,
-                          fieldName
-                        })
+                        return (
+                          isWestLessThanEast({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'West edge must be less than East edge'
+                        )
                       },
                       range: value => {
                         return (
@@ -389,12 +395,14 @@ describe('<GeographicExtentWidget/>', () => {
                     },
                     validate: {
                       westLessThanEast: (value, fields) => {
-                        return isWestLessThanEast({
-                          name,
-                          value,
-                          fields,
-                          fieldName
-                        })
+                        return (
+                          isWestLessThanEast({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'West edge must be less than East edge'
+                        )
                       },
                       range: value => {
                         return (
