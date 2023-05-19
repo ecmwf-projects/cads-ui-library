@@ -29,7 +29,8 @@ export {
 export {
   isWithinRange,
   isWestLessThanEast,
-  isSouthLessThanNorth
+  isSouthLessThanNorth,
+  isValidInput
 } from './widgets/GeographicExtentWidget'
 
 export { createWidget } from './utils/widgetFactory'

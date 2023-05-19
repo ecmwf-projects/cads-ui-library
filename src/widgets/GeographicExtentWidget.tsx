@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { KeyboardEvent } from 'react'
 import styled from 'styled-components'
 
 import { useEventListener } from 'usehooks-ts'
@@ -161,6 +161,13 @@ const GeographicExtentWidget = <TErrors,>({
             type='text'
             name={_name}
             id={_name}
+            onKeyDown={event => {
+              const { value } = event.currentTarget
+              const { code } = event.nativeEvent
+              if (!isValidInput({ code, value })) {
+                return event.preventDefault()
+              }
+            }}
             defaultValue={getDefaultValue(selection, defaultValueIndex, key)}
             aria-invalid={isInvalid ? 'true' : 'false'}
             {...(typeof validator === 'function'
@@ -335,6 +342,20 @@ const isSouthLessThanNorth = ({
   return true
 }
 
+const isValidInput = ({ code, value }: { code: string; value?: string }) => {
+  if (value && value.match(/-|-\./) && code.match(/Period|Digit/)) return true
+  if (value && Number.isNaN(parseFloat(value))) return false
+
+  // TODO: allow Control A but not a
+  if (
+    code.match(/Slash|Delete|Backspace|Arrow|Digit|Period|Control|KeyA|Minus/)
+  ) {
+    return true
+  }
+
+  return false
+}
+
 const Inputs = styled.div`
   display: grid;
 
@@ -390,4 +411,4 @@ const ReservedErrorSpace = styled(ReservedSpace)`
 `
 
 export { GeographicExtentWidget }
-export { isWithinRange, isWestLessThanEast, isSouthLessThanNorth }
+export { isWithinRange, isWestLessThanEast, isSouthLessThanNorth, isValidInput }
