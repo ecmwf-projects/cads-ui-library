@@ -342,18 +342,52 @@ const isSouthLessThanNorth = ({
   return true
 }
 
-const isValidInput = ({ code, value }: { code: string; value?: string }) => {
-  if (value && value.match(/-|-\./) && code.match(/Period|Digit/)) return true
-  if (value && Number.isNaN(parseFloat(value))) return false
+const toPrecision = (input: string, precision: number) => {
+  const dot = input.indexOf('.')
+  if (dot !== -1) {
+    if (input.length - dot > precision) {
+      return input.slice(0, dot + precision + 1)
+    }
+  }
+  return input
+}
 
-  // TODO: allow Control A but not a
+const isValidInput = ({ code, value }: { code: string; value?: string }) => {
+  const whitelist = new RegExp(
+    /Delete|Backspace|Arrow|Digit|Period|Control|Minus|Hyphen/
+  )
+  const minus = new RegExp(/Minus|Slash|Hyphen/)
+
+  /**
+   * Only one dot allowed
+   */
+  if (value && value.match(/[.]/) && code.match(/Period/)) {
+    return false
+  }
+
   if (
-    code.match(/Slash|Delete|Backspace|Arrow|Digit|Period|Control|KeyA|Minus/)
+    value &&
+    value.match(/[-.]/) &&
+    code.match(/Period|Digit|Backspace|ArrowR/)
   ) {
     return true
   }
 
-  return false
+  /**
+   * Only one minus allowed.
+   */
+  if (value && value.match(/[-]/) && code.match(minus)) {
+    return false
+  }
+
+  /**
+   * Minus allowed only at the beginning
+   */
+  if (value && !value.match(/^[-].*/) && code.match(minus)) {
+    return false
+  }
+
+  return !!code.match(whitelist)
 }
 
 const Inputs = styled.div`
@@ -411,4 +445,10 @@ const ReservedErrorSpace = styled(ReservedSpace)`
 `
 
 export { GeographicExtentWidget }
-export { isWithinRange, isWestLessThanEast, isSouthLessThanNorth, isValidInput }
+export {
+  isWithinRange,
+  isWestLessThanEast,
+  isSouthLessThanNorth,
+  isValidInput,
+  toPrecision
+}

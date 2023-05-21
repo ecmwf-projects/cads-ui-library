@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { SyntheticEvent } from 'react'
 import { useForm } from 'react-hook-form'
 
 import {
   GeographicExtentWidget,
   isSouthLessThanNorth,
   isWestLessThanEast,
-  isWithinRange
+  isWithinRange,
+  toPrecision
 } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
@@ -480,5 +481,82 @@ describe('<GeographicExtentWidget/>', () => {
 
     cy.findByLabelText('North').clear()
     cy.findByRole('alert').should('have.text', 'Please insert North input')
+  })
+
+  it('applies validation - minus, dot, precision', () => {
+    const Form = ({
+      handleSubmit
+    }: {
+      handleSubmit: (...args: any) => void
+    }) => {
+      const {
+        register,
+        setValue,
+        formState: { errors: ownErrors }
+      } = useForm({
+        mode: 'onChange'
+      })
+
+      return (
+        <form
+          onSubmit={ev => {
+            ev.preventDefault()
+            const formData = new FormData(ev.currentTarget)
+            handleSubmit([...formData.entries()])
+          }}
+        >
+          <GeographicExtentWidget
+            configuration={{
+              ...getGeographicExtentWidgetConfiguration(),
+              details: {
+                ...getGeographicExtentWidgetConfiguration().details,
+                precision: 3
+              },
+              help: null
+            }}
+            validators={{
+              n: (fieldName, { name, details: { precision } }) =>
+                register(fieldName, {
+                  onChange: ev => {
+                    if ('nativeEvent' in ev) {
+                      if (ev.nativeEvent instanceof InputEvent) {
+                        setValue(
+                          fieldName,
+                          toPrecision(ev.nativeEvent.target.value, precision)
+                        )
+                      }
+                    }
+                  }
+                })
+            }}
+          />
+
+          <button>submit</button>
+        </form>
+      )
+    }
+
+    cy.mount(<Form handleSubmit={() => void 0} />)
+
+    /**
+     * Minus and dot
+     */
+    cy.findByLabelText('North').clear().type('-99-').should('have.value', '-99')
+    cy.findByLabelText('North').clear().type('.99-').should('have.value', '.99')
+    cy.findByLabelText('North').clear().type('--').should('have.value', '-')
+    cy.findByLabelText('North').clear().type('..').should('have.value', '.')
+
+    /**
+     * Precision
+     */
+    cy.findByLabelText('North')
+      .clear()
+      .type('99.171')
+      .should('have.value', '99.171')
+
+    cy.findByLabelText('North')
+      .clear()
+      .type('99.1234567')
+      .should('have.value', '99.123')
   })
 })

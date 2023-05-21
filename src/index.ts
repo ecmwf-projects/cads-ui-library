@@ -30,7 +30,8 @@ export {
   isWithinRange,
   isWestLessThanEast,
   isSouthLessThanNorth,
-  isValidInput
+  isValidInput,
+  toPrecision
 } from './widgets/GeographicExtentWidget'
 
 export { createWidget } from './utils/widgetFactory'

@@ -7,7 +7,8 @@ import {
   isWithinRange,
   isWestLessThanEast,
   isSouthLessThanNorth,
-  isValidInput
+  isValidInput,
+  toPrecision
 } from '../../src'
 
 describe('<GeographicExtentWidget/>', () => {
@@ -18,16 +19,21 @@ describe('<GeographicExtentWidget/>', () => {
         expect(isValidInput({ code: 'KeyN' })).toBeFalsy()
 
         expect(isValidInput({ code: 'Slash', value: '-' })).toBeFalsy()
+        expect(isValidInput({ code: 'Minus', value: '-99' })).toBeFalsy()
+        expect(isValidInput({ code: 'Slash', value: '-99' })).toBeFalsy()
         expect(isValidInput({ code: 'Comma' })).toBeFalsy()
+        expect(isValidInput({ code: 'Period', value: '.' })).toBeFalsy()
       })
 
       it('accepts valid input', () => {
         expect(isValidInput({ code: 'Delete' })).toBeTruthy()
         expect(isValidInput({ code: 'Backspace' })).toBeTruthy()
+        expect(isValidInput({ code: 'Backspace', value: '-' })).toBeTruthy()
 
-        expect(isValidInput({ code: 'Slash' })).toBeTruthy()
         expect(isValidInput({ code: 'ArrowRight' })).toBeTruthy()
         expect(isValidInput({ code: 'Period', value: '-' })).toBeTruthy()
+        expect(isValidInput({ code: 'Digit0', value: '.' })).toBeTruthy()
+        expect(isValidInput({ code: 'ArrowRight', value: '.' })).toBeTruthy()
 
         expect(isValidInput({ code: 'Digit9', value: '-' })).toBeTruthy()
 
@@ -38,6 +44,13 @@ describe('<GeographicExtentWidget/>', () => {
         expect(isValidInput({ code: 'ControlLeft' })).toBeTruthy()
 
         expect(isValidInput({ code: 'ControlRight' })).toBeTruthy()
+      })
+
+      it('converts to precision', () => {
+        expect(toPrecision('99.17', 2)).toEqual('99.17')
+        expect(toPrecision('99.171', 2)).toEqual('99.17')
+        expect(toPrecision('99.1712', 3)).toEqual('99.171')
+        expect(toPrecision('99.123456789', 5)).toEqual('99.12345')
       })
     })
     describe('Field validation', () => {
