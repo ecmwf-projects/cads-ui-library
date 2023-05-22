@@ -299,7 +299,33 @@ describe('<GeographicExtentWidget/>', () => {
         >
           <TooltipProvider>
             <GeographicExtentWidget
-              configuration={getGeographicExtentWidgetConfiguration()}
+              configuration={{
+                details: {
+                  default: {
+                    n: 90,
+                    w: -180,
+                    e: 180,
+                    s: -90
+                  },
+                  extentLabels: {
+                    n: 'North',
+                    w: 'West',
+                    e: 'East',
+                    s: 'South'
+                  },
+                  precision: 2,
+                  range: {
+                    e: 180,
+                    n: 90,
+                    s: -90,
+                    w: -180
+                  }
+                },
+                help: null,
+                label: 'Sub-region extraction',
+                name: 'area',
+                type: 'GeographicExtentWidget' as const
+              }}
               validators={{
                 n: (fieldName, { name, details: { range } }) =>
                   register(fieldName, {
@@ -308,16 +334,6 @@ describe('<GeographicExtentWidget/>', () => {
                       message: 'Please insert North input'
                     },
                     validate: {
-                      southLessThanNorth: (value, fields) => {
-                        return (
-                          isSouthLessThanNorth({
-                            name,
-                            value,
-                            fields,
-                            fieldName
-                          }) || 'South edge must be less than North edge'
-                        )
-                      },
                       range: value => {
                         return (
                           isWithinRange({
@@ -326,6 +342,16 @@ describe('<GeographicExtentWidget/>', () => {
                             fieldName,
                             range
                           }) || 'Please select coordinates within range'
+                        )
+                      },
+                      southLessThanNorth: (value, fields) => {
+                        return (
+                          isSouthLessThanNorth({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'South edge must be less than North edge'
                         )
                       }
                     }
@@ -507,12 +533,31 @@ describe('<GeographicExtentWidget/>', () => {
         >
           <GeographicExtentWidget
             configuration={{
-              ...getGeographicExtentWidgetConfiguration(),
               details: {
-                ...getGeographicExtentWidgetConfiguration().details,
-                precision: 3
+                default: {
+                  n: 90,
+                  w: -180,
+                  e: 180,
+                  s: -90
+                },
+                extentLabels: {
+                  n: 'North',
+                  w: 'West',
+                  e: 'East',
+                  s: 'South'
+                },
+                precision: 3,
+                range: {
+                  e: 180,
+                  n: 90,
+                  s: -90,
+                  w: -180
+                }
               },
-              help: null
+              help: null,
+              label: 'Sub-region extraction',
+              name: 'area',
+              type: 'GeographicExtentWidget' as const
             }}
             validators={{
               n: (fieldName, { name, details: { precision } }) =>
@@ -559,5 +604,10 @@ describe('<GeographicExtentWidget/>', () => {
       .clear()
       .type('99.1234567')
       .should('have.value', '99.123')
+
+    cy.findByLabelText('North')
+      .clear()
+      .type('8.12345678')
+      .should('have.value', '8.123')
   })
 })
