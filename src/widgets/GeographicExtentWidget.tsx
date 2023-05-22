@@ -354,7 +354,7 @@ const toPrecision = (input: string, precision: number) => {
 
 const isValidInput = ({ code, value }: { code: string; value?: string }) => {
   const whitelist = new RegExp(
-    /Delete|Backspace|Arrow|Digit|Period|Control|Minus|Hyphen/
+    /Delete|Backspace|Arrow|Digit|Period|Control|Minus|Slash|Hyphen/
   )
   const minus = new RegExp(/Minus|Slash|Hyphen/)
 

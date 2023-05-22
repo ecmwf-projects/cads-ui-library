@@ -26,6 +26,9 @@ describe('<GeographicExtentWidget/>', () => {
       })
 
       it('accepts valid input', () => {
+        expect(isValidInput({ code: 'Minus' })).toBeTruthy()
+        expect(isValidInput({ code: 'Slash' })).toBeTruthy()
+
         expect(isValidInput({ code: 'Delete' })).toBeTruthy()
         expect(isValidInput({ code: 'Backspace' })).toBeTruthy()
         expect(isValidInput({ code: 'Backspace', value: '-' })).toBeTruthy()
