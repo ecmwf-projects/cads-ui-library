@@ -354,6 +354,18 @@ describe('<GeographicExtentWidget/>', () => {
         const range = { n: 90, e: 180, s: -90, w: -180 }
 
         /**
+         * East within permitted range
+         */
+        expect(
+          isWithinRange({
+            name: 'area_2',
+            fieldName: 'area_2_e',
+            value: '179',
+            range
+          })
+        ).toBeTruthy()
+
+        /**
          * Reject East less than West range.
          */
         expect(
@@ -374,6 +386,20 @@ describe('<GeographicExtentWidget/>', () => {
             fieldName: 'area_2_e',
             value: '250',
             range
+          })
+        ).toBeFalsy()
+
+        expect(
+          isWithinRange({
+            name: 'area',
+            fieldName: 'area_e',
+            value: '166',
+            range: {
+              n: 180,
+              w: 90,
+              e: -180,
+              s: -90
+            }
           })
         ).toBeFalsy()
       })
