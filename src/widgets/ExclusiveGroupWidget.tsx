@@ -8,6 +8,8 @@ import {
   RadioIndicator,
   WidgetTooltip
 } from '../index'
+import { useReadOnlyPersistedSelection } from '../utils'
+
 import { createWidget } from '../index'
 
 import type { FormConfiguration } from '../types/Form'
@@ -49,7 +51,12 @@ const ExclusiveGroupWidget = <TErrors,>({
 }: ExclusiveGroupWidgetProps<TErrors>) => {
   const { type, name, label, help, children, details } = configuration
 
-  const [selection, setSelection] = useState<string>(details.default)
+  const selections = useReadOnlyPersistedSelection() || {}
+
+  const [selection, setSelection] = useState<string>(
+    getDefaultValue(children, getPersistedSelection(selections)) ||
+      details.default
+  )
   if (!configuration) return null
 
   if (type !== 'ExclusiveGroupWidget') return null
@@ -98,6 +105,22 @@ const ExclusiveGroupWidget = <TErrors,>({
       </Fieldset>
     </Widget>
   )
+}
+
+const getDefaultValue = (
+  children: string[],
+  selections: Record<string, string[]>
+) => {
+  return children.find(child => {
+    return Object.keys(selections).includes(child)
+  })
+}
+
+const getPersistedSelection = (
+  selections: string[] | Record<string, string[]>
+) => {
+  if (!Array.isArray(selections)) return selections
+  return {}
 }
 
 /**

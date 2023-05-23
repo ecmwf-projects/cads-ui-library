@@ -131,15 +131,15 @@ const GeographicExtentWidget = <TErrors,>({
     return details.extentLabels[key]
   }
 
-  const getDefaultValue = <TSelection extends string[] | null>(
-    selection: TSelection,
+  const getDefaultValue = (
+    selection: string[] | { [p: string]: string[] } | null,
     defaultValueIndex: number,
     key: string
   ) => {
     if (!selection && !details.default) return ''
     if (!selection && details.default) return details.default[key]
     if (!selection) return ''
-    return selection[defaultValueIndex]
+    return Array.isArray(selection) && selection[defaultValueIndex]
   }
 
   const getFields = (errors: GeographicExtentWidgetProps['errors'] = {}) => {

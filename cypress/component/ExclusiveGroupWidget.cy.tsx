@@ -513,4 +513,139 @@ describe('<ExclusiveGroupWidget/>', () => {
 
     cy.findByText('At least one selection must be made').should('not.exist')
   })
+
+  it('hydrates its default selection', () => {
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Geographical area',
+      help: null,
+      name: 'area_group',
+      children: ['global', 'area', 'area_1'],
+      details: {
+        default: 'area_1'
+      }
+    }
+
+    const formConfiguration = [
+      configuration,
+      {
+        details: {
+          id: 1,
+          text: '<p>With this option selected the entire available area will be provided</p>'
+        },
+        label: 'Whole available region',
+        name: 'global',
+        type: 'FreeEditionWidget' as const
+      },
+      {
+        ...getGeographicExtentWidgetConfiguration(),
+        help: null,
+        label: 'Sub-region extraction'
+      },
+      {
+        ...getGeographicExtentWidgetConfiguration(),
+        help: null,
+        label: 'Area 1',
+        name: 'area_1'
+      }
+    ]
+
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: { id: 'cems-glofas-seasonal-reforecast' },
+        inputs: {
+          leadtime_hour: ['672'],
+          month: ['04'],
+          area: [89.11, -179.95, -51.95, 179.13]
+        }
+      })
+    )
+
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    const Form = () => {
+      const {
+        register,
+        formState: { errors }
+      } = useForm({
+        mode: 'onChange'
+      })
+
+      return (
+        <form
+          onSubmit={ev => {
+            ev.preventDefault()
+            const formData = new FormData(ev.currentTarget)
+            stubbedHandleSubmit([...formData.entries()])
+          }}
+        >
+          <ExclusiveGroupWidget
+            configuration={configuration}
+            errors={errors}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'area_group',
+              null,
+              {
+                validators: {
+                  geographicExtentWidgetValidators: {
+                    n: (internalName, { label }) =>
+                      register(internalName, {
+                        required: {
+                          value: true,
+                          message: `Please insert ${label} North input`
+                        }
+                      }),
+                    s: (internalName, { label }) =>
+                      register(internalName, {
+                        required: {
+                          value: true,
+                          message: `Please insert ${label} South input`
+                        }
+                      }),
+                    w: (internalName, { label }) =>
+                      register(internalName, {
+                        required: {
+                          value: true,
+                          message: `Please insert ${label} West input`
+                        }
+                      }),
+                    e: (internalName, { label }) =>
+                      register(internalName, {
+                        required: {
+                          value: true,
+                          message: `Please insert ${label} East input`
+                        }
+                      })
+                  }
+                }
+              }
+            )}
+          />
+
+          <button>submit</button>
+        </form>
+      )
+    }
+
+    cy.viewport(1200, 900)
+    cy.mount(<Form />)
+
+    cy.findAllByLabelText('North').eq(0).should('have.value', '89.11')
+    cy.findAllByLabelText('South').eq(0).should('have.value', '-51.95')
+    cy.findAllByLabelText('West').eq(0).should('have.value', '-179.95')
+    cy.findAllByLabelText('East').eq(0).should('have.value', '179.13')
+
+    /**
+     * We have a persisted selection active for area, so it should be interactive from the start.
+     */
+    cy.findAllByLabelText('North').eq(0).clear().type('11')
+    cy.findAllByLabelText('West').eq(0).clear().type('90')
+    cy.findAllByLabelText('East').eq(0).clear().type('14')
+    cy.findAllByLabelText('South').eq(0).clear().type('44')
+
+    cy.findByLabelText('Area 1').click()
+    cy.findAllByLabelText('North').eq(1).clear().type('11')
+  })
 })

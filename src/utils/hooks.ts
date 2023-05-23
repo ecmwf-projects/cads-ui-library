@@ -1,16 +1,21 @@
 import { useState, useRef, useEffect, RefObject } from 'react'
 import { useReadLocalStorage } from 'usehooks-ts'
 
-const useReadOnlyPersistedSelection = (fieldset: string) => {
+/**
+ * Read and return the persisted selection of the given widget, or the entire selection if no name is provided.
+ */
+const useReadOnlyPersistedSelection = (fieldset?: string) => {
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
-    inputs?: { [k: string]: string[] }
+    inputs?: Record<string, string[]>
   }>('formSelection')
 
   if (!persistedSelection) return null
 
+  if (!fieldset && persistedSelection.inputs) return persistedSelection.inputs
+
   if (persistedSelection.inputs) {
-    if (fieldset in persistedSelection.inputs)
+    if (fieldset && fieldset in persistedSelection.inputs)
       return persistedSelection.inputs[fieldset]
   }
 
