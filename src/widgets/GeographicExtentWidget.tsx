@@ -360,6 +360,8 @@ const stripMinus = (value: string) => {
 
     return value.replace(minus, '')
   }
+
+  return value
 }
 
 const isValidInput = ({ code, value }: { code: string; value?: string }) => {

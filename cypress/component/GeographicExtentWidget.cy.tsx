@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 
 import {
@@ -6,7 +6,8 @@ import {
   isSouthLessThanNorth,
   isWestLessThanEast,
   isWithinRange,
-  toPrecision
+  toPrecision,
+  stripMinus
 } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
@@ -534,10 +535,10 @@ describe('<GeographicExtentWidget/>', () => {
                   onChange: ev => {
                     if ('nativeEvent' in ev) {
                       if (ev.nativeEvent instanceof InputEvent) {
-                        setValue(
-                          fieldName,
-                          toPrecision(ev.nativeEvent.target.value, precision)
-                        )
+                        const value = ev.nativeEvent.target.value
+                        const nextValue = stripMinus(value)
+
+                        setValue(fieldName, toPrecision(nextValue, precision))
                       }
                     }
                   }
@@ -563,7 +564,7 @@ describe('<GeographicExtentWidget/>', () => {
       .should('have.value', '-9')
 
     cy.findByLabelText('North').clear().type('-99').should('have.value', '-99')
-
+    cy.findByLabelText('North').clear().type('.99-').should('have.value', '.99')
     cy.findByLabelText('North').clear().type('-').should('have.value', '-')
     cy.findByLabelText('North').clear().type('..').should('have.value', '.')
 

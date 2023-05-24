@@ -54,6 +54,8 @@ describe('<GeographicExtentWidget/>', () => {
         expect(stripMinus('--')).toEqual('-')
         expect(stripMinus('.99-')).toEqual('.99')
         expect(stripMinus('-.99')).toEqual('-.99')
+        expect(stripMinus('9')).toEqual('9')
+        expect(stripMinus('')).toEqual('')
       })
     })
     describe('Field validation', () => {
