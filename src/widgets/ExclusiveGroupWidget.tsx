@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
 import { Widget, WidgetHeader, WidgetTitle, Fieldset, Legend } from './Widget'
@@ -51,12 +51,28 @@ const ExclusiveGroupWidget = <TErrors,>({
 }: ExclusiveGroupWidgetProps<TErrors>) => {
   const { type, name, label, help, children, details } = configuration
 
-  const selections = useReadOnlyPersistedSelection() || {}
+  const selections = useReadOnlyPersistedSelection()
 
-  const [selection, setSelection] = useState<string>(
-    getDefaultValue(children, getPersistedSelection(selections)) ||
-      details.default
-  )
+  const [selection, setSelection] = useState(details.default)
+
+  useEffect(() => {
+    if (!selections) return
+    if (selections && Array.isArray(selections)) return
+
+    const getDefaultValue = (
+      children: string[],
+      selections: Record<string, string[]>
+    ) => {
+      return (
+        children.find(child => {
+          return Object.keys(selections).includes(child)
+        }) || ''
+      )
+    }
+
+    setSelection(getDefaultValue(children, selections))
+  }, [selections])
+
   if (!configuration) return null
 
   if (type !== 'ExclusiveGroupWidget') return null
@@ -105,22 +121,6 @@ const ExclusiveGroupWidget = <TErrors,>({
       </Fieldset>
     </Widget>
   )
-}
-
-const getDefaultValue = (
-  children: string[],
-  selections: Record<string, string[]>
-) => {
-  return children.find(child => {
-    return Object.keys(selections).includes(child)
-  })
-}
-
-const getPersistedSelection = (
-  selections: string[] | Record<string, string[]>
-) => {
-  if (!Array.isArray(selections)) return selections
-  return {}
 }
 
 /**

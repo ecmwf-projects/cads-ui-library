@@ -646,6 +646,7 @@ describe('<ExclusiveGroupWidget/>', () => {
     cy.findAllByLabelText('South').eq(0).clear().type('44')
 
     cy.findByLabelText('Area 1').click()
+    cy.findAllByLabelText('North').eq(1).should('have.value', '90')
     cy.findAllByLabelText('North').eq(1).clear().type('11')
   })
 })

@@ -1,4 +1,4 @@
-import React, { KeyboardEvent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import { useEventListener } from 'usehooks-ts'
@@ -99,7 +99,15 @@ const GeographicExtentWidget = <TErrors,>({
    */
   const defaultOrder = [`${name}_n`, `${name}_w`, `${name}_s`, `${name}_e`]
 
-  const selection = useReadOnlyPersistedSelection(name)
+  const selection = useReadOnlyPersistedSelection(
+    [
+      details.default?.n,
+      details.default?.w,
+      details.default?.s,
+      details.default?.e
+    ].map(val => String(val)),
+    name
+  )
 
   const injectWidgetPayload = (ev: FormDataEvent) => {
     const { formData } = ev
@@ -132,14 +140,12 @@ const GeographicExtentWidget = <TErrors,>({
   }
 
   const getDefaultValue = (
-    selection: string[] | { [p: string]: string[] } | null,
-    defaultValueIndex: number,
-    key: string
+    selection: string[] | Record<string, string[]> = [],
+    defaultValueIndex: number
   ) => {
-    if (!selection && !details.default) return ''
-    if (!selection && details.default) return details.default[key]
-    if (!selection) return ''
-    return Array.isArray(selection) && selection[defaultValueIndex]
+    if (selection && Array.isArray(selection)) {
+      return selection[defaultValueIndex]
+    }
   }
 
   const getFields = (errors: GeographicExtentWidgetProps['errors'] = {}) => {
@@ -168,7 +174,7 @@ const GeographicExtentWidget = <TErrors,>({
                 return event.preventDefault()
               }
             }}
-            defaultValue={getDefaultValue(selection, defaultValueIndex, key)}
+            defaultValue={getDefaultValue(selection, defaultValueIndex)}
             aria-invalid={isInvalid ? 'true' : 'false'}
             {...(typeof validator === 'function'
               ? validator(_name, configuration)

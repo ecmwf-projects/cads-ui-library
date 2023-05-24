@@ -4,22 +4,49 @@ import { useReadLocalStorage } from 'usehooks-ts'
 /**
  * Read and return the persisted selection of the given widget, or the entire selection if no name is provided.
  */
-const useReadOnlyPersistedSelection = (fieldset?: string) => {
+const useReadOnlyPersistedSelection = <
+  TDefault extends string[] | Record<string, string[]>
+>(
+  defaultSelection?: TDefault,
+  fieldset?: string | null
+) => {
+  const [selection, setSelection] = useState<
+    string[] | Record<string, string[]>
+  >()
+
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
     inputs?: Record<string, string[]>
   }>('formSelection')
+  const persistedSelectionRef = useRef(persistedSelection)
 
-  if (!persistedSelection) return null
+  /**
+   * Hydrate the widget selection from local storage, if present.
+   * useEffect is necessary to prevent SSR hydration mismatches.
+   */
+  useEffect(() => {
+    const getInitialSelection = () => {
+      if (persistedSelectionRef.current) {
+        if (!persistedSelectionRef.current?.inputs) {
+          if (!fieldset) return {}
 
-  if (!fieldset && persistedSelection.inputs) return persistedSelection.inputs
+          return defaultSelection
+        }
 
-  if (persistedSelection.inputs) {
-    if (fieldset && fieldset in persistedSelection.inputs)
-      return persistedSelection.inputs[fieldset]
-  }
+        if (!fieldset) return persistedSelectionRef.current.inputs
 
-  return null
+        return (
+          persistedSelectionRef.current.inputs[fieldset] || defaultSelection
+        )
+      }
+
+      return defaultSelection
+    }
+
+    setSelection(getInitialSelection())
+  }, [fieldset])
+
+  return selection
 }
 
 const useWidgetSelection = (fieldset: string) => {
@@ -29,7 +56,7 @@ const useWidgetSelection = (fieldset: string) => {
 
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
-    inputs: { [k: string]: string[] }
+    inputs: Record<string, string[]>
   }>('formSelection')
 
   /**
