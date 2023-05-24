@@ -8,7 +8,8 @@ import {
   isWestLessThanEast,
   isSouthLessThanNorth,
   isValidInput,
-  toPrecision
+  toPrecision,
+  stripMinus
 } from '../../src'
 
 describe('<GeographicExtentWidget/>', () => {
@@ -47,6 +48,12 @@ describe('<GeographicExtentWidget/>', () => {
         expect(toPrecision('99.171', 2)).toEqual('99.17')
         expect(toPrecision('99.1712', 3)).toEqual('99.171')
         expect(toPrecision('99.123456789', 5)).toEqual('99.12345')
+      })
+
+      it('strips out minus', () => {
+        expect(stripMinus('--')).toEqual('-')
+        expect(stripMinus('.99-')).toEqual('.99')
+        expect(stripMinus('-.99')).toEqual('-.99')
       })
     })
     describe('Field validation', () => {

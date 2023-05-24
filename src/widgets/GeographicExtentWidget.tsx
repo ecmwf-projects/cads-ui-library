@@ -344,6 +344,24 @@ const toPrecision = (input: string, precision: number) => {
   return input
 }
 
+const stripMinus = (value: string) => {
+  /**
+   * Allow only one minus, at the beginning of the value.
+   */
+  const minus = new RegExp(/-/g)
+  const minuses = value?.match(minus) || []
+
+  if (minuses.length) {
+    const [firstChar] = value
+
+    if (firstChar === '-') {
+      return `${firstChar}${value.replace(minus, '')}`
+    }
+
+    return value.replace(minus, '')
+  }
+}
+
 const isValidInput = ({ code, value }: { code: string; value?: string }) => {
   const whitelist = new RegExp(
     /Delete|Backspace|Arrow|Digit|Period|Control|KeyA|KeyC|KeyZ|KeyV|Slash|Minus|Hyphen/
@@ -427,5 +445,6 @@ export {
   isWestLessThanEast,
   isSouthLessThanNorth,
   isValidInput,
-  toPrecision
+  toPrecision,
+  stripMinus
 }

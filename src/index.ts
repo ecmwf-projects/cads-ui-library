@@ -31,7 +31,8 @@ export {
   isWestLessThanEast,
   isSouthLessThanNorth,
   isValidInput,
-  toPrecision
+  toPrecision,
+  stripMinus
 } from './widgets/GeographicExtentWidget'
 
 export { createWidget } from './utils/widgetFactory'
