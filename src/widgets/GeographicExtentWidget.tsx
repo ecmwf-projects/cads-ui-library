@@ -142,8 +142,6 @@ const GeographicExtentWidget = <TErrors,>({
 
       const isInvalid = _name in errors
 
-      const defaultValueIndex = defaultOrder.findIndex(item => item === _name)
-
       return (
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={_name}>{getLabel(key)}</Label>
