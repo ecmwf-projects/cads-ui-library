@@ -8,7 +8,6 @@ import {
   RadioIndicator,
   WidgetTooltip
 } from '../index'
-import { useReadOnlyPersistedSelection } from '../utils'
 
 import { createWidget } from '../index'
 
@@ -51,27 +50,7 @@ const ExclusiveGroupWidget = <TErrors,>({
 }: ExclusiveGroupWidgetProps<TErrors>) => {
   const { type, name, label, help, children, details } = configuration
 
-  const selections = useReadOnlyPersistedSelection()
-
   const [selection, setSelection] = useState(details.default)
-
-  useEffect(() => {
-    if (!selections) return
-    if (selections && Array.isArray(selections)) return
-
-    const getDefaultValue = (
-      children: string[],
-      selections: Record<string, string[]>
-    ) => {
-      return (
-        children.find(child => {
-          return Object.keys(selections).includes(child)
-        }) || ''
-      )
-    }
-
-    setSelection(getDefaultValue(children, selections))
-  }, [selections])
 
   if (!configuration) return null
 

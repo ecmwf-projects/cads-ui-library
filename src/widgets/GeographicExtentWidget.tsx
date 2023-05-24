@@ -14,8 +14,6 @@ import {
 } from './Widget'
 import { Label, WidgetTooltip } from '../index'
 
-import { useReadOnlyPersistedSelection } from '../utils'
-
 export interface GeographicExtentWidgetConfiguration {
   type: 'GeographicExtentWidget'
   name: string
@@ -99,16 +97,6 @@ const GeographicExtentWidget = <TErrors,>({
    */
   const defaultOrder = [`${name}_n`, `${name}_w`, `${name}_s`, `${name}_e`]
 
-  const selection = useReadOnlyPersistedSelection(
-    [
-      details.default?.n,
-      details.default?.w,
-      details.default?.s,
-      details.default?.e
-    ].map(val => String(val)),
-    name
-  )
-
   const injectWidgetPayload = (ev: FormDataEvent) => {
     const { formData } = ev
 
@@ -130,6 +118,11 @@ const GeographicExtentWidget = <TErrors,>({
 
   if (type !== 'GeographicExtentWidget') return null
 
+  const getDefaultValue = (key: string) => {
+    if (!details.default) return ''
+    return details.default[key]
+  }
+
   const getRange = () => {
     return details.range
   }
@@ -137,15 +130,6 @@ const GeographicExtentWidget = <TErrors,>({
   const getLabel = (key: string) => {
     if (!details.extentLabels) return defaultMapping[key]
     return details.extentLabels[key]
-  }
-
-  const getDefaultValue = (
-    selection: string[] | Record<string, string[]> = [],
-    defaultValueIndex: number
-  ) => {
-    if (selection && Array.isArray(selection)) {
-      return selection[defaultValueIndex]
-    }
   }
 
   const getFields = (errors: GeographicExtentWidgetProps['errors'] = {}) => {
@@ -174,7 +158,7 @@ const GeographicExtentWidget = <TErrors,>({
                 return event.preventDefault()
               }
             }}
-            defaultValue={getDefaultValue(selection, defaultValueIndex)}
+            defaultValue={getDefaultValue(key)}
             aria-invalid={isInvalid ? 'true' : 'false'}
             {...(typeof validator === 'function'
               ? validator(_name, configuration)

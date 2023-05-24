@@ -61,39 +61,6 @@ describe('<GeographicExtentWidget/>', () => {
     cy.findAllByLabelText('East').should('have.value', '180')
   })
 
-  it('hydrates its default selection', () => {
-    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
-
-    localStorage.setItem(
-      'formSelection',
-      JSON.stringify({
-        dataset: { id: 'cems-glofas-seasonal-reforecast' },
-        inputs: {
-          leadtime_hour: ['672'],
-          month: ['04'],
-          area: [99.11, -179.95, -51.95, 179.13],
-          area_1: [90, -180, -70, 180]
-        }
-      })
-    )
-
-    cy.mount(
-      <Form handleSubmit={stubbedHandleSubmit}>
-        <GeographicExtentWidget
-          configuration={{
-            ...getGeographicExtentWidgetConfiguration(),
-            help: null
-          }}
-        />
-      </Form>
-    )
-
-    cy.findAllByLabelText('North').should('have.value', '99.11')
-    cy.findAllByLabelText('South').should('have.value', '-51.95')
-    cy.findAllByLabelText('West').should('have.value', '-179.95')
-    cy.findAllByLabelText('East').should('have.value', '179.13')
-  })
-
   it('multiple geo extents', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
@@ -188,6 +155,92 @@ describe('<GeographicExtentWidget/>', () => {
     cy.findByLabelText('South').should('have.attr', 'required')
     cy.findByLabelText('South').should('have.attr', 'pattern')
     cy.findByLabelText('South').should('have.attr', 'maxlength', '33')
+  })
+
+  it('applies validation - West edge must be less than East edge', () => {
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    const Form = ({
+      handleSubmit
+    }: {
+      handleSubmit: (...args: any) => void
+    }) => {
+      const {
+        register,
+        formState: { errors }
+      } = useForm({
+        mode: 'onChange'
+      })
+
+      return (
+        <form
+          onSubmit={ev => {
+            ev.preventDefault()
+            const formData = new FormData(ev.currentTarget)
+            handleSubmit([...formData.entries()])
+          }}
+        >
+          <GeographicExtentWidget
+            configuration={{
+              ...getGeographicExtentWidgetConfiguration(),
+              help: null
+            }}
+            validators={{
+              n: internalName =>
+                register(internalName, {
+                  required: {
+                    value: true,
+                    message: 'Please insert North input'
+                  }
+                }),
+              s: internalName =>
+                register(internalName, {
+                  required: {
+                    value: true,
+                    message: 'Please insert South input'
+                  }
+                }),
+              w: internalName =>
+                register(internalName, {
+                  required: {
+                    value: true,
+                    message: 'Please insert West input'
+                  }
+                }),
+              e: internalName =>
+                register(internalName, {
+                  required: {
+                    value: true,
+                    message: 'Please insert East input'
+                  }
+                })
+            }}
+            errors={errors}
+          />
+
+          <button>submit</button>
+        </form>
+      )
+    }
+
+    cy.mount(<Form handleSubmit={stubbedHandleSubmit} />)
+
+    cy.findByLabelText('North').should('have.value', '90')
+    cy.findByLabelText('North').clear()
+    cy.findByLabelText('North').should('have.attr', 'aria-invalid', 'true')
+    cy.findByText('Please insert North input')
+
+    cy.findByLabelText('South').clear()
+    cy.findByLabelText('South').should('have.attr', 'aria-invalid', 'true')
+    cy.findByText('Please insert South input')
+
+    cy.findByLabelText('West').clear()
+    cy.findByLabelText('West').should('have.attr', 'aria-invalid', 'true')
+    cy.findByText('Please insert West input')
+
+    cy.findByLabelText('East').clear()
+    cy.findByLabelText('East').should('have.attr', 'aria-invalid', 'true')
+    cy.findByText('Please insert East input')
   })
 
   it('applies validation - range, w/e, n/s validation', () => {

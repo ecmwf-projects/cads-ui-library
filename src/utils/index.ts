@@ -4,10 +4,6 @@ export {
   isAllSelected
 } from './constraints'
 
-export {
-  useWidgetSelection,
-  useBypassRequired,
-  useReadOnlyPersistedSelection
-} from './hooks'
+export { useWidgetSelection, useBypassRequired } from './hooks'
 
 export { SelectAll, ClearAll } from './bulkSelector'
