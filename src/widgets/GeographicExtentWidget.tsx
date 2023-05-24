@@ -152,6 +152,10 @@ const GeographicExtentWidget = <TErrors,>({
             onKeyDown={event => {
               const { value } = event.currentTarget
               const { code } = event.nativeEvent
+              /**
+               * Don't let the user type any possible character into the fields.
+               * This is better in terms of performances than letting the user type, parsing the input, and setting the field again, especially for complex forms.
+               */
               if (!isValidInput({ code, value })) {
                 return event.preventDefault()
               }
@@ -342,9 +346,8 @@ const toPrecision = (input: string, precision: number) => {
 
 const isValidInput = ({ code, value }: { code: string; value?: string }) => {
   const whitelist = new RegExp(
-    /Delete|Backspace|Arrow|Digit|Period|Control|Minus|Slash|Hyphen/
+    /Delete|Backspace|Arrow|Digit|Period|Control|KeyA|KeyC|KeyZ|KeyV|Slash|Minus|Hyphen/
   )
-  const minus = new RegExp(/Minus|Slash|Hyphen/)
 
   /**
    * Only one dot allowed
@@ -359,20 +362,6 @@ const isValidInput = ({ code, value }: { code: string; value?: string }) => {
     code.match(/Period|Digit|Backspace|ArrowR/)
   ) {
     return true
-  }
-
-  /**
-   * Only one minus allowed.
-   */
-  if (value && value.match(/[-]/) && code.match(minus)) {
-    return false
-  }
-
-  /**
-   * Minus allowed only at the beginning
-   */
-  if (value && !value.match(/^[-].*/) && code.match(minus)) {
-    return false
   }
 
   return !!code.match(whitelist)

@@ -17,18 +17,11 @@ describe('<GeographicExtentWidget/>', () => {
       it('rejects invalid input', () => {
         expect(isValidInput({ code: 'KeyP' })).toBeFalsy()
         expect(isValidInput({ code: 'KeyN' })).toBeFalsy()
-
-        expect(isValidInput({ code: 'Slash', value: '-' })).toBeFalsy()
-        expect(isValidInput({ code: 'Minus', value: '-99' })).toBeFalsy()
-        expect(isValidInput({ code: 'Slash', value: '-99' })).toBeFalsy()
         expect(isValidInput({ code: 'Comma' })).toBeFalsy()
         expect(isValidInput({ code: 'Period', value: '.' })).toBeFalsy()
       })
 
       it('accepts valid input', () => {
-        expect(isValidInput({ code: 'Minus' })).toBeTruthy()
-        expect(isValidInput({ code: 'Slash' })).toBeTruthy()
-
         expect(isValidInput({ code: 'Delete' })).toBeTruthy()
         expect(isValidInput({ code: 'Backspace' })).toBeTruthy()
         expect(isValidInput({ code: 'Backspace', value: '-' })).toBeTruthy()

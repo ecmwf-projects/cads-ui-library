@@ -555,9 +555,15 @@ describe('<GeographicExtentWidget/>', () => {
     /**
      * Minus and dot
      */
-    cy.findByLabelText('North').clear().type('-99-').should('have.value', '-99')
-    cy.findByLabelText('North').clear().type('.99-').should('have.value', '.99')
-    cy.findByLabelText('North').clear().type('--').should('have.value', '-')
+    cy.findByLabelText('North')
+      .clear()
+      .type('9')
+      .should('have.value', '9')
+      .type('{leftArrow}-')
+      .should('have.value', '-9')
+
+    cy.findByLabelText('North').clear().type('-99').should('have.value', '-99')
+
     cy.findByLabelText('North').clear().type('-').should('have.value', '-')
     cy.findByLabelText('North').clear().type('..').should('have.value', '.')
 
