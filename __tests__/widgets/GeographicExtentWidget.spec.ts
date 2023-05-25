@@ -20,6 +20,7 @@ describe('<GeographicExtentWidget/>', () => {
         expect(isValidInput({ code: 'KeyN' })).toBeFalsy()
         expect(isValidInput({ code: 'Comma' })).toBeFalsy()
         expect(isValidInput({ code: 'Period', value: '.' })).toBeFalsy()
+        expect(isValidInput({ code: undefined })).toBeFalsy()
       })
 
       it('accepts valid input', () => {

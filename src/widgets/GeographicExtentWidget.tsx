@@ -364,7 +364,13 @@ const stripMinus = (value: string) => {
   return value
 }
 
-const isValidInput = ({ code, value }: { code: string; value?: string }) => {
+const isValidInput = ({
+  code,
+  value
+}: {
+  code: string | undefined
+  value?: string
+}) => {
   const whitelist = new RegExp(
     /Delete|Backspace|Arrow|Digit|Period|Control|KeyA|KeyC|KeyZ|KeyV|Slash|Minus|Hyphen/
   )
@@ -372,19 +378,20 @@ const isValidInput = ({ code, value }: { code: string; value?: string }) => {
   /**
    * Only one dot allowed
    */
-  if (value && value.match(/[.]/) && code.match(/Period/)) {
+  if (value && value.match(/[.]/) && code?.match(/Period/)) {
     return false
   }
 
   if (
     value &&
-    value.match(/[-.]/) &&
-    code.match(/Period|Digit|Backspace|ArrowR/)
+    value.match(/-|./) &&
+    code?.match(/Period|Digit|Backspace|ArrowR/)
   ) {
     return true
   }
 
-  return !!code.match(whitelist)
+  if (code?.match(whitelist)) return true
+  return false
 }
 
 const Inputs = styled.div`
