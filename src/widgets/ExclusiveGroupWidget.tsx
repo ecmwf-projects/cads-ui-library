@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { Widget, WidgetHeader, WidgetTitle, Fieldset, Legend } from './Widget'

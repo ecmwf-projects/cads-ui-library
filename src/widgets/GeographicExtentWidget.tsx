@@ -154,9 +154,10 @@ const GeographicExtentWidget = <TErrors,>({
               const { code } = event.nativeEvent
               /**
                * Don't let the user type any possible character into the fields.
-               * This is better in terms of performances than letting the user type, parsing the input, and setting the field again, especially for complex forms.
+               * This is better in terms of performances than letting the user type, parsing the input, and setting the field again, especially for bigger forms.
                */
-              if (!isValidInput({ code, value })) {
+
+              if (!isValidInput({ code, value }) && !event.ctrlKey) {
                 return event.preventDefault()
               }
             }}
@@ -171,10 +172,7 @@ const GeographicExtentWidget = <TErrors,>({
     })
   }
 
-  const getOwnErrors = (
-    errors: GeographicExtentWidgetProps['errors'],
-    range: GeographicExtentWidgetConfiguration['details']['range']
-  ) => {
+  const getOwnErrors = (errors: GeographicExtentWidgetProps['errors']) => {
     if (!errors) return null
 
     const ownFields = Object.keys(getRange()).map(key => `${name}_${key}`)
@@ -215,7 +213,7 @@ const GeographicExtentWidget = <TErrors,>({
           {getFields(errors || {})}
         </Inputs>
         <ReservedErrorSpace data-stylizable='widget geographic-extent reserved-error-space'>
-          {getOwnErrors(errors || {}, getRange())}
+          {getOwnErrors(errors || {})}
         </ReservedErrorSpace>
       </Fieldset>
     </Widget>
@@ -372,7 +370,7 @@ const isValidInput = ({
   value?: string
 }) => {
   const whitelist = new RegExp(
-    /Delete|Backspace|Arrow|Digit|Period|Control|KeyA|KeyC|KeyZ|KeyV|Slash|Minus|Hyphen/
+    /Delete|Backspace|Arrow|Digit|Period|Control|Slash|Minus|Hyphen/
   )
 
   /**
