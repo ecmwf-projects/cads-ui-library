@@ -8,7 +8,7 @@ const useWidgetSelection = (fieldset: string) => {
 
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
-    inputs: { [k: string]: string[] }
+    inputs: Record<string, string[]>
   }>('formSelection')
 
   /**

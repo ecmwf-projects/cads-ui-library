@@ -56,7 +56,7 @@ export interface GeographicExtentWidgetProps<
    * Each validator gets passed the widget configuration, and the internal name of the field.
    */
   validators?: Record<
-    keyof GeographicExtentWidgetConfiguration['details']['range'],
+    string,
     (
       internalName: string,
       configuration: GeographicExtentWidgetConfiguration
@@ -89,19 +89,26 @@ const GeographicExtentWidget = <TErrors,>({
   validators,
   errors
 }: GeographicExtentWidgetProps<TErrors>) => {
+  const { type, name, label, help, details } = configuration
+
+  /**
+   * The default payload order expected by the adaptor is: North, West, South, East.
+   * We might make this configurable in the near future.
+   */
+  const defaultOrder = [`${name}_n`, `${name}_w`, `${name}_s`, `${name}_e`]
+
   const injectWidgetPayload = (ev: FormDataEvent) => {
     const { formData } = ev
+
     /**
      * Remove the original keys from the form data object, and replace them with the fieldset name.
      * This is required for the request payload utils to properly assemble the request object.
      */
 
-    for (const extent of Object.keys(getRange())) {
-      const _name = `${name}_${extent}`
-
-      if (formData.has(_name)) {
-        const value = formData.get(_name) as unknown as string
-        formData.delete(_name)
+    for (const field of defaultOrder) {
+      if (formData.has(field)) {
+        const value = formData.get(field) as unknown as string
+        formData.delete(field)
         formData.append(name, value)
       }
     }
@@ -109,13 +116,9 @@ const GeographicExtentWidget = <TErrors,>({
 
   useEventListener('formdata', injectWidgetPayload)
 
-  if (!configuration) return null
-
-  const { type, name, label, help, details } = configuration
-
   if (type !== 'GeographicExtentWidget') return null
 
-  const getDefault = (key: string) => {
+  const getDefaultValue = (key: string) => {
     if (!details.default) return ''
     return details.default[key]
   }
@@ -132,12 +135,10 @@ const GeographicExtentWidget = <TErrors,>({
   const getFields = (errors: GeographicExtentWidgetProps['errors'] = {}) => {
     const areas = ['top', 'left', 'right', 'bottom']
 
-    return Object.keys(getRange()).map((key, index) => {
-      const k = key as unknown as keyof ReturnType<typeof getRange>
-
+    return ['n', 'w', 'e', 's'].map((key, index) => {
       const _name = `${name}_${key}`
 
-      const validator = validators ? validators[k] : null
+      const validator = validators ? validators[key] : null
 
       const isInvalid = _name in errors
 
@@ -145,10 +146,30 @@ const GeographicExtentWidget = <TErrors,>({
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={_name}>{getLabel(key)}</Label>
           <input
+            autoComplete='off'
             type='text'
             name={_name}
             id={_name}
-            defaultValue={getDefault(key)}
+            onKeyDown={event => {
+              const { value } = event.currentTarget
+              const { code } = event.nativeEvent
+              /**
+               * Don't let the user type any possible character into the fields.
+               * This is better in terms of performances than letting the user type, parsing the input, and setting the field again, especially for bigger forms.
+               */
+
+              /**
+               * Allow shift only in combination with ctrl.
+               */
+              if (event.shiftKey && !event.ctrlKey) {
+                return event.preventDefault()
+              }
+
+              if (!isValidInput({ code, value }) && !event.ctrlKey) {
+                return event.preventDefault()
+              }
+            }}
+            defaultValue={getDefaultValue(key)}
             aria-invalid={isInvalid ? 'true' : 'false'}
             {...(typeof validator === 'function'
               ? validator(_name, configuration)
@@ -159,26 +180,24 @@ const GeographicExtentWidget = <TErrors,>({
     })
   }
 
-  const getOwnErrors = (
-    errors: GeographicExtentWidgetProps['errors'],
-    range: GeographicExtentWidgetConfiguration['details']['range']
-  ) => {
+  const getOwnErrors = (errors: GeographicExtentWidgetProps['errors']) => {
     if (!errors) return null
 
-    const { error } = Object.keys(range).reduce(
-      (acc, key) => {
-        const _name = `${name}_${key}`
-        if (_name in errors) {
-          acc['error'] = 'Please select coordinates within range'
+    const ownFields = Object.keys(getRange()).map(key => `${name}_${key}`)
 
+    const { error } = Object.keys(errors).reduce<{ error: string | null }>(
+      (acc, key) => {
+        if (ownFields.includes(key)) {
+          acc['error'] = errors[key].message || null
           return acc
         }
+
         return acc
       },
-      { error: '' }
+      { error: null }
     )
 
-    return <Error>{error}</Error>
+    return error ? <Error>{error}</Error> : null
   }
 
   return (
@@ -202,11 +221,183 @@ const GeographicExtentWidget = <TErrors,>({
           {getFields(errors || {})}
         </Inputs>
         <ReservedErrorSpace data-stylizable='widget geographic-extent reserved-error-space'>
-          {getOwnErrors(errors || {}, getRange())}
+          {getOwnErrors(errors || {})}
         </ReservedErrorSpace>
       </Fieldset>
     </Widget>
   )
+}
+
+const isWithinRange = ({
+  name,
+  fieldName,
+  value,
+  range
+}: {
+  name: string
+  fieldName: string
+  value: string
+  range: GeographicExtentWidgetConfiguration['details']['range']
+}) => {
+  const { n, s, w, e } = range
+  const _range = {
+    [`${name}_n`]: n,
+    [`${name}_w`]: w,
+    [`${name}_e`]: e,
+    [`${name}_s`]: s
+  }
+
+  if (`${name}_n` === fieldName) {
+    const _value = Number(value)
+
+    if (_value > _range[`${name}_n`]) return false
+
+    if (_value < _range[`${name}_s`]) return false
+  }
+
+  if (`${name}_s` === fieldName) {
+    const _value = Number(value)
+
+    if (_value >= _range[`${name}_n`]) return false
+
+    if (_value < _range[`${name}_s`]) return false
+  }
+
+  if (`${name}_w` === fieldName) {
+    const _value = Number(value)
+
+    if (_value > _range[`${name}_e`]) return false
+
+    if (_value < _range[`${name}_w`]) return false
+  }
+
+  if (`${name}_e` === fieldName) {
+    const _value = Number(value)
+
+    if (_value < _range[`${name}_w`]) return false
+
+    if (_value > _range[`${name}_e`]) return false
+  }
+
+  return true
+}
+
+const isWestLessThanEast = ({
+  name,
+  fieldName,
+  fields,
+  value
+}: {
+  name: string
+  fieldName: string
+  fields: Record<string, string>
+  value: string
+}) => {
+  if (`${name}_e` === fieldName) {
+    const _value = Number(value)
+
+    if (_value <= Number(fields[`${name}_w`])) {
+      return false
+    }
+  }
+
+  if (`${name}_w` === fieldName) {
+    const _value = Number(value)
+
+    if (_value >= Number(fields[`${name}_e`])) {
+      return false
+    }
+  }
+
+  return true
+}
+
+const isSouthLessThanNorth = ({
+  name,
+  fieldName,
+  fields,
+  value
+}: {
+  name: string
+  fieldName: string
+  fields: Record<string, string>
+  value: string
+}) => {
+  if (`${name}_n` === fieldName) {
+    const _value = Number(value)
+    if (_value <= Number(fields[`${name}_s`])) {
+      return false
+    }
+  }
+
+  if (`${name}_s` === fieldName) {
+    const _value = Number(value)
+    if (_value >= Number(fields[`${name}_n`])) {
+      return false
+    }
+  }
+
+  return true
+}
+
+const toPrecision = (input: string, precision: number) => {
+  const dot = input.indexOf('.')
+  if (dot !== -1) {
+    if (input.length - dot > precision) {
+      return input.slice(0, dot + precision + 1)
+    }
+  }
+  return input
+}
+
+const stripMinus = (value: string) => {
+  /**
+   * Allow only one minus, at the beginning of the value.
+   */
+  const minus = new RegExp(/-/g)
+  const minuses = value?.match(minus) || []
+
+  if (minuses.length) {
+    const [firstChar] = value
+
+    if (firstChar === '-') {
+      return `${firstChar}${value.replace(minus, '')}`
+    }
+
+    return value.replace(minus, '')
+  }
+
+  return value
+}
+
+const isValidInput = ({
+  code,
+  value
+}: {
+  code: string | undefined
+  value?: string
+}) => {
+  const whitelist = new RegExp(
+    /Delete|Backspace|Arrow|Digit|Period|Control|Slash|Minus|Hyphen|Tab|MetaKey/
+  )
+
+  /**
+   * Only one dot allowed
+   */
+  if (value && value.match(/[.]/) && code?.match(/Period/)) {
+    return false
+  }
+
+  if (
+    value &&
+    value.match(/-|./) &&
+    code?.match(/Period|Digit|Backspace|ArrowR/)
+  ) {
+    return true
+  }
+
+  if (code?.match(whitelist)) return true
+  return false
 }
 
 const Inputs = styled.div`
@@ -264,3 +455,11 @@ const ReservedErrorSpace = styled(ReservedSpace)`
 `
 
 export { GeographicExtentWidget }
+export {
+  isWithinRange,
+  isWestLessThanEast,
+  isSouthLessThanNorth,
+  isValidInput,
+  toPrecision,
+  stripMinus
+}

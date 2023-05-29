@@ -26,4 +26,13 @@ export {
   isChildOfExclusiveGroup
 } from './widgets/ExclusiveGroupWidget'
 
+export {
+  isWithinRange,
+  isWestLessThanEast,
+  isSouthLessThanNorth,
+  isValidInput,
+  toPrecision,
+  stripMinus
+} from './widgets/GeographicExtentWidget'
+
 export { createWidget } from './utils/widgetFactory'

@@ -1,7 +1,14 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 
-import { GeographicExtentWidget } from '../../src'
+import {
+  GeographicExtentWidget,
+  isSouthLessThanNorth,
+  isWestLessThanEast,
+  isWithinRange,
+  toPrecision,
+  stripMinus
+} from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 import { getGeographicExtentWidgetConfiguration } from '../../__tests__/factories'
@@ -29,18 +36,30 @@ const Form = ({
 
 describe('<GeographicExtentWidget/>', () => {
   it('renders', () => {
-    cy.mount(
-      <TooltipProvider>
-        <GeographicExtentWidget
-          configuration={getGeographicExtentWidgetConfiguration()}
-        />
-      </TooltipProvider>
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: { id: 'cems-glofas-seasonal-reforecast' }
+      })
     )
 
-    cy.findByLabelText('North').clear().type('89')
-    cy.findByLabelText('West').clear().type('-120')
-    cy.findByLabelText('East').clear().type('170')
-    cy.findByLabelText('South').clear().type('-89')
+    cy.mount(
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <GeographicExtentWidget
+          configuration={{
+            ...getGeographicExtentWidgetConfiguration(),
+            help: null
+          }}
+        />
+      </Form>
+    )
+
+    cy.findAllByLabelText('North').should('have.value', '90')
+    cy.findAllByLabelText('South').should('have.value', '-90')
+    cy.findAllByLabelText('West').should('have.value', '-180')
+    cy.findAllByLabelText('East').should('have.value', '180')
   })
 
   it('multiple geo extents', () => {
@@ -65,6 +84,11 @@ describe('<GeographicExtentWidget/>', () => {
       </Form>
     )
 
+    cy.findAllByLabelText('North').eq(0).should('have.value', '90')
+    cy.findAllByLabelText('South').eq(0).should('have.value', '-90')
+    cy.findAllByLabelText('West').eq(0).should('have.value', '-180')
+    cy.findAllByLabelText('East').eq(0).should('have.value', '180')
+
     cy.findAllByLabelText('North').eq(0).clear().type('11')
     cy.findAllByLabelText('South').eq(0).clear().type('12')
     cy.findAllByLabelText('West').eq(0).clear().type('13')
@@ -77,15 +101,18 @@ describe('<GeographicExtentWidget/>', () => {
 
     cy.findByText('submit').click()
 
+    /**
+     * Testing the default payload order expected by the adaptor: North, West, South, East.
+     */
     cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
       ['area', '11'],
       ['area', '13'],
-      ['area', '14'],
       ['area', '12'],
+      ['area', '14'],
       ['area_1', '51'],
       ['area_1', '33'],
-      ['area_1', '11'],
-      ['area_1', '64']
+      ['area_1', '64'],
+      ['area_1', '11']
     ])
   })
 
@@ -131,7 +158,7 @@ describe('<GeographicExtentWidget/>', () => {
     cy.findByLabelText('South').should('have.attr', 'maxlength', '33')
   })
 
-  it('applies validation - integration with react hook form', () => {
+  it('applies validation - West edge must be less than East edge', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
     const Form = ({
@@ -154,40 +181,248 @@ describe('<GeographicExtentWidget/>', () => {
             handleSubmit([...formData.entries()])
           }}
         >
+          <GeographicExtentWidget
+            configuration={{
+              ...getGeographicExtentWidgetConfiguration(),
+              help: null
+            }}
+            validators={{
+              n: internalName =>
+                register(internalName, {
+                  required: {
+                    value: true,
+                    message: 'Please insert North input'
+                  }
+                }),
+              s: internalName =>
+                register(internalName, {
+                  required: {
+                    value: true,
+                    message: 'Please insert South input'
+                  }
+                }),
+              w: internalName =>
+                register(internalName, {
+                  required: {
+                    value: true,
+                    message: 'Please insert West input'
+                  }
+                }),
+              e: internalName =>
+                register(internalName, {
+                  required: {
+                    value: true,
+                    message: 'Please insert East input'
+                  }
+                })
+            }}
+            errors={errors}
+          />
+
+          <button>submit</button>
+        </form>
+      )
+    }
+
+    cy.mount(<Form handleSubmit={stubbedHandleSubmit} />)
+
+    cy.findByLabelText('North').should('have.value', '90')
+    cy.findByLabelText('North').clear()
+    cy.findByLabelText('North').should('have.attr', 'aria-invalid', 'true')
+    cy.findByText('Please insert North input')
+
+    cy.findByLabelText('South').clear()
+    cy.findByLabelText('South').should('have.attr', 'aria-invalid', 'true')
+    cy.findByText('Please insert South input')
+
+    cy.findByLabelText('West').clear()
+    cy.findByLabelText('West').should('have.attr', 'aria-invalid', 'true')
+    cy.findByText('Please insert West input')
+
+    cy.findByLabelText('East').clear()
+    cy.findByLabelText('East').should('have.attr', 'aria-invalid', 'true')
+    cy.findByText('Please insert East input')
+  })
+
+  it('applies validation - range, w/e, n/s validation', () => {
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    const Form = ({
+      handleSubmit
+    }: {
+      handleSubmit: (...args: any) => void
+    }) => {
+      const {
+        register,
+        formState: { errors: ownErrors }
+      } = useForm({
+        mode: 'onChange'
+      })
+
+      return (
+        <form
+          onSubmit={ev => {
+            ev.preventDefault()
+            const formData = new FormData(ev.currentTarget)
+            handleSubmit([...formData.entries()])
+          }}
+        >
           <TooltipProvider>
             <GeographicExtentWidget
-              configuration={getGeographicExtentWidgetConfiguration()}
+              configuration={{
+                details: {
+                  default: {
+                    n: 90,
+                    w: -180,
+                    e: 180,
+                    s: -90
+                  },
+                  extentLabels: {
+                    n: 'North',
+                    w: 'West',
+                    e: 'East',
+                    s: 'South'
+                  },
+                  precision: 2,
+                  range: {
+                    e: 180,
+                    n: 90,
+                    s: -90,
+                    w: -180
+                  }
+                },
+                help: null,
+                label: 'Sub-region extraction',
+                name: 'area',
+                type: 'GeographicExtentWidget' as const
+              }}
               validators={{
-                n: (internalName, { details: { precision: _todo } }) =>
-                  register(internalName, {
+                n: (fieldName, { name, details: { range } }) =>
+                  register(fieldName, {
                     required: {
                       value: true,
                       message: 'Please insert North input'
+                    },
+                    validate: {
+                      range: value => {
+                        return (
+                          isWithinRange({
+                            name,
+                            value,
+                            fieldName,
+                            range
+                          }) || 'Please select coordinates within range'
+                        )
+                      },
+                      southLessThanNorth: (value, fields) => {
+                        return (
+                          isSouthLessThanNorth({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'South edge must be less than North edge'
+                        )
+                      }
                     }
                   }),
-                s: (internalName, { details: { precision: _todo } }) =>
-                  register(internalName, {
+                s: (fieldName, { name, details: { range } }) =>
+                  register(fieldName, {
                     required: {
                       value: true,
                       message: 'Please insert South input'
+                    },
+                    validate: {
+                      southLessThanNorth: (value, fields) => {
+                        return (
+                          isSouthLessThanNorth({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'South edge must be less than North edge'
+                        )
+                      },
+                      range: value => {
+                        return (
+                          isWithinRange({
+                            name,
+                            value,
+                            fieldName,
+                            range
+                          }) || 'Please select coordinates within range'
+                        )
+                      }
                     }
                   }),
-                w: (internalName, { details: { precision: _todo } }) =>
-                  register(internalName, {
+                w: (fieldName, { name, details: { range } }) =>
+                  register(fieldName, {
                     required: {
                       value: true,
                       message: 'Please insert West input'
+                    },
+                    validate: {
+                      westLessThanEast: (value, fields) => {
+                        return (
+                          isWestLessThanEast({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'West edge must be less than East edge'
+                        )
+                      },
+                      range: value => {
+                        return (
+                          isWithinRange({
+                            name,
+                            value,
+                            fieldName,
+                            range
+                          }) || 'Please select coordinates within range'
+                        )
+                      }
                     }
                   }),
-                e: (internalName, { details: { precision: _todo } }) =>
-                  register(internalName, {
+                e: (fieldName, { name, details: { range } }) =>
+                  register(fieldName, {
                     required: {
                       value: true,
                       message: 'Please insert East input'
+                    },
+                    validate: {
+                      westLessThanEast: (value, fields) => {
+                        return (
+                          isWestLessThanEast({
+                            name,
+                            value,
+                            fields,
+                            fieldName
+                          }) || 'West edge must be less than East edge'
+                        )
+                      },
+                      range: value => {
+                        return (
+                          isWithinRange({
+                            name,
+                            value,
+                            fieldName,
+                            range
+                          }) || 'Please select coordinates within range'
+                        )
+                      }
                     }
                   })
               }}
-              errors={errors}
+              errors={{
+                ...ownErrors,
+                area_unrelated_widget: {
+                  message: 'Not an own error of this widget 1'
+                },
+                area_another_unrelated_widget: {
+                  message: 'Not an own error of this widget 2'
+                }
+              }}
             />
           </TooltipProvider>
 
@@ -198,22 +433,165 @@ describe('<GeographicExtentWidget/>', () => {
 
     cy.mount(<Form handleSubmit={stubbedHandleSubmit} />)
 
-    cy.findByLabelText('North').clear()
-    cy.findByLabelText('North').should('have.attr', 'aria-invalid', 'true')
-    cy.findByText('Please select coordinates within range')
+    cy.findByLabelText('North').clear().type('200')
+    cy.findByRole('alert').should(
+      'have.text',
+      'Please select coordinates within range'
+    )
 
-    cy.findByLabelText('South').clear()
-    cy.findByLabelText('South').should('have.attr', 'aria-invalid', 'true')
-    cy.findByText('Please select coordinates within range')
+    cy.findByLabelText('North').clear().type('89')
+    cy.findByLabelText('South').clear().type('89')
+    cy.findByRole('alert').should(
+      'have.text',
+      'South edge must be less than North edge'
+    )
+
+    cy.findByLabelText('West').clear().type('180')
+    cy.findByRole('alert').should(
+      'have.text',
+      'West edge must be less than East edge'
+    )
+
+    cy.findByLabelText('West').clear().type('-185')
+    cy.findByRole('alert').should(
+      'have.text',
+      'Please select coordinates within range'
+    )
 
     cy.findByLabelText('West').clear()
-    cy.findByLabelText('West').should('have.attr', 'aria-invalid', 'true')
-    cy.findByText('Please select coordinates within range')
+    cy.findByRole('alert').should('have.text', 'Please insert West input')
 
-    cy.findByLabelText('East').clear()
-    cy.findByLabelText('East').should('have.attr', 'aria-invalid', 'true')
-    cy.findByText('Please select coordinates within range')
+    cy.findByLabelText('West').type('15')
 
-    cy.findByRole('alert')
+    cy.findByLabelText('East').clear().type('15')
+    cy.findByRole('alert').should(
+      'have.text',
+      'West edge must be less than East edge'
+    )
+
+    cy.findByLabelText('South').clear().type('90')
+    cy.findByRole('alert').should(
+      'have.text',
+      'South edge must be less than North edge'
+    )
+
+    cy.findByLabelText('North').clear()
+    cy.findByRole('alert').should('have.text', 'Please insert North input')
+  })
+
+  it('applies validation - minus, dot, precision, alt and shift', () => {
+    const Form = ({
+      handleSubmit
+    }: {
+      handleSubmit: (...args: any) => void
+    }) => {
+      const {
+        register,
+        setValue,
+        formState: { errors: ownErrors }
+      } = useForm({
+        mode: 'onChange'
+      })
+
+      return (
+        <form
+          onSubmit={ev => {
+            ev.preventDefault()
+            const formData = new FormData(ev.currentTarget)
+            handleSubmit([...formData.entries()])
+          }}
+        >
+          <GeographicExtentWidget
+            configuration={{
+              details: {
+                default: {
+                  n: 90,
+                  w: -180,
+                  e: 180,
+                  s: -90
+                },
+                extentLabels: {
+                  n: 'North',
+                  w: 'West',
+                  e: 'East',
+                  s: 'South'
+                },
+                precision: 3,
+                range: {
+                  e: 180,
+                  n: 90,
+                  s: -90,
+                  w: -180
+                }
+              },
+              help: null,
+              label: 'Sub-region extraction',
+              name: 'area',
+              type: 'GeographicExtentWidget' as const
+            }}
+            validators={{
+              n: (fieldName, { name, details: { precision } }) =>
+                register(fieldName, {
+                  onChange: ev => {
+                    if ('nativeEvent' in ev) {
+                      if (ev.nativeEvent instanceof InputEvent) {
+                        const value = ev.nativeEvent.target.value
+                        const nextValue = stripMinus(value)
+
+                        setValue(fieldName, toPrecision(nextValue, precision))
+                      }
+                    }
+                  }
+                })
+            }}
+          />
+
+          <button>submit</button>
+        </form>
+      )
+    }
+
+    cy.mount(<Form handleSubmit={() => void 0} />)
+
+    /**
+     * Minus and dot
+     */
+    cy.findByLabelText('North')
+      .clear()
+      .type('9')
+      .should('have.value', '9')
+      .type('{leftArrow}-')
+      .should('have.value', '-9')
+
+    cy.findByLabelText('North').clear().type('-99').should('have.value', '-99')
+    cy.findByLabelText('North').clear().type('.99-').should('have.value', '.99')
+    cy.findByLabelText('North').clear().type('-').should('have.value', '-')
+    cy.findByLabelText('North').clear().type('..').should('have.value', '.')
+
+    /**
+     * Precision
+     */
+    cy.findByLabelText('North')
+      .clear()
+      .type('99.171')
+      .should('have.value', '99.171')
+
+    cy.findByLabelText('North')
+      .clear()
+      .type('99.1234567')
+      .should('have.value', '99.123')
+
+    cy.findByLabelText('North')
+      .clear()
+      .type('8.12345678')
+      .should('have.value', '8.123')
+
+    /**
+     * Letters
+     */
+    cy.findByLabelText('South')
+      .clear()
+      .type('gibberish')
+      .should('have.value', '')
   })
 })

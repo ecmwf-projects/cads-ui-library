@@ -8,6 +8,7 @@ import {
   RadioIndicator,
   WidgetTooltip
 } from '../index'
+
 import { createWidget } from '../index'
 
 import type { FormConfiguration } from '../types/Form'
@@ -49,7 +50,8 @@ const ExclusiveGroupWidget = <TErrors,>({
 }: ExclusiveGroupWidgetProps<TErrors>) => {
   const { type, name, label, help, children, details } = configuration
 
-  const [selection, setSelection] = useState<string>(details.default)
+  const [selection, setSelection] = useState(details.default)
+
   if (!configuration) return null
 
   if (type !== 'ExclusiveGroupWidget') return null
