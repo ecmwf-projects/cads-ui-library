@@ -157,6 +157,13 @@ const GeographicExtentWidget = <TErrors,>({
                * This is better in terms of performances than letting the user type, parsing the input, and setting the field again, especially for bigger forms.
                */
 
+              /**
+               * Allow shift only in combination with ctrl.
+               */
+              if (event.shiftKey && !event.ctrlKey) {
+                return event.preventDefault()
+              }
+
               if (!isValidInput({ code, value }) && !event.ctrlKey) {
                 return event.preventDefault()
               }
@@ -370,7 +377,7 @@ const isValidInput = ({
   value?: string
 }) => {
   const whitelist = new RegExp(
-    /Delete|Backspace|Arrow|Digit|Period|Control|Slash|Minus|Hyphen/
+    /Delete|Backspace|Arrow|Digit|Period|Control|Slash|Minus|Hyphen|Tab|MetaKey/
   )
 
   /**
