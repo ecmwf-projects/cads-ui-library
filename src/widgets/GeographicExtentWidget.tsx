@@ -146,6 +146,7 @@ const GeographicExtentWidget = <TErrors,>({
         <Wrap key={key} area={areas[index]}>
           <Label htmlFor={_name}>{getLabel(key)}</Label>
           <input
+            autoComplete='off'
             type='text'
             name={_name}
             id={_name}
