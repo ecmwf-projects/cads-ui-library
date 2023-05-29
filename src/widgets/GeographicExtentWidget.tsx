@@ -165,7 +165,10 @@ const GeographicExtentWidget = <TErrors,>({
                 return event.preventDefault()
               }
 
-              if (!isValidInput({ code, value }) && !event.ctrlKey) {
+              if (
+                !isValidInput({ code, value }) &&
+                !(event.ctrlKey || event.metaKey)
+              ) {
                 return event.preventDefault()
               }
             }}
@@ -378,7 +381,7 @@ const isValidInput = ({
   value?: string
 }) => {
   const whitelist = new RegExp(
-    /Delete|Backspace|Arrow|Digit|Period|Control|Slash|Minus|Hyphen|Tab|MetaKey/
+    /Delete|Backspace|Arrow|Digit|Period|Control|Slash|Minus|Hyphen|Tab/
   )
 
   /**

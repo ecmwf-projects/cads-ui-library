@@ -479,7 +479,7 @@ describe('<GeographicExtentWidget/>', () => {
     cy.findByRole('alert').should('have.text', 'Please insert North input')
   })
 
-  it('applies validation - minus, dot, precision, alt and shift', () => {
+  it('applies validation - minus, dot, precision, special keys', () => {
     const Form = ({
       handleSubmit
     }: {
@@ -552,6 +552,12 @@ describe('<GeographicExtentWidget/>', () => {
     }
 
     cy.mount(<Form handleSubmit={() => void 0} />)
+
+    /**
+     * Meta key
+     */
+
+    cy.findByLabelText('South').type('{command}', { release: false }).type('A')
 
     /**
      * Minus and dot
