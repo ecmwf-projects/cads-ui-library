@@ -191,6 +191,15 @@ describe('<GeographicExtentWidget/>', () => {
           isWithinRange({
             name: 'area',
             fieldName: 'area_s',
+            value: '90',
+            range
+          })
+        ).toBeTruthy()
+
+        expect(
+          isWithinRange({
+            name: 'area',
+            fieldName: 'area_s',
             value: '11',
             range
           })

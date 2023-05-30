@@ -261,7 +261,7 @@ const isWithinRange = ({
   if (`${name}_s` === fieldName) {
     const _value = Number(value)
 
-    if (_value >= _range[`${name}_n`]) return false
+    if (_value > _range[`${name}_n`]) return false
 
     if (_value < _range[`${name}_s`]) return false
   }
