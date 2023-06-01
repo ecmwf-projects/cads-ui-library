@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+/* see cypress/component/StringListArrayWidget.cy.tsx **/
 import React, { useRef } from 'react'
 import { Trigger as AccordionTriggerPrimitive } from '@radix-ui/react-accordion'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
@@ -5,8 +7,15 @@ import { useEventListener } from 'usehooks-ts'
 import styled from 'styled-components'
 
 import 'core-js/actual/set/intersection.js'
+import 'core-js/actual/set/difference.js'
 
-import { AccordionSingle, Checkbox, Label, WidgetTooltip } from '../index'
+import {
+  AccordionSingle,
+  BaseButton,
+  Checkbox,
+  Label,
+  WidgetTooltip
+} from '../index'
 
 import {
   InputGroup,
@@ -35,6 +44,7 @@ import {
 declare global {
   interface Set<T> {
     intersection(other: Set<T>): Set<T>
+    difference(other: Set<T>): Set<T>
   }
 }
 
@@ -122,8 +132,27 @@ const appendToFormData = (
   return formData
 }
 
+const getOwnGroupValues = (
+  groups: StringListArrayWidgetConfiguration['details']['groups'],
+  groupLabel: string
+) => {
+  const ownGroup = groups.find(group => group.label === groupLabel)
+
+  if (!ownGroup) return []
+
+  return ownGroup.values
+}
+
+const groupIntersectsSelection = (values: string[], selection: string[]) => {
+  return new Set(values).intersection(new Set(selection)).size
+}
+
+const isGroupAllSelected = (values: string[], selection: string[]) => {
+  return values.length == groupIntersectsSelection(values, selection)
+}
+
 /**
- * StringListArrayWidget: widget to render accordionable set of checkboxes.
+ * StringListArrayWidget: widget to render "accordionable" set of checkboxes.
  */
 const StringListArrayWidget = ({
   configuration,
@@ -231,27 +260,42 @@ const StringListArrayWidget = ({
                 constraints,
                 currentSelection: selection[name]
               }) ? (
-              <ClearAll
-                fieldset={name}
-                handleAction={state => {
-                  setSelection(state)
+              <ActionButton
+                type='button'
+                aria-label={`Clear all ${label}`}
+                onClick={ev => {
+                  ev.stopPropagation()
+                  setSelection(prevState => {
+                    return { ...prevState, [name]: [] }
+                  })
                   if (!bulkSelectionTriggerRef.current) return
                   bulkSelectionTriggerRef.current.click()
                 }}
-              />
+              >
+                Clear all
+              </ActionButton>
             ) : (
-              <SelectAll
-                fieldset={name}
-                handleAction={state => {
-                  setSelection(state)
+              <ActionButton
+                type='button'
+                aria-label={`Select all ${label}`}
+                onClick={ev => {
+                  ev.stopPropagation()
+                  setSelection(prevState => {
+                    return {
+                      ...prevState,
+                      [name]: getPermittedBulkSelection({
+                        constraints,
+                        availableSelection: allValues
+                      })
+                    }
+                  })
+
                   if (!bulkSelectionTriggerRef.current) return
                   bulkSelectionTriggerRef.current.click()
                 }}
-                values={getPermittedBulkSelection({
-                  constraints,
-                  availableSelection: allValues
-                })}
-              />
+              >
+                Select all
+              </ActionButton>
             )}
           </div>
         </WidgetActionsWrapper>
@@ -302,6 +346,56 @@ const StringListArrayWidget = ({
                   )
                 }}
               >
+                <Actions>
+                  {isGroupAllSelected(
+                    getOwnGroupValues(groups, groupLabel),
+                    selection[name]
+                  ) ? null : (
+                    <ActionButton
+                      type='button'
+                      aria-label={`Select all ${groupLabel}`}
+                      onClick={ev => {
+                        ev.stopPropagation()
+
+                        const values = getOwnGroupValues(groups, groupLabel)
+
+                        setSelection(prevState => {
+                          return {
+                            ...prevState,
+                            [name]: [...prevState[name], ...values]
+                          }
+                        })
+                      }}
+                    >
+                      Select all
+                    </ActionButton>
+                  )}
+                  {groupIntersectsSelection(
+                    groups.find(group => group.label === groupLabel)?.values ||
+                      [],
+                    selection[name]
+                  ) ? (
+                    <ActionButton
+                      type='button'
+                      aria-label={`Clear all ${groupLabel}`}
+                      onClick={ev => {
+                        ev.stopPropagation()
+
+                        const values = getOwnGroupValues(groups, groupLabel)
+
+                        setSelection(prevState => {
+                          const diff = new Set(prevState[name]).difference(
+                            new Set(values)
+                          )
+
+                          return { ...prevState, [name]: [...diff] }
+                        })
+                      }}
+                    >
+                      Clear all
+                    </ActionButton>
+                  ) : null}
+                </Actions>
                 <InputsGrid
                   key={groupLabel}
                   columns={columns}
@@ -392,6 +486,20 @@ const StyledTrigger = styled(AccordionTriggerPrimitive)`
       display: none;
     }
   }
+`
+
+const Actions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  max-width: 150px;
+  margin-bottom: 2em;
+`
+
+const ActionButton = styled(BaseButton)`
+  all: unset;
+  cursor: pointer;
+  color: #25408f;
+  text-decoration: underline;
 `
 
 const AccordionTrigger = styled.div`

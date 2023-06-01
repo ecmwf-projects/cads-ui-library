@@ -13,6 +13,7 @@ const SelectAll = ({ fieldset, handleAction, values }: Props) => {
   return (
     <>
       <ActionButton
+        aria-label={`Select all ${fieldset}`}
         type='button'
         onClick={ev => {
           ev.stopPropagation()
