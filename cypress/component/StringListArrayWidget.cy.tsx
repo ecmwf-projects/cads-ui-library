@@ -331,7 +331,7 @@ describe('<StringListArrayWidget/>', () => {
     cy.findAllByText('Clear all').eq(2)
     cy.findByLabelText('Lake shape factor').click()
 
-    cy.findAllByText('Clear all').eq(0).click()
+    cy.findByLabelText('Clear all Temperature').click()
     cy.findByLabelText('Soil temperature level 2').should(
       'have.attr',
       'aria-checked',
@@ -347,6 +347,8 @@ describe('<StringListArrayWidget/>', () => {
       'aria-checked',
       'false'
     )
+
+    cy.findByLabelText('Clear all Temperature').should('not.exist')
 
     cy.findByLabelText('Select all Temperature').click()
 
