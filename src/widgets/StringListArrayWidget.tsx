@@ -335,7 +335,8 @@ const StringListArrayWidget = ({
                               selection[name]
                             ) ? null : (
                               <ActionButton
-                                type='button'
+                                as='span'
+                                role='button'
                                 aria-label={`Select all ${groupLabel}`}
                                 onClick={ev => {
                                   ev.stopPropagation()
@@ -362,7 +363,8 @@ const StringListArrayWidget = ({
                               selection[name]
                             ) ? (
                               <ActionButton
-                                type='button'
+                                as='span'
+                                role='button'
                                 aria-label={`Clear all ${groupLabel}`}
                                 onClick={ev => {
                                   ev.stopPropagation()
