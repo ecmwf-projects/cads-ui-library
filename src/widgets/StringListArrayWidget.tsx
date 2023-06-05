@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* see cypress/component/StringListArrayWidget.cy.tsx **/
 import React, { useRef } from 'react'
+import { flushSync } from 'react-dom'
 import { Trigger as AccordionTriggerPrimitive } from '@radix-ui/react-accordion'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { useEventListener } from 'usehooks-ts'
@@ -263,8 +264,10 @@ const StringListArrayWidget = ({
                 aria-label={`Clear all ${label}`}
                 onClick={ev => {
                   ev.stopPropagation()
-                  setSelection(prevState => {
-                    return { ...prevState, [name]: [] }
+                  flushSync(() => {
+                    setSelection(prevState => {
+                      return { ...prevState, [name]: [] }
+                    })
                   })
                   if (!bulkSelectionTriggerRef.current) return
                   bulkSelectionTriggerRef.current.click()
@@ -278,14 +281,16 @@ const StringListArrayWidget = ({
                 aria-label={`Select all ${label}`}
                 onClick={ev => {
                   ev.stopPropagation()
-                  setSelection(prevState => {
-                    return {
-                      ...prevState,
-                      [name]: getPermittedBulkSelection({
-                        constraints,
-                        availableSelection: allValues
-                      })
-                    }
+                  flushSync(() => {
+                    setSelection(prevState => {
+                      return {
+                        ...prevState,
+                        [name]: getPermittedBulkSelection({
+                          constraints,
+                          availableSelection: allValues
+                        })
+                      }
+                    })
                   })
 
                   if (!bulkSelectionTriggerRef.current) return
@@ -346,12 +351,17 @@ const StringListArrayWidget = ({
                                     groupLabel
                                   )
 
-                                  setSelection(prevState => {
-                                    return {
-                                      ...prevState,
-                                      [name]: [...prevState[name], ...values]
-                                    }
+                                  flushSync(() => {
+                                    setSelection(prevState => {
+                                      return {
+                                        ...prevState,
+                                        [name]: [...prevState[name], ...values]
+                                      }
+                                    })
                                   })
+
+                                  if (!bulkSelectionTriggerRef.current) return
+                                  bulkSelectionTriggerRef.current.click()
                                 }}
                               >
                                 Select all
@@ -374,12 +384,14 @@ const StringListArrayWidget = ({
                                     groupLabel
                                   )
 
-                                  setSelection(prevState => {
-                                    const diff = new Set(
-                                      prevState[name]
-                                    ).difference(new Set(values))
+                                  flushSync(() => {
+                                    setSelection(prevState => {
+                                      const diff = new Set(
+                                        prevState[name]
+                                      ).difference(new Set(values))
 
-                                    return { ...prevState, [name]: [...diff] }
+                                      return { ...prevState, [name]: [...diff] }
+                                    })
                                   })
 
                                   if (!bulkSelectionTriggerRef.current) return

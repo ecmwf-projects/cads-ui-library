@@ -6,10 +6,12 @@ import { getStringListArrayWidgetConfiguration } from '../../__tests__/factories
 
 const Form = ({
   children,
-  handleSubmit
+  handleSubmit,
+  handleChange
 }: {
   children: React.ReactNode
   handleSubmit: (...args: any) => void
+  handleChange?: (...args: any) => void
 }) => {
   return (
     <form
@@ -17,6 +19,13 @@ const Form = ({
         ev.preventDefault()
         const formData = new FormData(ev.currentTarget)
         handleSubmit([...formData.entries()])
+      }}
+      onChange={ev => {
+        if (!handleChange) return
+        const formData = new FormData(ev.currentTarget)
+        console.log(ev.currentTarget, [...formData.entries()])
+
+        handleChange([...formData.entries()])
       }}
     >
       {children}
@@ -52,16 +61,20 @@ describe('<StringListArrayWidget/>', () => {
 
   it('appends current selection for closed accordions - select all/clear all', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+    const stubbedHandleChange = cy.stub().as('stubbedHandleChange')
 
     cy.mount(
-      <Form handleSubmit={stubbedHandleSubmit}>
+      <Form
+        handleSubmit={stubbedHandleSubmit}
+        handleChange={stubbedHandleChange}
+      >
         <StringListArrayWidget
           configuration={{
             ...getStringListArrayWidgetConfiguration(),
             details: {
               ...getStringListArrayWidgetConfiguration().details,
               accordionOptions: {
-                openGroups: ['Lakes'],
+                openGroups: [],
                 searchable: false
               }
             }
@@ -70,20 +83,14 @@ describe('<StringListArrayWidget/>', () => {
       </Form>
     )
 
-    cy.findByLabelText('Select all Variable').click()
-    cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit')
-      .its('firstCall')
+    /**
+     * Clicking on closed accordion
+     */
+    cy.findByLabelText('Select all Temperature').click()
+    cy.get('@stubbedHandleChange')
+      .its('lastCall')
       .its('lastArg')
       .should('deep.equal', [
-        ['variable', 'lake_bottom_temperature'],
-        ['variable', 'lake_ice_depth'],
-        ['variable', 'lake_ice_temperature'],
-        ['variable', 'lake_mix_layer_depth'],
-        ['variable', 'lake_mix_layer_temperature'],
-        ['variable', 'lake_shape_factor'],
-        ['variable', 'lake_total_layer_temperature'],
         ['variable', '2m_dewpoint_temperature'],
         ['variable', '2m_temperature'],
         ['variable', 'skin_temperature'],
@@ -94,12 +101,24 @@ describe('<StringListArrayWidget/>', () => {
       ])
 
     cy.findByLabelText('Clear all Temperature').click()
-    cy.findByText('submit').click()
+    cy.get('@stubbedHandleChange')
+      .its('lastCall')
+      .its('lastArg')
+      .should('deep.equal', [])
 
-    cy.get('@stubbedHandleSubmit')
-      .its('secondCall')
+    cy.findByLabelText('Select all Variable').click()
+
+    cy.get('@stubbedHandleChange')
+      .its('lastCall')
       .its('lastArg')
       .should('deep.equal', [
+        ['variable', '2m_dewpoint_temperature'],
+        ['variable', '2m_temperature'],
+        ['variable', 'skin_temperature'],
+        ['variable', 'soil_temperature_level_1'],
+        ['variable', 'soil_temperature_level_2'],
+        ['variable', 'soil_temperature_level_3'],
+        ['variable', 'soil_temperature_level_4'],
         ['variable', 'lake_bottom_temperature'],
         ['variable', 'lake_ice_depth'],
         ['variable', 'lake_ice_temperature'],
@@ -109,24 +128,7 @@ describe('<StringListArrayWidget/>', () => {
         ['variable', 'lake_total_layer_temperature']
       ])
 
-    cy.findByText('Lakes').click()
-
-    cy.findByLabelText('Select all Temperature').click()
-    cy.findByLabelText('Clear all Lakes').click()
-    cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit')
-      .its('thirdCall')
-      .its('lastArg')
-      .should('deep.equal', [
-        ['variable', '2m_dewpoint_temperature'],
-        ['variable', '2m_temperature'],
-        ['variable', 'skin_temperature'],
-        ['variable', 'soil_temperature_level_1'],
-        ['variable', 'soil_temperature_level_2'],
-        ['variable', 'soil_temperature_level_3'],
-        ['variable', 'soil_temperature_level_4']
-      ])
+    cy.findByText('submit')
   })
 
   it('appends current selection for closed accordions - clear all', () => {
