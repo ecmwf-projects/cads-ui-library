@@ -73,22 +73,60 @@ describe('<StringListArrayWidget/>', () => {
     cy.findByLabelText('Select all Variable').click()
     cy.findByText('submit').click()
 
-    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
-      ['variable', 'lake_bottom_temperature'],
-      ['variable', 'lake_ice_depth'],
-      ['variable', 'lake_ice_temperature'],
-      ['variable', 'lake_mix_layer_depth'],
-      ['variable', 'lake_mix_layer_temperature'],
-      ['variable', 'lake_shape_factor'],
-      ['variable', 'lake_total_layer_temperature'],
-      ['variable', '2m_dewpoint_temperature'],
-      ['variable', '2m_temperature'],
-      ['variable', 'skin_temperature'],
-      ['variable', 'soil_temperature_level_1'],
-      ['variable', 'soil_temperature_level_2'],
-      ['variable', 'soil_temperature_level_3'],
-      ['variable', 'soil_temperature_level_4']
-    ])
+    cy.get('@stubbedHandleSubmit')
+      .its('firstCall')
+      .its('lastArg')
+      .should('deep.equal', [
+        ['variable', 'lake_bottom_temperature'],
+        ['variable', 'lake_ice_depth'],
+        ['variable', 'lake_ice_temperature'],
+        ['variable', 'lake_mix_layer_depth'],
+        ['variable', 'lake_mix_layer_temperature'],
+        ['variable', 'lake_shape_factor'],
+        ['variable', 'lake_total_layer_temperature'],
+        ['variable', '2m_dewpoint_temperature'],
+        ['variable', '2m_temperature'],
+        ['variable', 'skin_temperature'],
+        ['variable', 'soil_temperature_level_1'],
+        ['variable', 'soil_temperature_level_2'],
+        ['variable', 'soil_temperature_level_3'],
+        ['variable', 'soil_temperature_level_4']
+      ])
+
+    cy.findByLabelText('Clear all Temperature').click()
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit')
+      .its('secondCall')
+      .its('lastArg')
+      .should('deep.equal', [
+        ['variable', 'lake_bottom_temperature'],
+        ['variable', 'lake_ice_depth'],
+        ['variable', 'lake_ice_temperature'],
+        ['variable', 'lake_mix_layer_depth'],
+        ['variable', 'lake_mix_layer_temperature'],
+        ['variable', 'lake_shape_factor'],
+        ['variable', 'lake_total_layer_temperature']
+      ])
+
+    cy.findByText('Lakes').click()
+
+    cy.findByLabelText('Select all Temperature').click()
+    cy.findByLabelText('Clear all Lakes').click()
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit')
+      .its('thirdCall')
+      .its('lastArg')
+      .should('deep.equal', [
+        ['variable', '2m_dewpoint_temperature'],
+        ['variable', '2m_temperature'],
+        ['variable', 'skin_temperature'],
+        ['variable', 'soil_temperature_level_1'],
+        ['variable', 'soil_temperature_level_2'],
+        ['variable', 'soil_temperature_level_3'],
+        ['variable', 'soil_temperature_level_4']
+      ])
   })
 
   it('appends current selection for closed accordions - clear all', () => {

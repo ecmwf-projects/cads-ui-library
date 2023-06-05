@@ -381,6 +381,9 @@ const StringListArrayWidget = ({
 
                                     return { ...prevState, [name]: [...diff] }
                                   })
+
+                                  if (!bulkSelectionTriggerRef.current) return
+                                  bulkSelectionTriggerRef.current.click()
                                 }}
                               >
                                 Clear all

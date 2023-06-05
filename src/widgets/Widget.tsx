@@ -104,7 +104,6 @@ const ReservedSpace = styled.div`
 const Actions = styled.div`
   display: flex;
   justify-content: space-between;
-  max-width: 150px;
   gap: 1em;
 `
 
