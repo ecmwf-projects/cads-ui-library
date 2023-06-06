@@ -11,6 +11,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Select all / Clear all behavior refined
 - `getGeoExtentFieldValue` into UI library
+- `ExclusiveGroupWidget` no longer crashes for missing children attribute
 
 ## [6.1.2] 2023-05-30
 

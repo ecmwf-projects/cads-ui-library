@@ -163,6 +163,8 @@ const isChildOfExclusiveGroup: IsChildOfExclusiveGroup = (
 ) => {
   if (
     formConfiguration.find(configuration => {
+      if (!Object.hasOwn(configuration, 'children')) return
+
       return (
         configuration.type === 'ExclusiveGroupWidget' &&
         configuration.children.includes(widgetConfiguration.name)
