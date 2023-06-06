@@ -23,7 +23,6 @@ const Form = ({
       onChange={ev => {
         if (!handleChange) return
         const formData = new FormData(ev.currentTarget)
-        console.log(ev.currentTarget, [...formData.entries()])
 
         handleChange([...formData.entries()])
       }}
@@ -308,7 +307,7 @@ describe('<StringListArrayWidget/>', () => {
       /**
        * Parent-level select all
        */
-      cy.findAllByText('Select all').eq(0)
+      cy.findByLabelText('Select all Variable')
 
       /**
        * Sub-widget-level select all
@@ -360,8 +359,9 @@ describe('<StringListArrayWidget/>', () => {
 
       /**
        * Parent-level clear all
-       * TODO
        */
+      cy.findByLabelText('Lake shape factor').click()
+      cy.findByLabelText('Clear all Variable')
 
       /**
        * Sub-widget-level clear all
@@ -393,7 +393,6 @@ describe('<StringListArrayWidget/>', () => {
 
       cy.findByLabelText('Select all Temperature').should('not.exist')
 
-      // TODO: re-render with constraints
       rerender(
         <StringListArrayWidget
           configuration={{

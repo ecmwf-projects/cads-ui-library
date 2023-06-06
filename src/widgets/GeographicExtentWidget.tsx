@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+/* See cypress/component/GeographicExtentWidget.cy.tsx */
 import React from 'react'
 import styled from 'styled-components'
 

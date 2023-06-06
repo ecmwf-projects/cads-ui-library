@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+/* See cypress/component/StringListWidget.cy.tsx */
 import React, { useRef } from 'react'
 
 import { Checkbox, Label, WidgetTooltip } from '../index'

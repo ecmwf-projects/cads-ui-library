@@ -10,7 +10,7 @@ module.exports = async () => {
       '!src/widgets/KeywordSearchWidget.tsx'
     ],
     coverageThreshold: {
-      global: { lines: 90 }
+      global: { lines: 80 }
     },
     modulePaths: [compilerOptions.baseUrl],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),

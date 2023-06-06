@@ -10,15 +10,10 @@ import styled from 'styled-components'
 import 'core-js/actual/set/intersection.js'
 import 'core-js/actual/set/difference.js'
 
-import {
-  AccordionSingle,
-  BaseButton,
-  Checkbox,
-  Label,
-  WidgetTooltip
-} from '../index'
+import { AccordionSingle, Checkbox, Label, WidgetTooltip } from '../index'
 
 import {
+  ActionButton,
   InputGroup,
   InputsGrid,
   LabelWrapper,
@@ -262,52 +257,56 @@ const StringListArrayWidget = ({
             id='bulkSelectionTrigger'
           />
           <div {...(fieldsetDisabled && { inert: '' })}>
-            {constraints?.length === 0 ? null : isAllSelected({
+            <Actions data-stylizable='widget string-listarray actions'>
+              {constraints?.length === 0 ||
+              isAllSelected({
                 availableSelection: allValues,
                 constraints,
                 currentSelection: selection[name]
-              }) ? (
-              <ActionButton
-                type='button'
-                aria-label={`Clear all ${label}`}
-                onClick={ev => {
-                  ev.stopPropagation()
-                  flushSync(() => {
-                    setSelection(prevState => {
-                      return { ...prevState, [name]: [] }
+              }) ? null : (
+                <ActionButton
+                  type='button'
+                  aria-label={`Select all ${label}`}
+                  onClick={ev => {
+                    ev.stopPropagation()
+                    flushSync(() => {
+                      setSelection(prevState => {
+                        return {
+                          ...prevState,
+                          [name]: getPermittedBulkSelection({
+                            constraints,
+                            availableSelection: allValues
+                          })
+                        }
+                      })
                     })
-                  })
-                  if (!bulkSelectionTriggerRef.current) return
-                  bulkSelectionTriggerRef.current.click()
-                }}
-              >
-                Clear all
-              </ActionButton>
-            ) : (
-              <ActionButton
-                type='button'
-                aria-label={`Select all ${label}`}
-                onClick={ev => {
-                  ev.stopPropagation()
-                  flushSync(() => {
-                    setSelection(prevState => {
-                      return {
-                        ...prevState,
-                        [name]: getPermittedBulkSelection({
-                          constraints,
-                          availableSelection: allValues
-                        })
-                      }
-                    })
-                  })
 
-                  if (!bulkSelectionTriggerRef.current) return
-                  bulkSelectionTriggerRef.current.click()
-                }}
-              >
-                Select all
-              </ActionButton>
-            )}
+                    if (!bulkSelectionTriggerRef.current) return
+                    bulkSelectionTriggerRef.current.click()
+                  }}
+                >
+                  Select all
+                </ActionButton>
+              )}
+              {groupIntersectsSelection(allValues, selection[name]) ? (
+                <ActionButton
+                  type='button'
+                  aria-label={`Clear all ${label}`}
+                  onClick={ev => {
+                    ev.stopPropagation()
+                    flushSync(() => {
+                      setSelection(prevState => {
+                        return { ...prevState, [name]: [] }
+                      })
+                    })
+                    if (!bulkSelectionTriggerRef.current) return
+                    bulkSelectionTriggerRef.current.click()
+                  }}
+                >
+                  Clear all
+                </ActionButton>
+              ) : null}
+            </Actions>
           </div>
         </WidgetActionsWrapper>
         <WidgetTooltip
@@ -527,15 +526,7 @@ const Actions = styled.div`
   display: flex;
   justify-content: space-between;
   max-width: 150px;
-  margin-bottom: 2em;
   gap: 1em;
-`
-
-const ActionButton = styled(BaseButton)`
-  all: unset;
-  cursor: pointer;
-  color: #25408f;
-  text-decoration: underline;
 `
 
 const AccordionTrigger = styled.div`
