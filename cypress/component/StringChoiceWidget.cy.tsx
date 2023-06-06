@@ -120,6 +120,9 @@ describe('<StringChoiceWidget/>', () => {
         }}
       />
     ).then(({ rerender }) => {
+      /**
+       * Clear all against the default value
+       */
       cy.findByLabelText('Clear all Format').click()
 
       cy.findByLabelText('GRIB').should('have.attr', 'aria-checked', 'false')
@@ -129,6 +132,20 @@ describe('<StringChoiceWidget/>', () => {
         'false'
       )
 
+      cy.findByRole('alert')
+
+      /**
+       * Clear all after interaction
+       */
+
+      cy.findByLabelText('GRIB').click()
+      cy.findByLabelText('Clear all Format').click()
+      cy.findByLabelText('GRIB').should('have.attr', 'aria-checked', 'false')
+      cy.findByLabelText('NetCDF (experimental)').should(
+        'have.attr',
+        'aria-checked',
+        'false'
+      )
       cy.findByRole('alert')
 
       /**
@@ -157,6 +174,12 @@ describe('<StringChoiceWidget/>', () => {
         />
       )
       cy.findByLabelText('Clear all Format').click()
+      cy.findByLabelText('GRIB').should('have.attr', 'aria-checked', 'false')
+      cy.findByLabelText('NetCDF (experimental)').should(
+        'have.attr',
+        'aria-checked',
+        'false'
+      )
       cy.findByLabelText('Clear all Format').should('not.exist')
 
       /**

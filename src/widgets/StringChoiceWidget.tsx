@@ -165,7 +165,7 @@ const StringChoiceWidget = ({
         <RadioGroup
           rootProps={{
             name,
-            value: defaultValue,
+            value: defaultValue || '',
             onValueChange: value => setSelection([value])
           }}
         >
