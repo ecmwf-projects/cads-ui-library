@@ -9,7 +9,7 @@ const Form = ({
   handleSubmit
 }: {
   children: React.ReactNode
-  handleSubmit: (...args: any) => void
+  handleSubmit?: (...args: any) => void
 }) => {
   return (
     <form
@@ -74,13 +74,96 @@ describe('<StringChoiceWidget/>', () => {
   })
 
   it('bypasses the required attribute if all options are made unavailable by constraints', () => {
-    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
-
     cy.mount(
-      <Form handleSubmit={stubbedHandleSubmit}>
+      <StringChoiceWidget
+        bypassRequiredForConstraints={true}
+        constraints={[]}
+        configuration={{
+          details: {
+            columns: 2,
+            labels: {
+              grib: 'GRIB',
+              netcdf: 'NetCDF (experimental)'
+            },
+            values: ['grib', 'netcdf']
+          },
+          required: true,
+          help: null,
+          label: 'Format',
+          name: 'format',
+          type: 'StringChoiceWidget' as const
+        }}
+      />
+    )
+
+    cy.findByRole('alert').should('not.exist')
+  })
+
+  it('select all / clear all behaviour', () => {
+    cy.mount(
+      <StringChoiceWidget
+        configuration={{
+          details: {
+            default: ['grib'],
+            columns: 2,
+            labels: {
+              grib: 'GRIB',
+              netcdf: 'NetCDF (experimental)'
+            },
+            values: ['grib', 'netcdf']
+          },
+          required: true,
+          help: null,
+          label: 'Format',
+          name: 'format',
+          type: 'StringChoiceWidget' as const
+        }}
+      />
+    ).then(({ rerender }) => {
+      cy.findByLabelText('Clear all Format').click()
+
+      cy.findByLabelText('GRIB').should('have.attr', 'aria-checked', 'false')
+      cy.findByLabelText('NetCDF (experimental)').should(
+        'have.attr',
+        'aria-checked',
+        'false'
+      )
+
+      cy.findByRole('alert')
+
+      /**
+       * Clear all with constraints
+       */
+      rerender(
         <StringChoiceWidget
           bypassRequiredForConstraints={true}
           constraints={[]}
+          configuration={{
+            details: {
+              default: ['grib'],
+              columns: 2,
+              labels: {
+                grib: 'GRIB',
+                netcdf: 'NetCDF (experimental)'
+              },
+              values: ['grib', 'netcdf']
+            },
+            required: true,
+            help: null,
+            label: 'Format',
+            name: 'format',
+            type: 'StringChoiceWidget' as const
+          }}
+        />
+      )
+      cy.findByLabelText('Clear all Format').click()
+      cy.findByLabelText('Clear all Format').should('not.exist')
+
+      /**
+       * No Clear all when nothing is selected
+       */
+      rerender(
+        <StringChoiceWidget
           configuration={{
             details: {
               columns: 2,
@@ -97,9 +180,9 @@ describe('<StringChoiceWidget/>', () => {
             type: 'StringChoiceWidget' as const
           }}
         />
-      </Form>
-    )
+      )
 
-    cy.findByRole('alert').should('not.exist')
+      cy.findByLabelText('Clear all Format').should('not.exist')
+    })
   })
 })

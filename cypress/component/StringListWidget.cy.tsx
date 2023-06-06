@@ -107,7 +107,5 @@ describe('<StringListWidget/>', () => {
     cy.findByLabelText('Monthly averaged reanalysis').click()
     cy.findByLabelText('Select all Product type')
     cy.findByLabelText('Clear all Product type')
-
-    // TODO: re-render with constraints
   })
 })

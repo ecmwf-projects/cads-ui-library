@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+/* See cypress/component/StringChoiceWidget.cy.tsx */
 import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 
@@ -11,6 +13,8 @@ import {
   WidgetTooltip
 } from '../index'
 import {
+  Actions,
+  ActionButton,
   InputsGrid,
   LabelWrapper,
   Widget,
@@ -129,6 +133,22 @@ const StringChoiceWidget = ({
           >
             {label}
           </WidgetTitle>
+          <div {...(fieldsetDisabled && { inert: '' })}>
+            <Actions data-stylizable='widget string-choice actions'>
+              {selection?.length ? (
+                <ActionButton
+                  type='button'
+                  aria-label={`Clear all ${label}`}
+                  onClick={ev => {
+                    ev.preventDefault()
+                    setSelection([])
+                  }}
+                >
+                  Clear all
+                </ActionButton>
+              ) : null}
+            </Actions>
+          </div>
         </WidgetActionsWrapper>
         <WidgetTooltip
           helpText={help || null}
