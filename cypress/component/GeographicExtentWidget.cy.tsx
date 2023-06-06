@@ -6,8 +6,7 @@ import {
   isSouthLessThanNorth,
   isWestLessThanEast,
   isWithinRange,
-  toPrecision,
-  stripMinus
+  getGeoExtentFieldValue
 } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
@@ -536,9 +535,12 @@ describe('<GeographicExtentWidget/>', () => {
                     if ('nativeEvent' in ev) {
                       if (ev.nativeEvent instanceof InputEvent) {
                         const value = ev.nativeEvent.target.value
-                        const nextValue = stripMinus(value)
+                        const nextValue = getGeoExtentFieldValue(
+                          value,
+                          precision
+                        )
 
-                        setValue(fieldName, toPrecision(nextValue, precision))
+                        setValue(fieldName, nextValue)
                       }
                     }
                   }
