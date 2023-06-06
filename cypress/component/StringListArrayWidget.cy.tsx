@@ -82,29 +82,6 @@ describe('<StringListArrayWidget/>', () => {
       </Form>
     )
 
-    /**
-     * Clicking on closed accordion
-     */
-    cy.findByLabelText('Select all Temperature').click()
-    cy.get('@stubbedHandleChange')
-      .its('lastCall')
-      .its('lastArg')
-      .should('deep.equal', [
-        ['variable', '2m_dewpoint_temperature'],
-        ['variable', '2m_temperature'],
-        ['variable', 'skin_temperature'],
-        ['variable', 'soil_temperature_level_1'],
-        ['variable', 'soil_temperature_level_2'],
-        ['variable', 'soil_temperature_level_3'],
-        ['variable', 'soil_temperature_level_4']
-      ])
-
-    cy.findByLabelText('Clear all Temperature').click()
-    cy.get('@stubbedHandleChange')
-      .its('lastCall')
-      .its('lastArg')
-      .should('deep.equal', [])
-
     cy.findByLabelText('Select all Variable').click()
 
     cy.get('@stubbedHandleChange')

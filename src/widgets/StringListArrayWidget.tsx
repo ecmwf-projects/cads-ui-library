@@ -341,80 +341,7 @@ const StringListArrayWidget = ({
                           <AccordionTriggerHeader>
                             {groupLabel}
                           </AccordionTriggerHeader>
-                          <Actions data-stylizable='widget string-listarray accordion-header actions'>
-                            {isGroupAllSelected(
-                              getOwnGroupValues(groups, groupLabel),
-                              selection[name]
-                            ) ? null : (
-                              <ActionButton
-                                as='span'
-                                role='button'
-                                aria-label={`Select all ${groupLabel}`}
-                                onClick={ev => {
-                                  ev.stopPropagation()
 
-                                  const values = getOwnGroupValues(
-                                    groups,
-                                    groupLabel
-                                  )
-
-                                  flushSync(() => {
-                                    setSelection(prevState => {
-                                      return {
-                                        ...prevState,
-                                        [name]: [
-                                          ...prevState[name],
-                                          ...getGroupPermittedBulkSelection(
-                                            values,
-                                            constraints
-                                          )
-                                        ]
-                                      }
-                                    })
-                                  })
-
-                                  if (!bulkSelectionTriggerRef.current) return
-                                  bulkSelectionTriggerRef.current.click()
-                                }}
-                              >
-                                Select all
-                              </ActionButton>
-                            )}
-                            {groupIntersectsSelection(
-                              groups.find(group => group.label === groupLabel)
-                                ?.values || [],
-                              selection[name]
-                            ) ? (
-                              <ActionButton
-                                as='span'
-                                role='button'
-                                aria-label={`Clear all ${groupLabel}`}
-                                onClick={ev => {
-                                  ev.stopPropagation()
-
-                                  const values = getOwnGroupValues(
-                                    groups,
-                                    groupLabel
-                                  )
-
-                                  flushSync(() => {
-                                    setSelection(prevState => {
-                                      const diff = new Set(
-                                        prevState[name]
-                                      ).difference(new Set(values))
-
-                                      return { ...prevState, [name]: [...diff] }
-                                    })
-                                  })
-
-                                  if (!bulkSelectionTriggerRef.current) return
-                                  bulkSelectionTriggerRef.current.click()
-                                }}
-                              >
-                                Clear all
-                              </ActionButton>
-                            ) : null}
-                          </Actions>
                           {renderActiveSelectionsCount
                             ? getActiveSelectionsCounts(
                                 groups,
@@ -430,6 +357,72 @@ const StringListArrayWidget = ({
                   )
                 }}
               >
+                <Actions data-stylizable='widget string-listarray accordion-header actions'>
+                  {isGroupAllSelected(
+                    getOwnGroupValues(groups, groupLabel),
+                    selection[name]
+                  ) ? null : (
+                    <ActionButton
+                      type='button'
+                      aria-label={`Select all ${groupLabel}`}
+                      onClick={ev => {
+                        ev.stopPropagation()
+
+                        const values = getOwnGroupValues(groups, groupLabel)
+
+                        flushSync(() => {
+                          setSelection(prevState => {
+                            return {
+                              ...prevState,
+                              [name]: [
+                                ...prevState[name],
+                                ...getGroupPermittedBulkSelection(
+                                  values,
+                                  constraints
+                                )
+                              ]
+                            }
+                          })
+                        })
+
+                        if (!bulkSelectionTriggerRef.current) return
+                        bulkSelectionTriggerRef.current.click()
+                      }}
+                    >
+                      Select all
+                    </ActionButton>
+                  )}
+                  {groupIntersectsSelection(
+                    groups.find(group => group.label === groupLabel)?.values ||
+                      [],
+                    selection[name]
+                  ) ? (
+                    <ActionButton
+                      type='button'
+                      aria-label={`Clear all ${groupLabel}`}
+                      onClick={ev => {
+                        ev.stopPropagation()
+
+                        const values = getOwnGroupValues(groups, groupLabel)
+
+                        flushSync(() => {
+                          setSelection(prevState => {
+                            const diff = new Set(prevState[name]).difference(
+                              new Set(values)
+                            )
+
+                            return { ...prevState, [name]: [...diff] }
+                          })
+                        })
+
+                        if (!bulkSelectionTriggerRef.current) return
+                        bulkSelectionTriggerRef.current.click()
+                      }}
+                    >
+                      Clear all
+                    </ActionButton>
+                  ) : null}
+                </Actions>
                 <InputsGrid
                   key={groupLabel}
                   columns={columns}
@@ -526,6 +519,8 @@ const Actions = styled.div`
   display: flex;
   justify-content: space-between;
   max-width: 150px;
+  margin-top: -1em;
+  margin-bottom: 2em;
   gap: 1em;
 `
 
