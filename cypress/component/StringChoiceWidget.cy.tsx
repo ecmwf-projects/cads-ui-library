@@ -208,4 +208,39 @@ describe('<StringChoiceWidget/>', () => {
       cy.findByLabelText('Clear all Format').should('not.exist')
     })
   })
+
+  it('reacts to form Clear all', () => {
+    cy.mount(
+      <StringChoiceWidget
+        configuration={{
+          details: {
+            default: ['grib'],
+            columns: 2,
+            labels: {
+              grib: 'GRIB',
+              netcdf: 'NetCDF (experimental)'
+            },
+            values: ['grib', 'netcdf']
+          },
+          required: true,
+          help: null,
+          label: 'Format',
+          name: 'format',
+          type: 'StringChoiceWidget' as const
+        }}
+      />
+    )
+
+    cy.document().trigger('formAction', {
+      eventConstructor: 'CustomEvent',
+      detail: { type: 'clearAll' }
+    })
+
+    cy.findByLabelText('GRIB').should('have.attr', 'aria-checked', 'false')
+    cy.findByLabelText('NetCDF (experimental)').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+  })
 })

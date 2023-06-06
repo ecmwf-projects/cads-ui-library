@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 
-import { useReadLocalStorage } from 'usehooks-ts'
+import { useReadLocalStorage, useEventListener } from 'usehooks-ts'
 
 import {
   Label,
@@ -117,6 +117,24 @@ const StringChoiceWidget = ({
 
     setSelection(getInitialSelection())
   }, [name, details])
+
+  /**
+   * Handle form Clear all
+   */
+  const documentRef = useRef<Document>(
+    typeof window !== 'undefined' ? document : null
+  )
+  useEventListener(
+    'formAction',
+    ev => {
+      if (!('detail' in ev)) return
+      if (!('type' in ev.detail)) return
+      if (ev.detail.type !== 'clearAll') return
+
+      setSelection([])
+    },
+    documentRef
+  )
 
   if (!configuration) return null
 
