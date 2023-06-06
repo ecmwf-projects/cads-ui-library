@@ -150,6 +150,14 @@ const isGroupAllSelected = (values: string[], selection: string[]) => {
   return values.length == groupIntersectsSelection(values, selection)
 }
 
+const getGroupPermittedBulkSelection = (
+  availableSelection: string[],
+  constraints?: string[]
+) => {
+  if (!constraints) return availableSelection
+  return [...new Set(constraints).intersection(new Set(availableSelection))]
+}
+
 /**
  * StringListArrayWidget: widget to render "accordionable" set of checkboxes.
  */
@@ -355,7 +363,13 @@ const StringListArrayWidget = ({
                                     setSelection(prevState => {
                                       return {
                                         ...prevState,
-                                        [name]: [...prevState[name], ...values]
+                                        [name]: [
+                                          ...prevState[name],
+                                          ...getGroupPermittedBulkSelection(
+                                            values,
+                                            constraints
+                                          )
+                                        ]
                                       }
                                     })
                                   })
