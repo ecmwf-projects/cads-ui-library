@@ -108,4 +108,30 @@ describe('<StringListWidget/>', () => {
     cy.findByLabelText('Select all Product type')
     cy.findByLabelText('Clear all Product type')
   })
+
+  it('reacts to form Clear all', () => {
+    cy.mount(
+      <StringListWidget configuration={getStringListWidgetConfiguration()} />
+    )
+
+    cy.findByLabelText('Monthly averaged reanalysis').click()
+    cy.findByLabelText('Monthly averaged reanalysis by hour of day').click()
+
+    cy.document().trigger('formAction', {
+      eventConstructor: 'CustomEvent',
+      detail: { type: 'clearAll' }
+    })
+
+    cy.findByLabelText('Monthly averaged reanalysis').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+
+    cy.findByLabelText('Monthly averaged reanalysis by hour of day').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+  })
 })

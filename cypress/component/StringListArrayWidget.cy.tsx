@@ -456,4 +456,29 @@ describe('<StringListArrayWidget/>', () => {
       )
     })
   })
+
+  it('reacts to form Clear all', () => {
+    cy.mount(
+      <StringListArrayWidget
+        configuration={getStringListArrayWidgetConfiguration()}
+      />
+    )
+
+    cy.findByLabelText('Select all Lakes').click()
+    cy.document().trigger('formAction', {
+      eventConstructor: 'CustomEvent',
+      detail: { type: 'clearAll' }
+    })
+
+    cy.findByLabelText('Lake shape factor').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+    cy.findByLabelText('Lake total layer temperature').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+  })
 })

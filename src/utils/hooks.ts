@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect, RefObject } from 'react'
-import { useReadLocalStorage } from 'usehooks-ts'
+import { useReadLocalStorage, useEventListener } from 'usehooks-ts'
 
+declare global {
+  interface DocumentEventMap {
+    formAction: CustomEvent
+  }
+}
 const useWidgetSelection = (fieldset: string) => {
   const [selection, setSelection] = useState<Record<string, string[]>>({
     [fieldset]: []
@@ -34,6 +39,26 @@ const useWidgetSelection = (fieldset: string) => {
       [fieldset]: getInitialSelection() || []
     })
   }, [fieldset])
+
+  /**
+   * Handle form Clear all
+   */
+  const documentRef = useRef<Document>(
+    typeof window !== 'undefined' ? document : null
+  )
+  useEventListener(
+    'formAction',
+    ev => {
+      if (!('detail' in ev)) return
+      if (!('type' in ev.detail)) return
+      if (ev.detail.type !== 'clearAll') return
+
+      setSelection({
+        [fieldset]: []
+      })
+    },
+    documentRef
+  )
 
   return { selection, setSelection }
 }
