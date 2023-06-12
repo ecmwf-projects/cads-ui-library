@@ -5,12 +5,12 @@ module.exports = async () => {
   return {
     preset: 'ts-jest',
     testEnvironment: 'jsdom',
-    collectCoverageFrom: [
-      'src/**/*.{ts,tsx}',
-      '!src/widgets/KeywordSearchWidget.tsx'
-    ],
+    /**
+     * Widgets coverage is taken care by Cypress component testing.
+     */
+    collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/widgets/**/*.tsx'],
     coverageThreshold: {
-      global: { lines: 80 }
+      global: { lines: 90 }
     },
     modulePaths: [compilerOptions.baseUrl],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),

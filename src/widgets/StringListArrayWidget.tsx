@@ -520,7 +520,6 @@ const Actions = styled.div`
   justify-content: space-between;
   max-width: 150px;
   margin-top: -1em;
-  margin-bottom: 2em;
   gap: 1em;
 `
 
