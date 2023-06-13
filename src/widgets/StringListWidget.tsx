@@ -1,8 +1,15 @@
+/* istanbul ignore file */
+/* See cypress/component/StringListWidget.cy.tsx */
 import React, { useRef } from 'react'
 
 import { Checkbox, Label, WidgetTooltip } from '../index'
 
+import 'core-js/actual/set/intersection.js'
+import 'core-js/actual/set/difference.js'
+
 import {
+  Actions,
+  ActionButton,
   Fieldset,
   InputGroup,
   InputsGrid,
@@ -21,10 +28,15 @@ import {
   getPermittedBulkSelection,
   isAllSelected,
   useBypassRequired,
-  useWidgetSelection,
-  ClearAll,
-  SelectAll
+  useWidgetSelection
 } from '../utils'
+
+declare global {
+  interface Set<T> {
+    intersection(other: Set<T>): Set<T>
+    difference(other: Set<T>): Set<T>
+  }
+}
 
 export interface StringListWidgetDetails {
   columns: number
@@ -62,6 +74,10 @@ type StringListWidgetProps = {
    * When true, bypass the required attribute if all options are made unavailable by constraints.
    */
   bypassRequiredForConstraints?: boolean
+}
+
+const groupIntersectsSelection = (values: string[], selection: string[]) => {
+  return new Set(values).intersection(new Set(selection)).size
 }
 
 const getAllValues = (labels: StringListWidgetDetails['labels']) => {
@@ -105,22 +121,52 @@ const StringListWidget = ({
             {label}
           </WidgetTitle>
           <div {...(fieldsetDisabled && { inert: '' })}>
-            {constraints?.length === 0 ? null : isAllSelected({
+            <Actions data-stylizable='widget string-list actions'>
+              {constraints?.length === 0 ||
+              isAllSelected({
                 availableSelection: allValues,
                 constraints,
                 currentSelection: selection[name]
-              }) ? (
-              <ClearAll fieldset={name} handleAction={setSelection} />
-            ) : (
-              <SelectAll
-                fieldset={name}
-                handleAction={setSelection}
-                values={getPermittedBulkSelection({
-                  constraints,
-                  availableSelection: allValues
-                })}
-              />
-            )}
+              }) ? null : (
+                <ActionButton
+                  type='button'
+                  aria-label={`Select all ${label}`}
+                  onClick={ev => {
+                    ev.preventDefault()
+
+                    setSelection(prevState => {
+                      return {
+                        ...prevState,
+                        [name]: getPermittedBulkSelection({
+                          constraints,
+                          availableSelection: allValues
+                        })
+                      }
+                    })
+                  }}
+                >
+                  Select all
+                </ActionButton>
+              )}
+              {groupIntersectsSelection(allValues, selection[name]) ? (
+                <ActionButton
+                  type='button'
+                  aria-label={`Clear all ${label}`}
+                  onClick={ev => {
+                    ev.preventDefault()
+
+                    setSelection(prevState => {
+                      return {
+                        ...prevState,
+                        [name]: []
+                      }
+                    })
+                  }}
+                >
+                  Clear all
+                </ActionButton>
+              ) : null}
+            </Actions>
           </div>
         </WidgetActionsWrapper>
         <WidgetTooltip

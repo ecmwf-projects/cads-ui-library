@@ -207,6 +207,26 @@ describe('<ExclusiveGroupWidget/>', () => {
           formConfiguration
         )
       ).toBeTruthy()
+
+      const missingChildren = {
+        type: 'ExclusiveGroupWidget' as const,
+        label: 'Geographical area',
+        help: null,
+        name: 'area_group',
+        details: {
+          default: 'global',
+          information:
+            'Valid latitude and longitude values are multiples of 0.05 degree.'
+        }
+      }
+
+      expect(
+        isChildOfExclusiveGroup(getGeographicExtentWidgetConfiguration(), [
+          // @ts-expect-error
+          missingChildren,
+          getGeographicExtentWidgetConfiguration()
+        ])
+      ).toBeFalsy()
     })
 
     it('returns false if not child of exclusive group widget', () => {

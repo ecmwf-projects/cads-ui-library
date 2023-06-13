@@ -150,31 +150,6 @@ const getExclusiveGroupChildren: GetExclusiveGroupChildren = (
   }
 }
 
-type IsChildOfExclusiveGroup = (
-  widgetConfiguration: Exclude<
-    FormConfiguration,
-    ExclusiveGroupWidgetConfiguration
-  >,
-  formConfiguration: FormConfiguration[]
-) => boolean
-const isChildOfExclusiveGroup: IsChildOfExclusiveGroup = (
-  widgetConfiguration,
-  formConfiguration
-) => {
-  if (
-    formConfiguration.find(configuration => {
-      return (
-        configuration.type === 'ExclusiveGroupWidget' &&
-        configuration.children.includes(widgetConfiguration.name)
-      )
-    })
-  ) {
-    return true
-  }
-
-  return false
-}
-
 const Group = styled.div`
   display: flex;
   flex-flow: row;
@@ -203,4 +178,4 @@ const Group = styled.div`
 `
 
 export { ExclusiveGroupWidget }
-export { getExclusiveGroupChildren, isChildOfExclusiveGroup }
+export { getExclusiveGroupChildren }

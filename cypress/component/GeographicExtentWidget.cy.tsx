@@ -6,8 +6,7 @@ import {
   isSouthLessThanNorth,
   isWestLessThanEast,
   isWithinRange,
-  toPrecision,
-  stripMinus
+  getGeoExtentFieldValue
 } from '../../src'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
@@ -536,9 +535,25 @@ describe('<GeographicExtentWidget/>', () => {
                     if ('nativeEvent' in ev) {
                       if (ev.nativeEvent instanceof InputEvent) {
                         const value = ev.nativeEvent.target.value
-                        const nextValue = stripMinus(value)
+                        const nextValue = getGeoExtentFieldValue(
+                          value,
+                          precision
+                        )
 
-                        setValue(fieldName, toPrecision(nextValue, precision))
+                        setValue(fieldName, nextValue)
+                      }
+                    }
+                  }
+                }),
+              s: fieldName =>
+                register(fieldName, {
+                  onChange: ev => {
+                    if ('nativeEvent' in ev) {
+                      if (ev.nativeEvent instanceof InputEvent) {
+                        const value = ev.nativeEvent.target.value
+                        const nextValue = getGeoExtentFieldValue(value)
+
+                        setValue(fieldName, nextValue)
                       }
                     }
                   }
@@ -599,5 +614,14 @@ describe('<GeographicExtentWidget/>', () => {
       .clear()
       .type('gibberish')
       .should('have.value', '')
+
+    cy.findByLabelText('North')
+      .clear()
+      .type('¼-56.2331')
+      .should('have.value', '-56.233')
+
+    cy.findByLabelText('North').clear().type('¼aa').should('have.value', '')
+
+    cy.findByLabelText('South').clear().type('¼-56').should('have.value', '-56')
   })
 })

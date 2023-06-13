@@ -9,7 +9,8 @@ import {
   isSouthLessThanNorth,
   isValidInput,
   toPrecision,
-  stripMinus
+  stripMinus,
+  getGeoExtentFieldValue
 } from '../../src'
 
 describe('<GeographicExtentWidget/>', () => {
@@ -57,6 +58,14 @@ describe('<GeographicExtentWidget/>', () => {
         expect(stripMinus('-.99')).toEqual('-.99')
         expect(stripMinus('9')).toEqual('9')
         expect(stripMinus('')).toEqual('')
+      })
+
+      it('returns the field value', () => {
+        expect(getGeoExtentFieldValue('v')).toEqual('')
+        expect(getGeoExtentFieldValue('v', 2)).toEqual('')
+        expect(getGeoExtentFieldValue('¼', 2)).toEqual('')
+        expect(getGeoExtentFieldValue('¼-55', 2)).toEqual('-55')
+        expect(getGeoExtentFieldValue('-55½', 2)).toEqual('-55')
       })
     })
     describe('Field validation', () => {

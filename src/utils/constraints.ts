@@ -50,7 +50,7 @@ const isAllSelected = ({
 
   if (constraints.length === 0) return true
   /**
-   * If there are constraints, and the current selection is greater than the constraints, this means that the user has triggered constraints after selecting all the available choices. In this case we show "Clear all".
+   * If there are constraints, and the current selection is greater than the constraints, this means that the user has triggered constraints after selecting all the available choices.
    */
   if (constraints.length && currentSelection.length > constraints.length)
     return true

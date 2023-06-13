@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+/* See cypress/component/GeographicExtentWidget.cy.tsx */
 import React from 'react'
 import styled from 'styled-components'
 
@@ -373,6 +375,32 @@ const stripMinus = (value: string) => {
   return value
 }
 
+const getGeoExtentFieldValue = (value: string, precision?: number) => {
+  /**
+   * Reject any non-digit at the gate, except minus and dot. This covers inputs obtained from Alt GR.
+   * Might change in the future.
+   */
+  const hasNotDigits = value?.match(/[^-.\d]/)
+
+  if (hasNotDigits && precision) {
+    const [nonDigit] = hasNotDigits
+    const nextValue = value?.replace(nonDigit, '')
+    return toPrecision(stripMinus(nextValue), precision)
+  }
+
+  if (hasNotDigits && !precision) {
+    const [nonDigit] = hasNotDigits
+    const nextValue = value?.replace(nonDigit, '')
+    return stripMinus(nextValue)
+  }
+
+  if (!precision) {
+    return stripMinus(value)
+  }
+
+  return toPrecision(stripMinus(value), precision)
+}
+
 const isValidInput = ({
   code,
   value
@@ -464,5 +492,6 @@ export {
   isSouthLessThanNorth,
   isValidInput,
   toPrecision,
-  stripMinus
+  stripMinus,
+  getGeoExtentFieldValue
 }

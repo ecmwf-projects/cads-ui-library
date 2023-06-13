@@ -21,10 +21,8 @@ export { StringChoiceWidget } from './widgets/StringChoiceWidget'
 /**
  * Widget utils.
  */
-export {
-  getExclusiveGroupChildren,
-  isChildOfExclusiveGroup
-} from './widgets/ExclusiveGroupWidget'
+export { getExclusiveGroupChildren } from './widgets/ExclusiveGroupWidget'
+export { isChildOfExclusiveGroup } from './utils/exclusiveGroupWidget'
 
 export {
   isWithinRange,
@@ -32,7 +30,8 @@ export {
   isSouthLessThanNorth,
   isValidInput,
   toPrecision,
-  stripMinus
+  stripMinus,
+  getGeoExtentFieldValue
 } from './widgets/GeographicExtentWidget'
 
 export { createWidget } from './utils/widgetFactory'

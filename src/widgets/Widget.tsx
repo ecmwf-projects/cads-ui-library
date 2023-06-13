@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { BaseButton } from '../index'
 
 /**
  * Common building blocks for all widgets. Inheritors in webportal can override styles
@@ -100,7 +101,22 @@ const ReservedSpace = styled.div`
   margin-bottom: 2em;
 `
 
+const Actions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+`
+
+const ActionButton = styled(BaseButton)`
+  all: unset;
+  cursor: pointer;
+  color: #25408f;
+  text-decoration: underline;
+`
+
 export {
+  Actions,
+  ActionButton,
   Fieldset,
   InputGroup,
   InputsGrid,

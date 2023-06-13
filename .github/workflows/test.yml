@@ -12,7 +12,7 @@ jobs:
           node-version: '16.x'
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn test
+      - run: yarn test --coverage
 
   component-test:
     runs-on: ubuntu-latest
