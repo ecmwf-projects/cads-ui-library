@@ -26,6 +26,56 @@ const Form = ({
 }
 
 describe('<StringListWidget/>', () => {
+  afterEach(() => {
+    cy.clearLocalStorage()
+  })
+
+  it('hydrates its selection', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { product_type: ['monthly_averaged_reanalysis'] }
+      })
+    )
+
+    cy.mount(
+      <StringListWidget configuration={getStringListWidgetConfiguration()} />
+    )
+
+    cy.findByLabelText('Monthly averaged reanalysis').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+  })
+
+  it('hydrates its selection - graceful fail', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { product_type: 'not-the-format-I-was-expecting' }
+      })
+    )
+
+    cy.mount(
+      <StringListWidget configuration={getStringListWidgetConfiguration()} />
+    )
+
+    cy.findByLabelText('Monthly averaged reanalysis').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+
+    cy.findByLabelText('Monthly averaged reanalysis by hour of day').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+  })
+
   it('handles selection', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 

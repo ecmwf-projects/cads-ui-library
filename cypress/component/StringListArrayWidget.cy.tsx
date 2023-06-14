@@ -34,6 +34,54 @@ const Form = ({
 }
 
 describe('<StringListArrayWidget/>', () => {
+  afterEach(() => {
+    cy.clearLocalStorage()
+  })
+
+  it('hydrates its selection', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { variable: ['lake_total_layer_temperature'] }
+      })
+    )
+
+    cy.mount(
+      <StringListArrayWidget
+        configuration={getStringListArrayWidgetConfiguration()}
+      />
+    )
+
+    cy.findByLabelText('Lake total layer temperature').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+  })
+
+  it('hydrates its selection - graceful fail', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { variable: 'not-the-format-I-was-expecting' }
+      })
+    )
+
+    cy.mount(
+      <StringListArrayWidget
+        configuration={getStringListArrayWidgetConfiguration()}
+      />
+    )
+
+    cy.findByLabelText('Lake total layer temperature').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+  })
+
   it('handles selection', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
