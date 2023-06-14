@@ -26,6 +26,76 @@ const Form = ({
 }
 
 describe('<StringChoiceWidget/>', () => {
+  afterEach(() => {
+    cy.clearLocalStorage()
+  })
+
+  it('hydrates its selection', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { period: 'summer' }
+      })
+    )
+
+    cy.mount(
+      <StringChoiceWidget
+        configuration={{
+          name: 'period',
+          label: 'Period',
+          help: null,
+          required: true,
+          type: 'StringChoiceWidget',
+          details: {
+            values: ['summer', 'winter', 'year'],
+            columns: 3,
+            labels: {
+              summer: 'Summer',
+              winter: 'Winter',
+              year: 'Year'
+            }
+          }
+        }}
+      />
+    )
+
+    cy.findByLabelText('Summer').should('have.attr', 'aria-checked', 'true')
+  })
+
+  it('hydrates its selection - graceful fail', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { period: ['not-what-I-was-expecting'] }
+      })
+    )
+
+    cy.mount(
+      <StringChoiceWidget
+        configuration={{
+          name: 'period',
+          label: 'Period',
+          help: null,
+          required: true,
+          type: 'StringChoiceWidget',
+          details: {
+            values: ['summer', 'winter', 'year'],
+            columns: 3,
+            labels: {
+              summer: 'Summer',
+              winter: 'Winter',
+              year: 'Year'
+            }
+          }
+        }}
+      />
+    )
+
+    cy.findByLabelText('Summer').should('have.attr', 'aria-checked', 'false')
+  })
+
   it('no default, required selection', () => {
     cy.mount(
       <StringChoiceWidget

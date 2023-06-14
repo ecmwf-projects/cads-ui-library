@@ -34,6 +34,54 @@ const Form = ({
 }
 
 describe('<StringListArrayWidget/>', () => {
+  afterEach(() => {
+    cy.clearLocalStorage()
+  })
+
+  it('hydrates its selection', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { variable: ['lake_total_layer_temperature'] }
+      })
+    )
+
+    cy.mount(
+      <StringListArrayWidget
+        configuration={getStringListArrayWidgetConfiguration()}
+      />
+    )
+
+    cy.findByLabelText('Lake total layer temperature').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+  })
+
+  it('hydrates its selection - graceful fail', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { variable: 'not-the-format-I-was-expecting' }
+      })
+    )
+
+    cy.mount(
+      <StringListArrayWidget
+        configuration={getStringListArrayWidgetConfiguration()}
+      />
+    )
+
+    cy.findByLabelText('Lake total layer temperature').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+  })
+
   it('handles selection', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
@@ -280,95 +328,151 @@ describe('<StringListArrayWidget/>', () => {
         }}
         renderActiveSelectionsCount={true}
       />
+    )
+
+    /**
+     * Parent-level select all
+     */
+    cy.findByLabelText('Select all Variable')
+
+    /**
+     * Sub-widget-level select all
+     */
+    cy.findByLabelText('Select all Temperature').click()
+
+    cy.findByLabelText('Soil temperature level 2').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+    cy.findByLabelText('Soil temperature level 3').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+    cy.findByLabelText('Soil temperature level 4').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+
+    cy.findByLabelText('Lake total layer temperature').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+    cy.findByLabelText('Lake shape factor').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+
+    /**
+     * Sub-widget-level select all
+     */
+    cy.findByLabelText('Select all Lakes').click()
+
+    cy.findByLabelText('Lake total layer temperature').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+    cy.findByLabelText('Lake shape factor').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+
+    /**
+     * Parent-level clear all
+     */
+    cy.findByLabelText('Lake shape factor').click()
+    cy.findByLabelText('Clear all Variable')
+
+    /**
+     * Sub-widget-level clear all
+     */
+    cy.findAllByText('Clear all').eq(1)
+    cy.findAllByText('Clear all').eq(2)
+    cy.findByLabelText('Lake shape factor').click()
+
+    cy.findByLabelText('Clear all Temperature').click()
+    cy.findByLabelText('Soil temperature level 2').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+    cy.findByLabelText('Soil temperature level 3').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+    cy.findByLabelText('Soil temperature level 4').should(
+      'have.attr',
+      'aria-checked',
+      'false'
+    )
+
+    cy.findByLabelText('Clear all Temperature').should('not.exist')
+
+    cy.findByLabelText('Select all Temperature').click()
+
+    cy.findByLabelText('Select all Temperature').should('not.exist')
+  })
+
+  it('select all / clear all behaviour - interaction with constraints', () => {
+    cy.viewport(800, 1300)
+
+    cy.mount(
+      <StringListArrayWidget
+        configuration={{
+          details: {
+            accordionGroups: true,
+            accordionOptions: {
+              openGroups: ['Temperature', 'Lakes'],
+              searchable: false
+            },
+            displayaslist: false,
+            groups: [
+              {
+                columns: 2,
+                label: 'Temperature',
+                labels: {
+                  soil_temperature_level_2: 'Soil temperature level 2',
+                  soil_temperature_level_3: 'Soil temperature level 3',
+                  soil_temperature_level_4: 'Soil temperature level 4'
+                },
+                values: [
+                  'soil_temperature_level_2',
+                  'soil_temperature_level_3',
+                  'soil_temperature_level_4'
+                ]
+              },
+              {
+                columns: 2,
+                label: 'Lakes',
+                labels: {
+                  lake_shape_factor: 'Lake shape factor',
+                  lake_total_layer_temperature: 'Lake total layer temperature'
+                },
+                values: ['lake_shape_factor', 'lake_total_layer_temperature']
+              }
+            ],
+            id: 1
+          },
+          help: null,
+          label: 'Variable',
+          name: 'variable',
+          required: true,
+          type: 'StringListArrayWidget' as const
+        }}
+        renderActiveSelectionsCount={true}
+        bypassRequiredForConstraints={true}
+        constraints={[]}
+      />
     ).then(({ rerender }) => {
-      /**
-       * Parent-level select all
-       */
-      cy.findByLabelText('Select all Variable')
-
-      /**
-       * Sub-widget-level select all
-       */
-      cy.findByLabelText('Select all Temperature').click()
-
-      cy.findByLabelText('Soil temperature level 2').should(
-        'have.attr',
-        'aria-checked',
-        'true'
-      )
-      cy.findByLabelText('Soil temperature level 3').should(
-        'have.attr',
-        'aria-checked',
-        'true'
-      )
-      cy.findByLabelText('Soil temperature level 4').should(
-        'have.attr',
-        'aria-checked',
-        'true'
-      )
-
-      cy.findByLabelText('Lake total layer temperature').should(
-        'have.attr',
-        'aria-checked',
-        'false'
-      )
-      cy.findByLabelText('Lake shape factor').should(
-        'have.attr',
-        'aria-checked',
-        'false'
-      )
-
-      /**
-       * Sub-widget-level select all
-       */
-      cy.findByLabelText('Select all Lakes').click()
-
-      cy.findByLabelText('Lake total layer temperature').should(
-        'have.attr',
-        'aria-checked',
-        'true'
-      )
-      cy.findByLabelText('Lake shape factor').should(
-        'have.attr',
-        'aria-checked',
-        'true'
-      )
-
-      /**
-       * Parent-level clear all
-       */
-      cy.findByLabelText('Lake shape factor').click()
-      cy.findByLabelText('Clear all Variable')
-
-      /**
-       * Sub-widget-level clear all
-       */
-      cy.findAllByText('Clear all').eq(1)
-      cy.findAllByText('Clear all').eq(2)
-      cy.findByLabelText('Lake shape factor').click()
-
-      cy.findByLabelText('Clear all Temperature').click()
-      cy.findByLabelText('Soil temperature level 2').should(
-        'have.attr',
-        'aria-checked',
-        'false'
-      )
-      cy.findByLabelText('Soil temperature level 3').should(
-        'have.attr',
-        'aria-checked',
-        'false'
-      )
-      cy.findByLabelText('Soil temperature level 4').should(
-        'have.attr',
-        'aria-checked',
-        'false'
-      )
-
-      cy.findByLabelText('Clear all Temperature').should('not.exist')
-
-      cy.findByLabelText('Select all Temperature').click()
-
       cy.findByLabelText('Select all Temperature').should('not.exist')
+      cy.findByLabelText('Select all Lakes').should('not.exist')
 
       rerender(
         <StringListArrayWidget
@@ -413,24 +517,14 @@ describe('<StringListArrayWidget/>', () => {
             required: true,
             type: 'StringListArrayWidget' as const
           }}
-          constraints={['lake_shape_factor']}
           renderActiveSelectionsCount={true}
+          bypassRequiredForConstraints={true}
+          constraints={['soil_temperature_level_2', 'lake_shape_factor']}
         />
       )
 
-      cy.findByLabelText('Clear all Lakes').click()
-      cy.findByLabelText('Select all Lakes').click()
-
-      cy.findByLabelText('Lake shape factor').should(
-        'have.attr',
-        'aria-checked',
-        'true'
-      )
-      cy.findByLabelText('Lake total layer temperature').should(
-        'have.attr',
-        'aria-checked',
-        'false'
-      )
+      cy.findByLabelText('Select all Temperature').click()
+      cy.findByLabelText('Select all Temperature').should('not.exist')
     })
   })
 

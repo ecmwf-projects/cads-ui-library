@@ -109,6 +109,11 @@ const StringListWidget = ({
 
   const allValues = getAllValues(labels)
 
+  const isChecked = (selection: string[], value: string) => {
+    if (!Array.isArray(selection)) return
+    return Boolean(selection.find(sel => sel === value))
+  }
+
   return (
     <Widget data-stylizable='widget'>
       <WidgetHeader>
@@ -193,9 +198,7 @@ const StringListWidget = ({
               >
                 <Checkbox
                   rootProps={{
-                    checked: Boolean(
-                      selection[name]?.find(sel => sel === value)
-                    ),
+                    checked: isChecked(selection[name], value),
                     disabled: isDisabled({ constraints, key: value }),
                     onCheckedChange: checked => {
                       if (checked) {
