@@ -5,7 +5,6 @@ import { CheckIcon } from '@radix-ui/react-icons'
 
 import { BaseButton } from '../index'
 
-import { TMarkdownToJSX } from '../internal'
 import { Widget, WidgetHeader, WidgetTitle } from './Widget'
 import { WidgetTooltip } from '../index'
 
@@ -54,7 +53,7 @@ export interface LicenceWidgetProps {
   /**
    * Licence accept handler. Invoked when the user clicks "Accept terms" for the given licence.
    */
-  onLicenceAccept?: (id: string) => void
+  onLicenceAccept?: (licence: Licence) => void
   /**
    * Licence click handler. Invoked when the user clicks the licence title.
    */
@@ -83,9 +82,7 @@ const LicenceWidget = ({
   if (type !== 'LicenceWidget') return null
 
   const handleAccept = (licence: Licence) => {
-    const { id } = licence
-
-    onLicenceAccept && onLicenceAccept(id)
+    onLicenceAccept && onLicenceAccept(licence)
   }
 
   const getLicence = (licence: Licence) => {

@@ -12,7 +12,7 @@ describe('<LicenceWidget />', () => {
         licences: [
           {
             id: 'licence-xyz',
-            revision: '3',
+            revision: 2,
             label: 'Licence to use Copernicus products',
             contents_url: '',
             attachment_url: '',
@@ -20,7 +20,7 @@ describe('<LicenceWidget />', () => {
           },
           {
             id: 'licence-abc',
-            revision: '3',
+            revision: 3,
             label: 'Additional licence to use non European contributions',
             contents_url: '',
             attachment_url: '',
@@ -43,7 +43,14 @@ describe('<LicenceWidget />', () => {
     cy.get('@onLicenceAccept')
       .should('have.been.calledOnce')
       .its('firstCall.args.0')
-      .should('eq', 'licence-abc')
+      .should('deep.equal', {
+        id: 'licence-abc',
+        label: 'Additional licence to use non European contributions',
+        accepted: false,
+        revision: 3,
+        contents_url: '',
+        attachment_url: ''
+      })
   })
 
   it('handles licence click', () => {
@@ -56,7 +63,7 @@ describe('<LicenceWidget />', () => {
         licences: [
           {
             id: 'licence-xyz',
-            revision: '3',
+            revision: 3,
             label: 'Licence to use Copernicus products',
             contents_url: '',
             attachment_url: '',
@@ -64,7 +71,7 @@ describe('<LicenceWidget />', () => {
           },
           {
             id: 'licence-abc',
-            revision: '3',
+            revision: 3,
             label: 'Additional licence to use non European contributions',
             contents_url: '',
             attachment_url: '',
@@ -89,7 +96,7 @@ describe('<LicenceWidget />', () => {
       .its('firstCall.args.0')
       .should('deep.equal', {
         id: 'licence-xyz',
-        revision: '3',
+        revision: 3,
         label: 'Licence to use Copernicus products',
         contents_url: '',
         attachment_url: '',
