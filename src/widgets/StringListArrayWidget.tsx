@@ -137,12 +137,47 @@ const getOwnGroupValues = (
   return ownGroup.values
 }
 
+const getGroupSelection = (values: string[], selection: string[]) => {
+  return [...new Set(values).intersection(new Set(selection))]
+}
+
 const groupIntersectsSelection = (values: string[], selection: string[]) => {
   return new Set(values).intersection(new Set(selection)).size
 }
 
-const isGroupAllSelected = (values: string[], selection: string[]) => {
-  return values.length == groupIntersectsSelection(values, selection)
+const isGroupAllSelected = ({
+  availableSelection,
+  ownConstraints,
+  currentSelection
+}: {
+  availableSelection: string[]
+  ownConstraints?: string[]
+  currentSelection: string[]
+}) => {
+  if (!ownConstraints) {
+    return (
+      availableSelection.length ==
+      groupIntersectsSelection(availableSelection, currentSelection)
+    )
+  }
+
+  if (ownConstraints.length === 0) return true
+
+  if (
+    ownConstraints.length &&
+    currentSelection.length > ownConstraints.length
+  ) {
+    return true
+  }
+
+  return ownConstraints.length === currentSelection.length
+}
+
+const getOwnConstraints = (
+  values: string[],
+  constraints: string[] | undefined
+) => {
+  return [...new Set(values).intersection(new Set(constraints || values))]
 }
 
 const getGroupPermittedBulkSelection = (
@@ -358,10 +393,18 @@ const StringListArrayWidget = ({
                 }}
               >
                 <Actions data-stylizable='widget string-listarray accordion-header actions'>
-                  {isGroupAllSelected(
-                    getOwnGroupValues(groups, groupLabel),
-                    selection[name]
-                  ) ? null : (
+                  {constraints?.length === 0 ||
+                  isGroupAllSelected({
+                    availableSelection: getOwnGroupValues(groups, groupLabel),
+                    ownConstraints: getOwnConstraints(
+                      getOwnGroupValues(groups, groupLabel),
+                      constraints
+                    ),
+                    currentSelection: getGroupSelection(
+                      getOwnGroupValues(groups, groupLabel),
+                      selection[name]
+                    )
+                  }) ? null : (
                     <ActionButton
                       type='button'
                       aria-label={`Select all ${groupLabel}`}
