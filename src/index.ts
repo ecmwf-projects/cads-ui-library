@@ -17,6 +17,7 @@ export { ExclusiveGroupWidget } from './widgets/ExclusiveGroupWidget'
 export { StringListArrayWidget } from './widgets/StringListArrayWidget'
 export { StringListWidget } from './widgets/StringListWidget'
 export { StringChoiceWidget } from './widgets/StringChoiceWidget'
+export { FreeformInputWidget } from './widgets/FreeformInputWidget'
 
 /**
  * Widget utils.
