@@ -32,9 +32,7 @@ const Wrapper = ({
 }) => {
   return (
     <TooltipProvider>
-      <Form>
-        {children}
-      </Form>
+      <Form>{children}</Form>
     </TooltipProvider>
   )
 }
@@ -45,21 +43,21 @@ describe('<FreeformInputWidget />', () => {
   })
 
   it('renders a FreeformInputWidget', () => {
-
-    cy.mount(<Wrapper>
-      <FreeformInputWidget
-        configuration={{
-          type: 'FreeformInputWidget',
-          name: 'name',
-          label: 'The label',
-          required: true,
-          details: {
-            dtype: 'string'
-          },
-          help: 'The help'
-        }}
-      />
-    </Wrapper>)
+    cy.mount(
+      <Wrapper>
+        <FreeformInputWidget
+          configuration={{
+            type: 'FreeformInputWidget',
+            name: 'name',
+            label: 'The label',
+            required: true,
+            details: {
+              dtype: 'string'
+            },
+            help: 'The help'
+          }}
+        />
+      </Wrapper>
+    )
   })
-
 })
