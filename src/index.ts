@@ -18,6 +18,7 @@ export { StringListArrayWidget } from './widgets/StringListArrayWidget'
 export { StringListWidget } from './widgets/StringListWidget'
 export { StringChoiceWidget } from './widgets/StringChoiceWidget'
 
+export { NestedStringListArrayWidget } from './widgets/NestedStringListArrayWidget'
 /**
  * Widget utils.
  */
