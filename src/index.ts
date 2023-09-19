@@ -35,4 +35,11 @@ export {
   getGeoExtentFieldValue
 } from './widgets/GeographicExtentWidget'
 
+export {
+  isDigitKey,
+  isInteger,
+  isFloat,
+  keyDownHandler
+} from './widgets/FreeformInputWidget'
+
 export { createWidget } from './utils/widgetFactory'

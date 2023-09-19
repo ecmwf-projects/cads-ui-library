@@ -185,7 +185,7 @@ const FreeformInputWidget = ({
  * + / - / e
  * @param ev The keydown event.
  */
-const ALLOWED_INT_KEYS = [
+const ALLOWED_KEYS = [
   'e',
   'E',
   '+',
@@ -219,7 +219,7 @@ const isDigitKey = (value: string) => {
  * @returns Whether the value is an integer.
  */
 const isInteger = (value: string) =>
-  isDigitKey(value) || ALLOWED_INT_KEYS.includes(value)
+  isDigitKey(value) || ALLOWED_KEYS.includes(value)
 
 /**
  * @param value The value to check.
@@ -227,7 +227,7 @@ const isInteger = (value: string) =>
  */
 const isFloat = (value: string) =>
   isDigitKey(value) ||
-  ALLOWED_INT_KEYS.includes(value) ||
+  ALLOWED_KEYS.includes(value) ||
   ALLOWED_FLOAT_KEYS.includes(value)
 
 /**
@@ -299,3 +299,4 @@ const Wrapper = styled.div`
 `
 
 export { FreeformInputWidget }
+export { isDigitKey, isInteger, isFloat, keyDownHandler }

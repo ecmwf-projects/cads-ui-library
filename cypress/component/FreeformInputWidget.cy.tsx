@@ -62,7 +62,6 @@ describe('<FreeformInputWidget />', () => {
   })
 
   it('can write a string', () => {
-
     cy.mount(
       <Wrapper>
         <FreeformInputWidget
@@ -85,7 +84,6 @@ describe('<FreeformInputWidget />', () => {
   })
 
   it('can write a float', () => {
-
     cy.mount(
       <Wrapper>
         <FreeformInputWidget
@@ -114,7 +112,6 @@ describe('<FreeformInputWidget />', () => {
   })
 
   it('can write an integer', () => {
-
     cy.mount(
       <Wrapper>
         <FreeformInputWidget
@@ -155,7 +152,6 @@ describe('<FreeformInputWidget />', () => {
   })
 
   it('can write a string', () => {
-
     cy.mount(
       <Wrapper>
         <FreeformInputWidget
@@ -367,5 +363,4 @@ describe('<FreeformInputWidget />', () => {
 
     cy.get('input').should('have.value', '')
   })
-
 })
