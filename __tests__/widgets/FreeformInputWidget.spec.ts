@@ -5,9 +5,7 @@ import { expect } from '@jest/globals'
 
 import { isDigitKey, isInteger, isFloat, keyDownHandler } from '../../src'
 
-const asEvent = (
-  key: string
-): React.KeyboardEvent<HTMLInputElement> => {
+const asEvent = (key: string): React.KeyboardEvent<HTMLInputElement> => {
   return {
     key,
     preventDefault: jest.fn(),
@@ -73,7 +71,7 @@ describe('<FreeformInputWidget/>', () => {
         let ev = asEvent('A')
         expect(validator(ev))
         expect(ev.preventDefault).toBeCalled()
-        
+
         ev = asEvent('2')
         expect(validator(ev))
         expect(ev.preventDefault).not.toBeCalled()
