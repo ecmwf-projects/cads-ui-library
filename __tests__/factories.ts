@@ -110,50 +110,50 @@ export const getNestedStringListArrayWidgetConfiguration = () => {
             groups: [
               {
                 columns: 2,
-                label: 'Subgroup 1',
+                label: 'Subgroup 1.1',
                 labels: {
-                  option_1_1: 'Option 1-1',
-                  option_1_2: 'Option 1-2',
-                  option_1_3: 'Option 1-3',
-                  option_1_4: 'Option 1-4',
-                  option_1_5: 'Option 1-5',
-                  option_1_6: 'Option 1-6',
-                  option_1_7: 'Option 1-7',
-                  option_1_8: 'Option 1-8'
+                  option_1_1_1: 'Option 1-1-1',
+                  option_1_1_2: 'Option 1-1-2',
+                  option_1_1_3: 'Option 1-1-3',
+                  option_1_1_4: 'Option 1-1-4',
+                  option_1_1_5: 'Option 1-1-5',
+                  option_1_1_6: 'Option 1-1-6',
+                  option_1_1_7: 'Option 1-1-7',
+                  option_1_1_8: 'Option 1-1-8'
                 },
                 values: [
-                  'option_1_1',
-                  'option_1_2',
-                  'option_1_3',
-                  'option_1_4',
-                  'option_1_5',
-                  'option_1_6',
-                  'option_1_7',
-                  'option_1_8'
+                  'option_1_1_1',
+                  'option_1_1_2',
+                  'option_1_1_3',
+                  'option_1_1_4',
+                  'option_1_1_5',
+                  'option_1_1_6',
+                  'option_1_1_7',
+                  'option_1_1_8'
                 ]
               },
               {
                 columns: 2,
-                label: 'Subgroup 2',
+                label: 'Subgroup 1.2',
                 labels: {
-                  option_2_1: 'Option 2-1',
-                  option_2_2: 'Option 2-2',
-                  option_2_3: 'Option 2-3',
-                  option_2_4: 'Option 2-4',
-                  option_2_5: 'Option 2-5',
-                  option_2_6: 'Option 2-6',
-                  option_2_7: 'Option 2-7',
-                  option_2_8: 'Option 2-8'
+                  option_1_2_1: 'Option 1-2-1',
+                  option_1_2_2: 'Option 1-2-2',
+                  option_1_2_3: 'Option 1-2-3',
+                  option_1_2_4: 'Option 1-2-4',
+                  option_1_2_5: 'Option 1-2-5',
+                  option_1_2_6: 'Option 1-2-6',
+                  option_1_2_7: 'Option 1-2-7',
+                  option_1_2_8: 'Option 1-2-8'
                 },
                 values: [
-                  'option_2_1',
-                  'option_2_2',
-                  'option_2_3',
-                  'option_2_4',
-                  'option_2_5',
-                  'option_2_6',
-                  'option_2_7',
-                  'option_2_8'
+                  'option_1_2_1',
+                  'option_1_2_2',
+                  'option_1_2_3',
+                  'option_1_2_4',
+                  'option_1_2_5',
+                  'option_1_2_6',
+                  'option_1_2_7',
+                  'option_1_2_8'
                 ]
               }
             ]
@@ -180,6 +180,50 @@ export const getNestedStringListArrayWidgetConfiguration = () => {
             'lake_shape_factor',
             'lake_total_layer_temperature'
           ]
+        },
+        {
+          label: 'Subgroup 2 parent',
+          details: {
+            accordionGroups: true,
+            accordionOptions: {
+              openGroups: ['Subgroup 2_1'],
+              searchable: false
+            },
+            displayaslist: false,
+            id: 2,
+            groups: [
+              {
+                label: 'Subgroup 2.1 parent',
+                details: {
+                  accordionGroups: true,
+                  accordionOptions: {
+                    openGroups: ['Subgroup 2_1'],
+                    searchable: false
+                  },
+                  displayaslist: false,
+                  id: 2,
+                  groups: [
+                    {
+                      columns: 2,
+                      label: 'Subgroup 2.1.1',
+                      labels: {
+                        option_2_1_1_1: 'Option 2.1.1.1'
+                      },
+                      values: ['option_2_1_1_1']
+                    },
+                    {
+                      columns: 2,
+                      label: 'Subgroup 2.1.2',
+                      labels: {
+                        option_2_1_2_1: 'Option 2.1.2.1'
+                      },
+                      values: ['option_2_1_2_1']
+                    }
+                  ]
+                }
+              }
+            ]
+          }
         }
       ],
       id: 1

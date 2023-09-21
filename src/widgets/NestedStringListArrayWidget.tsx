@@ -100,16 +100,33 @@ interface StringListArrayWidgetProps {
   renderActiveSelectionsCount?: boolean
 }
 
-const getGroups = (
+/**
+ * Default max nesting level allowed
+ */
+const MAX_NESTING_LEVEL = 1
+
+/**
+ * Function that extracts groups recursively according to nesting constraints.
+ * Extracting the groups is used to select options in bulk.
+ */
+export const getGroups = (
   groups: StringListArrayWidgetConfiguration['details']['groups'],
-  result: StringListArrayWidgetGroupDetails[] = []
+  result: StringListArrayWidgetGroupDetails[] = [],
+  currentNesting = 0,
+  maxNesting = MAX_NESTING_LEVEL
 ) => {
+  if (currentNesting > maxNesting) {
+    return result
+  }
+
   for (const group of groups) {
     if ('details' in group) {
       getGroups(
         group.details
           .groups as StringListArrayWidgetConfiguration['details']['groups'],
-        result
+        result,
+        currentNesting + 1,
+        maxNesting
       )
     } else {
       result.push(group as StringListArrayWidgetGroupDetails)
@@ -117,6 +134,34 @@ const getGroups = (
   }
 
   return result
+}
+
+/**
+ * Function that determines whether a parent group should be rendered.
+ * It is used in the case where a parent group has a child that in turn
+ * is a parent child, if the group with options does not meet the nesting
+ * constraints this function prevents the empty parent group from being rendered.
+ */
+export const shouldRenderParent = (
+  group: Pick<StringListArrayWidgetConfiguration, 'label' | 'details'>,
+  currentNesting = 0,
+  maxNesting: number = MAX_NESTING_LEVEL
+): boolean => {
+  if ('details' in group) {
+    for (const g of group.details.groups) {
+      if ('details' in g) {
+        return shouldRenderParent(g, currentNesting + 1, maxNesting)
+      } else if (currentNesting >= maxNesting) {
+        return false
+      }
+    }
+  }
+
+  if (currentNesting >= maxNesting) {
+    return false
+  }
+
+  return true
 }
 
 const getAllValues = (groups: StringListArrayWidgetGroupDetails[]) => {
@@ -404,7 +449,7 @@ const NestedStringListArrayWidget = ({
           constraints={constraints}
           accordionOptions={accordionOptions}
           renderActiveSelectionsCount={renderActiveSelectionsCount}
-          deep={0}
+          nestingLevel={0}
           onActionButtonClick={onActionButtonClick}
           setSelection={setSelection}
         />
@@ -421,7 +466,7 @@ interface GroupRendererProps {
   constraints?: string[]
   accordionOptions: StringListArrayWidgetDetails['accordionOptions']
   renderActiveSelectionsCount?: boolean
-  deep: number
+  nestingLevel: number
   setSelection: (value: React.SetStateAction<Record<string, string[]>>) => void
   onActionButtonClick: VoidFunction
 }
@@ -432,14 +477,14 @@ const GroupRenderer = ({
   selection,
   constraints,
   accordionOptions,
-  deep,
+  nestingLevel,
   renderActiveSelectionsCount,
   setSelection,
   onActionButtonClick
 }: GroupRendererProps) => {
   return (
     <>
-      {deep <= 1 &&
+      {nestingLevel <= MAX_NESTING_LEVEL &&
         groups.map(group => {
           if ('details' in group) {
             const g: Pick<
@@ -447,55 +492,55 @@ const GroupRenderer = ({
               'label' | 'details'
             > = group as any
 
-            return (
-              <ParentGroup
-                group={g}
-                name={name}
-                accordionOptions={accordionOptions}
-                allGroups={allGroups}
-                selection={selection}
-                constraints={constraints}
-                key={g.label}
-                renderActiveSelectionsCount={renderActiveSelectionsCount}
-              >
-                <GroupRenderer
+            if (shouldRenderParent(group, nestingLevel, MAX_NESTING_LEVEL)) {
+              return (
+                <ParentGroup
+                  group={g}
                   name={name}
+                  accordionOptions={accordionOptions}
                   allGroups={allGroups}
-                  groups={g.details.groups}
                   selection={selection}
                   constraints={constraints}
-                  accordionOptions={accordionOptions}
+                  key={g.label}
                   renderActiveSelectionsCount={renderActiveSelectionsCount}
-                  deep={deep + 1}
-                  onActionButtonClick={onActionButtonClick}
-                  setSelection={setSelection}
-                />
-              </ParentGroup>
-            )
-          } else {
-            const g: StringListArrayWidgetGroupDetails = group as any
-            if (!Object.keys(g.labels).length) return null
-
-            const openedItem = getOpenedItem(
-              accordionOptions.openGroups,
-              g.label
-            )
-
-            return (
-              <ChildGroup
-                key={group.label}
-                name={name}
-                group={g}
-                groups={allGroups}
-                selection={selection}
-                constraints={constraints}
-                openedItem={openedItem}
-                renderActiveSelectionsCount={renderActiveSelectionsCount}
-                onActionButtonClick={onActionButtonClick}
-                setSelection={setSelection}
-              />
-            )
+                >
+                  <GroupRenderer
+                    name={name}
+                    allGroups={allGroups}
+                    groups={g.details.groups}
+                    selection={selection}
+                    constraints={constraints}
+                    accordionOptions={accordionOptions}
+                    renderActiveSelectionsCount={renderActiveSelectionsCount}
+                    nestingLevel={nestingLevel + 1}
+                    onActionButtonClick={onActionButtonClick}
+                    setSelection={setSelection}
+                  />
+                </ParentGroup>
+              )
+            }
+            return null
           }
+
+          const g: StringListArrayWidgetGroupDetails = group as any
+          if (!Object.keys(g.labels).length) return null
+
+          const openedItem = getOpenedItem(accordionOptions.openGroups, g.label)
+
+          return (
+            <ChildGroup
+              key={group.label}
+              name={name}
+              group={g}
+              groups={allGroups}
+              selection={selection}
+              constraints={constraints}
+              openedItem={openedItem}
+              renderActiveSelectionsCount={renderActiveSelectionsCount}
+              onActionButtonClick={onActionButtonClick}
+              setSelection={setSelection}
+            />
+          )
         })}
     </>
   )
