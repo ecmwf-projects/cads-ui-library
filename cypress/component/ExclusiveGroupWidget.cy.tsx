@@ -468,9 +468,8 @@ describe('<ExclusiveGroupWidget/>', () => {
   })
 
   it('with FreeformInputWidget and StringListWidget', () => {
-
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
-    
+
     cy.viewport(1200, 900)
     const configuration = {
       type: 'ExclusiveGroupWidget' as const,
@@ -492,13 +491,13 @@ describe('<ExclusiveGroupWidget/>', () => {
     cy.mount(
       <TooltipProvider>
         <Form handleSubmit={stubbedHandleSubmit}>
-        <ExclusiveGroupWidget
-          configuration={configuration}
-          childrenGetter={getExclusiveGroupChildren(
-            formConfiguration,
-            'checkbox_groups'
-          )}
-        />
+          <ExclusiveGroupWidget
+            configuration={configuration}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'checkbox_groups'
+            )}
+          />
         </Form>
       </TooltipProvider>
     )

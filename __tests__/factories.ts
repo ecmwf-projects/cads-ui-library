@@ -155,8 +155,8 @@ export const getFreeformInputWidgetConfiguration = () => {
     name: 'freeform_input',
     help: 'Enter a freeform input',
     details: {
-      dtype: 'string' as const,
+      dtype: 'string' as const
     },
-    required: true,
+    required: true
   }
 }
