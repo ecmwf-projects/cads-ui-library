@@ -9,7 +9,8 @@ import {
   getStringListArrayWidgetConfiguration,
   getGeographicExtentWidgetConfiguration,
   getTextWidgetConfiguration,
-  getStringChoiceWidgetConfiguration
+  getStringChoiceWidgetConfiguration,
+  getFreeformInputWidgetConfiguration
 } from '../../__tests__/factories'
 
 const Form = ({
@@ -384,6 +385,203 @@ describe('<ExclusiveGroupWidget/>', () => {
     ])
   })
 
+  it('with FreeformInputWidget and StringListArrayWidget', () => {
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Generic selections',
+      help: null,
+      name: 'checkbox_groups',
+      children: ['variable', 'freeform_input'],
+      details: {
+        default: 'variable'
+      }
+    }
+
+    const formConfiguration = [
+      configuration,
+      getStringListArrayWidgetConfiguration(),
+      getFreeformInputWidgetConfiguration()
+    ]
+
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.viewport(800, 600)
+    cy.mount(
+      <TooltipProvider>
+        <Form handleSubmit={stubbedHandleSubmit}>
+          <ExclusiveGroupWidget
+            configuration={configuration}
+            childrenGetter={getExclusiveGroupChildren(
+              formConfiguration,
+              'checkbox_groups',
+              null,
+              {
+                renderActiveSelectionsCount: true
+              }
+            )}
+          />
+        </Form>
+      </TooltipProvider>
+    ).then(({ rerender }) => {
+      cy.findByLabelText('Lake shape factor').click()
+      cy.findByLabelText('Soil temperature level 3').click()
+
+      cy.findByText('submit').click()
+
+      cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+        ['variable', 'soil_temperature_level_3'],
+        ['variable', 'lake_shape_factor']
+      ])
+
+      cy.log('Re-render with constraints.')
+      rerender(
+        <TooltipProvider>
+          <Form handleSubmit={stubbedHandleSubmit}>
+            <ExclusiveGroupWidget
+              configuration={configuration}
+              childrenGetter={getExclusiveGroupChildren(
+                formConfiguration,
+                'checkbox_groups',
+                {
+                  variable: [
+                    'lake_bottom_temperature',
+                    'lake_ice_depth',
+                    'lake_ice_temperature'
+                  ]
+                },
+                {
+                  renderActiveSelectionsCount: true
+                }
+              )}
+            />
+          </Form>
+        </TooltipProvider>
+      )
+
+      cy.findByLabelText('2m dewpoint temperature').should('be.disabled')
+      cy.findByLabelText('Lake bottom temperature').should('not.be.disabled')
+
+      cy.findByLabelText('Lake ice depth').click()
+      cy.findByText('Lakes').click()
+      cy.findByText('1 selected item')
+    })
+  })
+
+  it('with FreeformInputWidget and StringListWidget', () => {
+
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+    
+    cy.viewport(1200, 900)
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Generic selections',
+      help: null,
+      name: 'checkbox_groups',
+      children: ['freeform_input', 'product_type'],
+      details: {
+        default: 'freeform_input'
+      }
+    }
+
+    const formConfiguration = [
+      configuration,
+      getFreeformInputWidgetConfiguration(),
+      getStringListWidgetConfiguration()
+    ]
+
+    cy.mount(
+      <TooltipProvider>
+        <Form handleSubmit={stubbedHandleSubmit}>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups'
+          )}
+        />
+        </Form>
+      </TooltipProvider>
+    )
+
+    cy.findByLabelText('Freeform input')
+
+    cy.get('input[name="freeform_input"]').type('a value')
+
+    cy.findByText('submit').click()
+
+    cy.get('@stubbedHandleSubmit').should('have.been.calledOnceWith', [
+      ['freeform_input', 'a value']
+    ])
+  })
+
+  it('with FreeformInputWidget and TextWidget', () => {
+    cy.viewport(1200, 900)
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Generic selections',
+      help: null,
+      name: 'checkbox_groups',
+      children: ['freeform_input', 'surface_help'],
+      details: {
+        default: 'freeform_input'
+      }
+    }
+
+    const formConfiguration = [
+      configuration,
+      getFreeformInputWidgetConfiguration(),
+      getTextWidgetConfiguration()
+    ]
+
+    cy.mount(
+      <TooltipProvider>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups'
+          )}
+        />
+      </TooltipProvider>
+    )
+
+    cy.findByLabelText('Freeform input')
+  })
+
+  it('with FreeformInputWidget and StringChoiceWidget', () => {
+    cy.viewport(1200, 900)
+    const configuration = {
+      type: 'ExclusiveGroupWidget' as const,
+      label: 'Generic selections',
+      help: null,
+      name: 'checkbox_groups',
+      children: ['freeform_input', 'format'],
+      details: {
+        default: 'freeform_input'
+      }
+    }
+
+    const formConfiguration = [
+      configuration,
+      getFreeformInputWidgetConfiguration(),
+      getStringChoiceWidgetConfiguration()
+    ]
+
+    cy.mount(
+      <TooltipProvider>
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups'
+          )}
+        />
+      </TooltipProvider>
+    )
+
+    cy.findByLabelText('Freeform input')
+  })
+
   it('multiple ExclusiveGroupWidget', () => {
     const thisExclusive = {
       type: 'ExclusiveGroupWidget' as const,
@@ -412,6 +610,7 @@ describe('<ExclusiveGroupWidget/>', () => {
       otherExclusive,
       getStringChoiceWidgetConfiguration(),
       getTextWidgetConfiguration(),
+      getFreeformInputWidgetConfiguration(),
       getStringListWidgetConfiguration(),
       getGeographicExtentWidgetConfiguration(),
       {
