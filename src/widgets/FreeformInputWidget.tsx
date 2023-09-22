@@ -12,7 +12,6 @@ import {
   WidgetTitle,
   Error
 } from './Widget'
-import { useBypassRequired } from '../utils'
 import { WidgetTooltip } from '..'
 import { useReadLocalStorage } from 'usehooks-ts'
 
@@ -54,10 +53,6 @@ export interface FreeformInputWidgetConfiguration {
 interface FreeformInputWidgetProps {
   configuration: FreeformInputWidgetConfiguration
   /**
-   * Permitted selections for the widget.
-   */
-  constraints?: string[]
-  /**
    * Whether the underlying fieldset should be functionally and visually disabled.
    */
   fieldsetDisabled?: boolean
@@ -74,7 +69,6 @@ interface FreeformInputWidgetProps {
 const FreeformInputWidget = ({
   configuration,
   labelAriaHidden = true,
-  constraints,
   fieldsetDisabled,
   bypassRequiredForConstraints
 }: FreeformInputWidgetProps) => {
@@ -124,12 +118,6 @@ const FreeformInputWidget = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
 
-  const bypassed = useBypassRequired(
-    fieldSetRef,
-    bypassRequiredForConstraints,
-    constraints
-  )
-
   const {
     dtype,
     default: defaultValue,
@@ -156,7 +144,7 @@ const FreeformInputWidget = ({
         />
       </WidgetHeader>
       <ReservedSpace data-stylizable='widget freeform-input reserved-error-space'>
-        {!bypassed && required && value?.length ? (
+        {required && value?.length ? (
           <Error>The field is required.</Error>
         ) : null}
       </ReservedSpace>
