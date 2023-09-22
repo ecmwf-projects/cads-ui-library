@@ -69,8 +69,7 @@ interface FreeformInputWidgetProps {
 const FreeformInputWidget = ({
   configuration,
   labelAriaHidden = true,
-  fieldsetDisabled,
-  bypassRequiredForConstraints
+  fieldsetDisabled
 }: FreeformInputWidgetProps) => {
   const [value, setValue] = useState<string>()
 
