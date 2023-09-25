@@ -5,14 +5,17 @@ import userEvent from '@testing-library/user-event'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 import {
+  getGroups,
+  shouldRenderParent,
   appendToFormData,
   getAllValues,
-  StringListArrayWidget
+  StringListArrayWidget,
+  StringListArrayWidgetConfiguration
 } from '../../src/widgets/StringListArrayWidget'
 
 import { getStringListArrayWidgetConfiguration } from '../factories'
 
-describe('<StringListArrayWidget/>', () => {
+describe('<StringListArrayWidget />', () => {
   it('renders from configuration', () => {
     render(
       <TooltipProvider>
@@ -26,26 +29,25 @@ describe('<StringListArrayWidget/>', () => {
     screen.getByLabelText('Soil temperature level 2')
     screen.getByLabelText('Lake ice temperature')
     screen.getByText('At least one selection must be made')
-  })
+  }),
+    it('handles required', async () => {
+      userEvent.setup()
+      render(
+        <TooltipProvider>
+          <StringListArrayWidget
+            configuration={getStringListArrayWidgetConfiguration()}
+          />
+        </TooltipProvider>
+      )
 
-  it('handles required', async () => {
-    userEvent.setup()
-    render(
-      <TooltipProvider>
-        <StringListArrayWidget
-          configuration={getStringListArrayWidgetConfiguration()}
-        />
-      </TooltipProvider>
-    )
+      screen.getByText('At least one selection must be made')
 
-    screen.getByText('At least one selection must be made')
+      await userEvent.click(screen.getByLabelText('Lake ice temperature'))
 
-    await userEvent.click(screen.getByLabelText('Lake ice temperature'))
-
-    expect(
-      screen.queryByText('At least one selection must be made')
-    ).not.toBeInTheDocument()
-  })
+      expect(
+        screen.queryByText('At least one selection must be made')
+      ).not.toBeInTheDocument()
+    })
 
   it('enforces constraints', () => {
     const constraints = [
@@ -197,4 +199,55 @@ describe('<StringListArrayWidget/> utils', () => {
       'temperature'
     ])
   })
+  describe('getGroups', () => {
+    it('returns groups recursively with only two levels of nesting', () => {
+      const { groups } = getStringListArrayWidgetConfiguration().details
+
+      const result = getGroups(groups)
+
+      expect(result).toHaveLength(4)
+    }),
+      it('returns groups recursively without nesting limit', () => {
+        const { groups } = getStringListArrayWidgetConfiguration().details
+
+        const result = getGroups(groups, [], 0, 10)
+
+        expect(result).toHaveLength(6)
+      })
+  }),
+    describe('shouldRenderParent', () => {
+      it('should return true for groups without nesting', () => {
+        const groups = getStringListArrayWidgetConfiguration().details
+          .groups as Pick<
+          StringListArrayWidgetConfiguration,
+          'label' | 'details'
+        >[]
+
+        const shouldRender = shouldRenderParent(groups[0])
+
+        expect(shouldRender).toBeTruthy()
+      })
+      it('should return true for groups with only one nesting level', () => {
+        const groups = getStringListArrayWidgetConfiguration().details
+          .groups as Pick<
+          StringListArrayWidgetConfiguration,
+          'label' | 'details'
+        >[]
+
+        const shouldRender = shouldRenderParent(groups[1])
+
+        expect(shouldRender).toBeTruthy()
+      })
+      it('should return false for groups with more than one nesting level', () => {
+        const groups = getStringListArrayWidgetConfiguration().details
+          .groups as Pick<
+          StringListArrayWidgetConfiguration,
+          'label' | 'details'
+        >[]
+
+        const shouldRender = shouldRenderParent(groups[3])
+
+        expect(shouldRender).toBeFalsy()
+      })
+    })
 })
