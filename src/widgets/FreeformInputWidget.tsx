@@ -143,8 +143,8 @@ const FreeformInputWidget = ({
         />
       </WidgetHeader>
       <ReservedSpace data-stylizable='widget freeform-input reserved-error-space'>
-        {required && value?.length ? (
-          <Error>The field is required.</Error>
+        {required && value?.length === 0 ? (
+          <Error>This field is required.</Error>
         ) : null}
       </ReservedSpace>
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
