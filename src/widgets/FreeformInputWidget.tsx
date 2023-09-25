@@ -156,6 +156,10 @@ const FreeformInputWidget = ({
               type={inputType}
               name={name}
               defaultValue={initialValue}
+              onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
+                setValue(ev.target.value)
+              }}
+              aria-invalid={required && value?.length === 0}
               {...otherProps}
             />
             {comment ?? ''}
@@ -263,11 +267,18 @@ const Wrapper = styled.div`
     margin-bottom: 0.5em;
   }
 
+  margin: auto;
+
+  label {
+    margin-bottom: 0.5em;
+  }
+
   input {
     all: unset;
     color: #9599a6;
     border: 2px solid #9599a6;
     border-radius: 4px;
+    padding: 1em;
   }
 
   input::-webkit-outer-spin-button,
