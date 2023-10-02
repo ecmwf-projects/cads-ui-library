@@ -13,7 +13,7 @@ import {
   Error
 } from './Widget'
 import { WidgetTooltip } from '..'
-import { useReadLocalStorage } from 'usehooks-ts'
+import { useEventListener, useReadLocalStorage } from 'usehooks-ts'
 
 interface FreeformInputWidgetDetailsCommon {
   comment?: string
@@ -50,7 +50,7 @@ export interface FreeformInputWidgetConfiguration {
   details: FreeformInputWidgetDetails
 }
 
-interface FreeformInputWidgetProps {
+export interface FreeformInputWidgetProps {
   configuration: FreeformInputWidgetConfiguration
   /**
    * Whether the underlying fieldset should be functionally and visually disabled.
@@ -72,6 +72,25 @@ const FreeformInputWidget = ({
   fieldsetDisabled
 }: FreeformInputWidgetProps) => {
   const [value, setValue] = useState<string>()
+
+  /**
+   * Handle form Clear all
+   */
+  const documentRef = useRef<Document>(
+    typeof window !== 'undefined' ? document : null
+  )
+
+  useEventListener(
+    'formAction',
+    ev => {
+      if (!('detail' in ev)) return
+      if (!('type' in ev.detail)) return
+      if (ev.detail.type !== 'clearAll') return
+
+      setValue('')
+    },
+    documentRef
+  )
 
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
@@ -128,7 +147,7 @@ const FreeformInputWidget = ({
   const initialValue = value ?? defaultValue ?? ''
 
   return (
-    <Widget data-stylizable='widget freeform-input-widget'>
+    <Widget data-stylizable='widget'>
       <WidgetHeader>
         <WidgetTitle
           data-stylizable='widget-title'
@@ -150,12 +169,13 @@ const FreeformInputWidget = ({
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Wrapper>
           <Legend>{label}</Legend>
-          <div data-stylizable='widget freeform-input-widget-input'>
+          <div data-stylizable='widget freeform-input-widget'>
             <input
               ref={inputRef}
               type={inputType}
               name={name}
               defaultValue={initialValue}
+              value={value}
               onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
                 setValue(ev.target.value)
               }}
