@@ -8,6 +8,7 @@ export { Tabs, StyledTabTrigger, StyledTabContent } from './common/Tabs'
 export { RadioGroup, RadioGroupItem, RadioIndicator } from './common/RadioGroup'
 export { WidgetTooltip } from './common/WidgetTooltip'
 export { SingleSelect } from './common/Select'
+export { DateField } from './common/DateField'
 
 export { LicenceWidget } from './widgets/LicenceWidget'
 export { TextWidget } from './widgets/TextWidget'
@@ -17,6 +18,7 @@ export { ExclusiveGroupWidget } from './widgets/ExclusiveGroupWidget'
 export { StringListArrayWidget } from './widgets/StringListArrayWidget'
 export { StringListWidget } from './widgets/StringListWidget'
 export { StringChoiceWidget } from './widgets/StringChoiceWidget'
+export { DateRangeWidget } from './widgets/DateRangeWidget'
 
 /**
  * Widget utils.
