@@ -4,7 +4,8 @@ import {
   StringListArrayWidget,
   StringListWidget,
   StringChoiceWidget,
-  TextWidget
+  TextWidget,
+  FreeformInputWidget
 } from '../index'
 
 import type { FormConfiguration } from '../types/Form'
@@ -55,6 +56,16 @@ const createWidget: CreateWidget = (configuration, constraints, opts) => {
           bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
           renderActiveSelectionsCount={opts?.renderActiveSelectionsCount}
           constraints={constraints}
+          {...props}
+        />
+      )
+    case 'FreeformInputWidget':
+      // eslint-disable-next-line react/display-name
+      return props => (
+        <FreeformInputWidget
+          configuration={configuration}
+          bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
+          renderActiveSelectionsCount={opts?.renderActiveSelectionsCount}
           {...props}
         />
       )

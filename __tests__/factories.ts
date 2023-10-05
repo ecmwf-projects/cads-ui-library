@@ -255,3 +255,16 @@ export const getStringChoiceWidgetConfiguration = () => {
     type: 'StringChoiceWidget' as const
   }
 }
+
+export const getFreeformInputWidgetConfiguration = () => {
+  return {
+    type: 'FreeformInputWidget' as const,
+    label: 'Freeform input',
+    name: 'freeform_input',
+    help: 'Enter a freeform input',
+    details: {
+      dtype: 'string' as const
+    },
+    required: true
+  }
+}
