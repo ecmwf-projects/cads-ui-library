@@ -17,6 +17,7 @@ export { ExclusiveGroupWidget } from './widgets/ExclusiveGroupWidget'
 export { StringListArrayWidget } from './widgets/StringListArrayWidget'
 export { StringListWidget } from './widgets/StringListWidget'
 export { StringChoiceWidget } from './widgets/StringChoiceWidget'
+export { FreeformInputWidget } from './widgets/FreeformInputWidget'
 
 /**
  * Widget utils.
@@ -33,5 +34,12 @@ export {
   stripMinus,
   getGeoExtentFieldValue
 } from './widgets/GeographicExtentWidget'
+
+export {
+  isDigitKey,
+  isInteger,
+  isFloat,
+  keyDownHandler
+} from './widgets/FreeformInputWidget'
 
 export { createWidget } from './utils/widgetFactory'

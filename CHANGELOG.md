@@ -15,7 +15,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- `StringListArrayWidget`, `StringListWidget`, `StringChoiceWidget` now fail gracefully in case of a mismatched persisted selection 
+- `StringListArrayWidget`, `StringListWidget`, `StringChoiceWidget` now fail gracefully in case of a mismatched persisted selection
 
 ## [6.1.14] 2023-06-14
 
