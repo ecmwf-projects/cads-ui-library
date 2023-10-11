@@ -14,11 +14,11 @@ export { TextWidget } from './widgets/TextWidget'
 export { KeywordSearchWidget } from './widgets/KeywordSearchWidget'
 export { GeographicExtentWidget } from './widgets/GeographicExtentWidget'
 export { ExclusiveGroupWidget } from './widgets/ExclusiveGroupWidget'
-export { StringListArrayWidget } from './widgets/StringListArrayWidget'
 export { StringListWidget } from './widgets/StringListWidget'
 export { StringChoiceWidget } from './widgets/StringChoiceWidget'
 export { FreeformInputWidget } from './widgets/FreeformInputWidget'
 
+export { StringListArrayWidget } from './widgets/StringListArrayWidget'
 /**
  * Widget utils.
  */

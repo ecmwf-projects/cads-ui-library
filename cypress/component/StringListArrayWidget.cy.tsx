@@ -1,8 +1,7 @@
 import React from 'react'
 
-import { StringListArrayWidget } from '../../src'
-
 import { getStringListArrayWidgetConfiguration } from '../../__tests__/factories'
+import { StringListArrayWidget } from '../../src'
 
 const Form = ({
   children,
@@ -143,6 +142,22 @@ describe('<StringListArrayWidget/>', () => {
         ['variable', 'soil_temperature_level_2'],
         ['variable', 'soil_temperature_level_3'],
         ['variable', 'soil_temperature_level_4'],
+        ['variable', 'option_1_1_1'],
+        ['variable', 'option_1_1_2'],
+        ['variable', 'option_1_1_3'],
+        ['variable', 'option_1_1_4'],
+        ['variable', 'option_1_1_5'],
+        ['variable', 'option_1_1_6'],
+        ['variable', 'option_1_1_7'],
+        ['variable', 'option_1_1_8'],
+        ['variable', 'option_1_2_1'],
+        ['variable', 'option_1_2_2'],
+        ['variable', 'option_1_2_3'],
+        ['variable', 'option_1_2_4'],
+        ['variable', 'option_1_2_5'],
+        ['variable', 'option_1_2_6'],
+        ['variable', 'option_1_2_7'],
+        ['variable', 'option_1_2_8'],
         ['variable', 'lake_bottom_temperature'],
         ['variable', 'lake_ice_depth'],
         ['variable', 'lake_ice_temperature'],
