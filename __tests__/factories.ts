@@ -1,3 +1,5 @@
+import { StringListArrayWidgetConfiguration } from '../src/widgets/StringListArrayWidget'
+
 export const getStringListArrayWidgetConfiguration = () => {
   return {
     details: {
@@ -31,6 +33,68 @@ export const getStringListArrayWidgetConfiguration = () => {
           ]
         },
         {
+          label: 'Subgroup parent',
+          details: {
+            accordionGroups: true,
+            accordionOptions: {
+              openGroups: ['Subgroup 1'],
+              searchable: false
+            },
+            displayaslist: false,
+            id: 2,
+            groups: [
+              {
+                columns: 2,
+                label: 'Subgroup 1.1',
+                labels: {
+                  option_1_1_1: 'Option 1-1-1',
+                  option_1_1_2: 'Option 1-1-2',
+                  option_1_1_3: 'Option 1-1-3',
+                  option_1_1_4: 'Option 1-1-4',
+                  option_1_1_5: 'Option 1-1-5',
+                  option_1_1_6: 'Option 1-1-6',
+                  option_1_1_7: 'Option 1-1-7',
+                  option_1_1_8: 'Option 1-1-8'
+                },
+                values: [
+                  'option_1_1_1',
+                  'option_1_1_2',
+                  'option_1_1_3',
+                  'option_1_1_4',
+                  'option_1_1_5',
+                  'option_1_1_6',
+                  'option_1_1_7',
+                  'option_1_1_8'
+                ]
+              },
+              {
+                columns: 2,
+                label: 'Subgroup 1.2',
+                labels: {
+                  option_1_2_1: 'Option 1-2-1',
+                  option_1_2_2: 'Option 1-2-2',
+                  option_1_2_3: 'Option 1-2-3',
+                  option_1_2_4: 'Option 1-2-4',
+                  option_1_2_5: 'Option 1-2-5',
+                  option_1_2_6: 'Option 1-2-6',
+                  option_1_2_7: 'Option 1-2-7',
+                  option_1_2_8: 'Option 1-2-8'
+                },
+                values: [
+                  'option_1_2_1',
+                  'option_1_2_2',
+                  'option_1_2_3',
+                  'option_1_2_4',
+                  'option_1_2_5',
+                  'option_1_2_6',
+                  'option_1_2_7',
+                  'option_1_2_8'
+                ]
+              }
+            ]
+          }
+        },
+        {
           columns: 2,
           label: 'Lakes',
           labels: {
@@ -51,6 +115,50 @@ export const getStringListArrayWidgetConfiguration = () => {
             'lake_shape_factor',
             'lake_total_layer_temperature'
           ]
+        },
+        {
+          label: 'Subgroup 2 parent',
+          details: {
+            accordionGroups: true,
+            accordionOptions: {
+              openGroups: ['Subgroup 2_1'],
+              searchable: false
+            },
+            displayaslist: false,
+            id: 2,
+            groups: [
+              {
+                label: 'Subgroup 2.1 parent',
+                details: {
+                  accordionGroups: true,
+                  accordionOptions: {
+                    openGroups: ['Subgroup 2_1'],
+                    searchable: false
+                  },
+                  displayaslist: false,
+                  id: 2,
+                  groups: [
+                    {
+                      columns: 2,
+                      label: 'Subgroup 2.1.1',
+                      labels: {
+                        option_2_1_1_1: 'Option 2.1.1.1'
+                      },
+                      values: ['option_2_1_1_1']
+                    },
+                    {
+                      columns: 2,
+                      label: 'Subgroup 2.1.2',
+                      labels: {
+                        option_2_1_2_1: 'Option 2.1.2.1'
+                      },
+                      values: ['option_2_1_2_1']
+                    }
+                  ]
+                }
+              }
+            ]
+          }
         }
       ],
       id: 1
@@ -60,7 +168,7 @@ export const getStringListArrayWidgetConfiguration = () => {
     name: 'variable',
     required: true,
     type: 'StringListArrayWidget' as const
-  }
+  } as StringListArrayWidgetConfiguration
 }
 
 export const getGeographicExtentWidgetConfiguration = () => {
@@ -161,3 +269,15 @@ export const getDateRangeWidgetConfiguration = () => ({
     maxEnd: '2024-03-20'
   }
 })
+export const getFreeformInputWidgetConfiguration = () => {
+  return {
+    type: 'FreeformInputWidget' as const,
+    label: 'Freeform input',
+    name: 'freeform_input',
+    help: 'Enter a freeform input',
+    details: {
+      dtype: 'string' as const
+    },
+    required: true
+  }
+}

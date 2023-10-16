@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* see cypress/component/StringListArrayWidget.cy.tsx **/
 import React, { useRef } from 'react'
-import { flushSync } from 'react-dom'
+import { flushSync, render } from 'react-dom'
 import { Trigger as AccordionTriggerPrimitive } from '@radix-ui/react-accordion'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { useEventListener } from 'usehooks-ts'
@@ -42,6 +42,13 @@ declare global {
   }
 }
 
+export interface StringListArrayWidgetGroupDetails {
+  columns: number
+  label: string
+  labels: Record<string, string | undefined>
+  values: string[]
+}
+
 export interface StringListArrayWidgetDetails {
   accordionGroups: boolean
   accordionOptions: {
@@ -49,12 +56,9 @@ export interface StringListArrayWidgetDetails {
     searchable: boolean
   }
   displayaslist: boolean
-  groups: {
-    columns: number
-    label: string
-    labels: Record<string, string | undefined>
-    values: string[]
-  }[]
+  groups:
+    | StringListArrayWidgetGroupDetails[]
+    | Pick<StringListArrayWidgetConfiguration, 'label' | 'details'>[]
   id: number
 }
 
@@ -92,9 +96,71 @@ interface StringListArrayWidgetProps {
   renderActiveSelectionsCount?: boolean
 }
 
-const getAllValues = (
-  groups: StringListArrayWidgetConfiguration['details']['groups']
+/**
+ * Default max nesting level allowed
+ */
+const MAX_NESTING_LEVEL = 1
+
+/**
+ * Function that extracts groups recursively according to nesting constraints.
+ * Extracting the groups is used to select options in bulk.
+ */
+export const getGroups = (
+  groups: StringListArrayWidgetConfiguration['details']['groups'],
+  result: StringListArrayWidgetGroupDetails[] = [],
+  currentNesting = 0,
+  maxNesting = MAX_NESTING_LEVEL
 ) => {
+  if (currentNesting > maxNesting) {
+    return result
+  }
+
+  for (const group of groups) {
+    if ('details' in group) {
+      getGroups(
+        group.details
+          .groups as StringListArrayWidgetConfiguration['details']['groups'],
+        result,
+        currentNesting + 1,
+        maxNesting
+      )
+    } else {
+      result.push(group as StringListArrayWidgetGroupDetails)
+    }
+  }
+
+  return result
+}
+
+/**
+ * Function that determines whether a parent group should be rendered.
+ * It is used in the case where a parent group has a child that in turn
+ * is a parent child, if the group with options does not meet the nesting
+ * constraints this function prevents the empty parent group from being rendered.
+ */
+export const shouldRenderParent = (
+  group: Pick<StringListArrayWidgetConfiguration, 'label' | 'details'>,
+  currentNesting = 0,
+  maxNesting: number = MAX_NESTING_LEVEL
+): boolean => {
+  if ('details' in group) {
+    for (const g of group.details.groups) {
+      if ('details' in g) {
+        return shouldRenderParent(g, currentNesting + 1, maxNesting)
+      } else if (currentNesting >= maxNesting) {
+        return false
+      }
+    }
+  }
+
+  if (currentNesting >= maxNesting) {
+    return false
+  }
+
+  return true
+}
+
+const getAllValues = (groups: StringListArrayWidgetGroupDetails[]) => {
   return groups.map(group => Object.keys(group.labels)).flat()
 }
 
@@ -127,7 +193,7 @@ const appendToFormData = (
 }
 
 const getOwnGroupValues = (
-  groups: StringListArrayWidgetConfiguration['details']['groups'],
+  groups: StringListArrayWidgetGroupDetails[],
   groupLabel: string
 ) => {
   const ownGroup = groups.find(group => group.label === groupLabel)
@@ -188,6 +254,44 @@ const getGroupPermittedBulkSelection = (
   return [...new Set(constraints).intersection(new Set(availableSelection))]
 }
 
+const getOpenedItem = (openGroups: string[], itemLabel: string) => {
+  return (openGroups.includes(itemLabel) && itemLabel) || void 0
+}
+
+const isChecked = (selection: string[], value: string) => {
+  if (!Array.isArray(selection)) return
+  return Boolean(selection.find(sel => sel === value))
+}
+
+const getActiveSelectionsCounts = (
+  name: string,
+  groups: StringListArrayWidgetGroupDetails[],
+  groupLabel: string,
+  selection: Record<string, string[]>,
+  constraints?: string[]
+) => {
+  const ownGroup = groups.find(group => group.label === groupLabel)
+
+  if (ownGroup) {
+    const activeSelections = [
+      ...new Set(selection[name])
+        .intersection(new Set(ownGroup.values))
+        .intersection(new Set(constraints || selection[name]))
+    ].length
+
+    return activeSelections > 1 ? (
+      <ActiveSelections data-stylizable='string-listarray-active-selections'>
+        {activeSelections} selected items
+      </ActiveSelections>
+    ) : activeSelections == 1 ? (
+      <ActiveSelections data-stylizable='string-listarray-active-selections'>
+        {activeSelections} selected item
+      </ActiveSelections>
+    ) : null
+  }
+  return null
+}
+
 /**
  * StringListArrayWidget: widget to render "accordionable" set of checkboxes.
  */
@@ -217,6 +321,8 @@ const StringListArrayWidget = ({
     constraints
   )
 
+  const allGroups = React.useMemo(() => getGroups(groups), [groups])
+
   /**
    * Closed radix-ui accordions do not render any children. This makes impossible to trigger a change event when the accordion is closed, or to include the current selection for closed accordions. To work around this, we employ two approaches:
    *
@@ -238,46 +344,15 @@ const StringListArrayWidget = ({
 
   useEventListener('formdata', formDataListener)
 
+  const onActionButtonClick = React.useCallback(() => {
+    if (bulkSelectionTriggerRef.current) {
+      bulkSelectionTriggerRef.current.click()
+    }
+  }, [])
+
   if (!configuration) return null
 
-  const getOpenedItem = (openGroups: string[], itemLabel: string) => {
-    return (openGroups.includes(itemLabel) && itemLabel) || void 0
-  }
-
-  const allValues = getAllValues(groups)
-
-  const getActiveSelectionsCounts = (
-    groups: StringListArrayWidgetConfiguration['details']['groups'],
-    groupLabel: string,
-    selection: Record<string, string[]>,
-    constraints?: string[]
-  ) => {
-    const ownGroup = groups.find(group => group.label === groupLabel)
-
-    if (ownGroup) {
-      const activeSelections = [
-        ...new Set(selection[name])
-          .intersection(new Set(ownGroup.values))
-          .intersection(new Set(constraints || selection[name]))
-      ].length
-
-      return activeSelections > 1 ? (
-        <ActiveSelections data-stylizable='string-listarray-active-selections'>
-          {activeSelections} selected items
-        </ActiveSelections>
-      ) : activeSelections == 1 ? (
-        <ActiveSelections data-stylizable='string-listarray-active-selections'>
-          {activeSelections} selected item
-        </ActiveSelections>
-      ) : null
-    }
-    return null
-  }
-
-  const isChecked = (selection: string[], value: string) => {
-    if (!Array.isArray(selection)) return
-    return Boolean(selection.find(sel => sel === value))
-  }
+  const allValues = getAllValues(allGroups)
 
   return (
     <Widget data-stylizable='widget'>
@@ -361,168 +436,331 @@ const StringListArrayWidget = ({
       </ReservedSpace>
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
-        {groups.map(({ label: groupLabel, columns, labels }) => {
-          if (!Object.keys(labels).length) return null
-          return (
-            <Margin key={groupLabel}>
-              <AccordionSingle
-                rootProps={{
-                  defaultValue: getOpenedItem(
-                    accordionOptions.openGroups,
-                    groupLabel
-                  )
-                }}
-                itemProps={{
-                  value: groupLabel,
-                  customTrigger: () => (
-                    <StyledTrigger>
-                      <AccordionTrigger>
-                        <AccordionTriggerContent data-stylizable='widget string-listarray accordion-header'>
-                          <AccordionTriggerHeader>
-                            {groupLabel}
-                          </AccordionTriggerHeader>
 
-                          {renderActiveSelectionsCount
-                            ? getActiveSelectionsCounts(
-                                groups,
-                                groupLabel,
-                                selection,
-                                constraints
-                              )
-                            : null}
-                        </AccordionTriggerContent>
-                      </AccordionTrigger>
-                      <ChevronDownIcon />
-                    </StyledTrigger>
-                  )
-                }}
-              >
-                <Actions data-stylizable='widget string-listarray accordion-header actions'>
-                  {constraints?.length === 0 ||
-                  isGroupAllSelected({
-                    availableSelection: getOwnGroupValues(groups, groupLabel),
-                    ownConstraints: getOwnConstraints(
-                      getOwnGroupValues(groups, groupLabel),
-                      constraints
-                    ),
-                    currentSelection: getGroupSelection(
-                      getOwnGroupValues(groups, groupLabel),
-                      selection[name]
-                    )
-                  }) ? null : (
-                    <ActionButton
-                      type='button'
-                      aria-label={`Select all ${groupLabel}`}
-                      onClick={ev => {
-                        ev.stopPropagation()
-
-                        const values = getOwnGroupValues(groups, groupLabel)
-
-                        flushSync(() => {
-                          setSelection(prevState => {
-                            return {
-                              ...prevState,
-                              [name]: [
-                                ...prevState[name],
-                                ...getGroupPermittedBulkSelection(
-                                  values,
-                                  constraints
-                                )
-                              ]
-                            }
-                          })
-                        })
-
-                        if (!bulkSelectionTriggerRef.current) return
-                        bulkSelectionTriggerRef.current.click()
-                      }}
-                    >
-                      Select all
-                    </ActionButton>
-                  )}
-                  {groupIntersectsSelection(
-                    groups.find(group => group.label === groupLabel)?.values ||
-                      [],
-                    selection[name]
-                  ) ? (
-                    <ActionButton
-                      type='button'
-                      aria-label={`Clear all ${groupLabel}`}
-                      onClick={ev => {
-                        ev.stopPropagation()
-
-                        const values = getOwnGroupValues(groups, groupLabel)
-
-                        flushSync(() => {
-                          setSelection(prevState => {
-                            const diff = new Set(prevState[name]).difference(
-                              new Set(values)
-                            )
-
-                            return { ...prevState, [name]: [...diff] }
-                          })
-                        })
-
-                        if (!bulkSelectionTriggerRef.current) return
-                        bulkSelectionTriggerRef.current.click()
-                      }}
-                    >
-                      Clear all
-                    </ActionButton>
-                  ) : null}
-                </Actions>
-                <InputsGrid
-                  key={groupLabel}
-                  columns={columns}
-                  data-stylizable='widget inputs-grid string-listarray-grid'
-                >
-                  {Object.keys(labels).map(label => {
-                    return (
-                      <InputGroup
-                        key={label}
-                        disabled={isDisabled({ constraints, key: label })}
-                      >
-                        <Checkbox
-                          rootProps={{
-                            checked: isChecked(selection[name], label),
-                            disabled: isDisabled({ constraints, key: label }),
-                            onCheckedChange: checked => {
-                              if (checked) {
-                                return setSelection(prevState => ({
-                                  ...prevState,
-                                  [name]: [...prevState[name], label]
-                                }))
-                              }
-
-                              return setSelection(prevState => ({
-                                ...prevState,
-                                [name]: prevState[name].filter(
-                                  val => val !== label
-                                )
-                              }))
-                            },
-                            id: `${groupLabel}_${label}`,
-                            value: label,
-                            name
-                          }}
-                        />
-                        <LabelWrapper
-                          disabled={isDisabled({ constraints, key: label })}
-                        >
-                          <Label htmlFor={`${groupLabel}_${label}`}>
-                            {labels[label]}
-                          </Label>
-                        </LabelWrapper>
-                      </InputGroup>
-                    )
-                  })}
-                </InputsGrid>
-              </AccordionSingle>
-            </Margin>
-          )
-        })}
+        <GroupRenderer
+          name={name}
+          allGroups={allGroups}
+          groups={groups}
+          selection={selection}
+          constraints={constraints}
+          accordionOptions={accordionOptions}
+          renderActiveSelectionsCount={renderActiveSelectionsCount}
+          nestingLevel={0}
+          onActionButtonClick={onActionButtonClick}
+          setSelection={setSelection}
+        />
       </Fieldset>
     </Widget>
+  )
+}
+
+interface GroupRendererProps {
+  groups: StringListArrayWidgetConfiguration['details']['groups']
+  name: string
+  allGroups: StringListArrayWidgetGroupDetails[]
+  selection: Record<string, string[]>
+  constraints?: string[]
+  accordionOptions: StringListArrayWidgetDetails['accordionOptions']
+  renderActiveSelectionsCount?: boolean
+  nestingLevel: number
+  setSelection: (value: React.SetStateAction<Record<string, string[]>>) => void
+  onActionButtonClick: VoidFunction
+}
+const GroupRenderer = ({
+  groups,
+  allGroups,
+  name,
+  selection,
+  constraints,
+  accordionOptions,
+  nestingLevel,
+  renderActiveSelectionsCount,
+  setSelection,
+  onActionButtonClick
+}: GroupRendererProps) => {
+  return (
+    <>
+      {nestingLevel <= MAX_NESTING_LEVEL &&
+        groups.map(group => {
+          if ('details' in group) {
+            const g: Pick<
+              StringListArrayWidgetConfiguration,
+              'label' | 'details'
+            > = group as any
+
+            if (shouldRenderParent(group, nestingLevel, MAX_NESTING_LEVEL)) {
+              return (
+                <ParentGroup
+                  group={g}
+                  name={name}
+                  accordionOptions={accordionOptions}
+                  allGroups={allGroups}
+                  selection={selection}
+                  constraints={constraints}
+                  key={g.label}
+                  renderActiveSelectionsCount={renderActiveSelectionsCount}
+                >
+                  <GroupRenderer
+                    name={name}
+                    allGroups={allGroups}
+                    groups={g.details.groups}
+                    selection={selection}
+                    constraints={constraints}
+                    accordionOptions={accordionOptions}
+                    renderActiveSelectionsCount={renderActiveSelectionsCount}
+                    nestingLevel={nestingLevel + 1}
+                    onActionButtonClick={onActionButtonClick}
+                    setSelection={setSelection}
+                  />
+                </ParentGroup>
+              )
+            }
+            return null
+          }
+
+          const g: StringListArrayWidgetGroupDetails = group as any
+          if (!Object.keys(g.labels).length) return null
+
+          const openedItem = getOpenedItem(accordionOptions.openGroups, g.label)
+
+          return (
+            <ChildGroup
+              key={group.label}
+              name={name}
+              group={g}
+              groups={allGroups}
+              selection={selection}
+              constraints={constraints}
+              openedItem={openedItem}
+              renderActiveSelectionsCount={renderActiveSelectionsCount}
+              onActionButtonClick={onActionButtonClick}
+              setSelection={setSelection}
+            />
+          )
+        })}
+    </>
+  )
+}
+
+interface ParentGroupProps extends React.PropsWithChildren {
+  group: Pick<StringListArrayWidgetConfiguration, 'label' | 'details'>
+  name: string
+  allGroups: StringListArrayWidgetGroupDetails[]
+  selection: Record<string, string[]>
+  constraints?: string[]
+  accordionOptions: StringListArrayWidgetDetails['accordionOptions']
+  renderActiveSelectionsCount?: boolean
+}
+const ParentGroup = ({
+  accordionOptions,
+  allGroups,
+  group,
+  name,
+  selection,
+  constraints,
+  renderActiveSelectionsCount,
+  children
+}: ParentGroupProps) => {
+  return (
+    <Margin key={group.label}>
+      <AccordionSingle
+        rootProps={{
+          defaultValue: getOpenedItem(accordionOptions.openGroups, group.label)
+        }}
+        itemProps={{
+          value: group.label,
+          customTrigger: () => (
+            <StyledTrigger>
+              <AccordionTrigger>
+                <AccordionTriggerContent data-stylizable='widget string-listarray accordion-header'>
+                  <AccordionTriggerHeader>{group.label}</AccordionTriggerHeader>
+
+                  {renderActiveSelectionsCount
+                    ? getActiveSelectionsCounts(
+                        name,
+                        allGroups,
+                        group.label,
+                        selection,
+                        constraints
+                      )
+                    : null}
+                </AccordionTriggerContent>
+              </AccordionTrigger>
+              <ChevronDownIcon />
+            </StyledTrigger>
+          )
+        }}
+      >
+        {children}
+      </AccordionSingle>
+    </Margin>
+  )
+}
+
+interface ChildGroupProps {
+  name: string
+  group: StringListArrayWidgetGroupDetails
+  groups: StringListArrayWidgetGroupDetails[]
+  selection: Record<string, string[]>
+  constraints?: string[]
+  openedItem?: string
+  renderActiveSelectionsCount?: boolean
+  setSelection: (value: React.SetStateAction<Record<string, string[]>>) => void
+  onActionButtonClick: VoidFunction
+}
+const ChildGroup = ({
+  name,
+  group,
+  groups,
+  selection,
+  constraints,
+  openedItem,
+  renderActiveSelectionsCount,
+  setSelection,
+  onActionButtonClick
+}: ChildGroupProps) => {
+  return (
+    <Margin key={group.label}>
+      <AccordionSingle
+        rootProps={{ defaultValue: openedItem }}
+        itemProps={{
+          value: group.label,
+          customTrigger: () => (
+            <StyledTrigger>
+              <AccordionTrigger>
+                <AccordionTriggerContent data-stylizable='widget string-listarray accordion-header'>
+                  <AccordionTriggerHeader>{group.label}</AccordionTriggerHeader>
+
+                  {renderActiveSelectionsCount
+                    ? getActiveSelectionsCounts(
+                        name,
+                        groups,
+                        group.label,
+                        selection,
+                        constraints
+                      )
+                    : null}
+                </AccordionTriggerContent>
+              </AccordionTrigger>
+              <ChevronDownIcon />
+            </StyledTrigger>
+          )
+        }}
+      >
+        <Actions data-stylizable='widget string-listarray accordion-header actions'>
+          {constraints?.length === 0 ||
+          isGroupAllSelected({
+            availableSelection: getOwnGroupValues(groups, group.label),
+            ownConstraints: getOwnConstraints(
+              getOwnGroupValues(groups, group.label),
+              constraints
+            ),
+            currentSelection: getGroupSelection(
+              getOwnGroupValues(groups, group.label),
+              selection[name]
+            )
+          }) ? null : (
+            <ActionButton
+              type='button'
+              aria-label={`Select all ${group.label}`}
+              onClick={ev => {
+                ev.stopPropagation()
+
+                const values = getOwnGroupValues(groups, group.label)
+
+                flushSync(() => {
+                  setSelection(prevState => {
+                    return {
+                      ...prevState,
+                      [name]: [
+                        ...prevState[name],
+                        ...getGroupPermittedBulkSelection(values, constraints)
+                      ]
+                    }
+                  })
+                })
+
+                onActionButtonClick()
+              }}
+            >
+              Select all
+            </ActionButton>
+          )}
+          {groupIntersectsSelection(
+            groups.find(group => group.label === group.label)?.values || [],
+            selection[name]
+          ) ? (
+            <ActionButton
+              type='button'
+              aria-label={`Clear all ${group.label}`}
+              onClick={ev => {
+                ev.stopPropagation()
+
+                const values = getOwnGroupValues(groups, group.label)
+
+                flushSync(() => {
+                  setSelection(prevState => {
+                    const diff = new Set(prevState[name]).difference(
+                      new Set(values)
+                    )
+
+                    return { ...prevState, [name]: [...diff] }
+                  })
+                })
+
+                onActionButtonClick()
+              }}
+            >
+              Clear all
+            </ActionButton>
+          ) : null}
+        </Actions>
+        <InputsGrid
+          key={group.label}
+          columns={group.columns}
+          data-stylizable='widget inputs-grid string-listarray-grid'
+        >
+          {Object.keys(group.labels).map(label => {
+            return (
+              <InputGroup
+                key={label}
+                disabled={isDisabled({ constraints, key: label })}
+              >
+                <Checkbox
+                  rootProps={{
+                    checked: isChecked(selection[name], label),
+                    disabled: isDisabled({ constraints, key: label }),
+                    onCheckedChange: checked => {
+                      if (checked) {
+                        return setSelection(prevState => ({
+                          ...prevState,
+                          [name]: [...prevState[name], label]
+                        }))
+                      }
+
+                      return setSelection(prevState => ({
+                        ...prevState,
+                        [name]: prevState[name].filter(val => val !== label)
+                      }))
+                    },
+                    id: `${group.label}_${label}`,
+                    value: label,
+                    name
+                  }}
+                />
+                <LabelWrapper
+                  disabled={isDisabled({ constraints, key: label })}
+                >
+                  <Label htmlFor={`${group.label}_${label}`}>
+                    {group.labels[label]}
+                  </Label>
+                </LabelWrapper>
+              </InputGroup>
+            )
+          })}
+        </InputsGrid>
+      </AccordionSingle>
+    </Margin>
   )
 }
 
