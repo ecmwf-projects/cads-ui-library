@@ -3,7 +3,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { DateValue } from 'react-aria-components'
 import {
-  Calendar,
   CalendarDate,
   parseDate,
   maxDate,
@@ -188,7 +187,7 @@ const getAvailableMonths = (
   return new Array(12).fill(1).map((_, i) => i + 1)
 }
 
-interface DateRangeWidgetConfiguration {
+export interface DateRangeWidgetConfiguration {
   type: 'DateRangeWidget'
   help: string | null
   label: string

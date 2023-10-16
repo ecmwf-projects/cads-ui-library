@@ -5,7 +5,8 @@ import {
   StringListWidget,
   StringChoiceWidget,
   TextWidget,
-  FreeformInputWidget
+  FreeformInputWidget,
+  DateRangeWidget
 } from '../index'
 
 import type { FormConfiguration } from '../types/Form'
@@ -92,6 +93,15 @@ const createWidget: CreateWidget = (configuration, constraints, opts) => {
     case 'FreeEditionWidget':
       // eslint-disable-next-line react/display-name
       return props => <TextWidget configuration={configuration} {...props} />
+    case 'DateRangeWidget':
+      return props => (
+        <DateRangeWidget
+          configuration={configuration}
+          bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
+          constraints={constraints}
+          {...props}
+        />
+      )
     default:
       return _props => null
   }
