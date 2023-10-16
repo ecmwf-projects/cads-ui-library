@@ -38,15 +38,17 @@ describe('<DateRangeWidget />', () => {
         dataset: 'fake',
         inputs: {
           date_range_start: '2023-09-30',
-          date_range_end: '2025-02-10'
+          date_range_end: '2023-10-10'
         }
       })
     )
 
+    const configuration = getDateRangeWidgetConfiguration()
+
     cy.mount(
       <Form handleSubmit={stubbedHandleSubmit}>
         <DateRangeWidget
-          configuration={getDateRangeWidgetConfiguration()}
+          configuration={configuration}
           constraints={['2023-10-05', '2023-10-11', '2023-10-30']}
           error='Start date and End date are required'
         />

@@ -25,7 +25,6 @@ import {
 import { CalendarDate } from '@internationalized/date'
 
 import { Error, ReservedSpace } from '../widgets/Widget'
-import { SingleSelect } from './Select'
 
 interface DateFieldProps {
   name: string
@@ -39,6 +38,8 @@ interface DateFieldProps {
   error?: string
   disabled?: boolean
   required?: boolean
+  years?: number[]
+  months?: number[]
 }
 const DateField = ({
   name,
@@ -51,7 +52,9 @@ const DateField = ({
   isDateUnavailable,
   error,
   disabled,
-  required
+  required,
+  months,
+  years
 }: DateFieldProps) => {
   return (
     <DatePicker
@@ -82,13 +85,16 @@ const DateField = ({
         <StyledDialog>
           <StyledCalendar>
             <StyledCalendarHeader>
-              <StyledBlankButton slot='previous'>
-                <ChevronLeftIcon width={24} height={24} />
-              </StyledBlankButton>
-              <StyledHeading />
-              <StyledBlankButton slot='next'>
-                <ChevronRightIcon width={24} height={24} />
-              </StyledBlankButton>
+              {months && months.length > 0 && years && years.length > 0 ? (
+                <DateSelects
+                  value={value}
+                  years={years}
+                  months={months}
+                  onDateChange={onChange}
+                />
+              ) : (
+                <StyledHeading />
+              )}
             </StyledCalendarHeader>
             <StyledCalendarGrid>
               {date => <StyledCalendarCell date={date} />}
@@ -116,58 +122,76 @@ const Months = [
 ]
 
 interface DateSelectsProps {
-  name: string
-  selectedYear: number
-  selectedMonth: number
+  value: CalendarDate
   years: number[]
   months: number[]
-  onYearChange(year: number): void
-  onMonthChange(month: number): void
+  onDateChange(date: CalendarDate): void
 }
-const DateSelects = ({
-  name,
-  selectedYear,
-  selectedMonth,
-  years,
-  months,
-  onYearChange,
-  onMonthChange
-}: DateSelectsProps) => {
-  const yearOptions = React.useMemo(
-    () => years.map(y => ({ id: y.toString(), label: y.toString() })),
-    [years]
-  )
+const DateSelects = React.memo(
+  ({ value, years, months, onDateChange }: DateSelectsProps) => {
+    const yearOptions = React.useMemo(() => {
+      const baseYears = years.map(y => ({
+        id: y.toString(),
+        label: y.toString(),
+        disabled: false
+      }))
+      if (!baseYears.find(({ id }) => value.year.toString() === id)) {
+        return baseYears.concat({
+          id: value.year.toString(),
+          label: value.year.toString(),
+          disabled: true
+        })
+      }
+      return baseYears
+    }, [years, value])
 
-  const monthOptions = React.useMemo(
-    () =>
-      months.map(m => ({
-        id: m.toString(),
-        label: Months[m]
-      })),
-    [months]
-  )
+    const monthOptions = React.useMemo(
+      () =>
+        months.map((m, i) => ({
+          id: (m + 1).toString(),
+          label: Months[m]
+        })),
+      [months]
+    )
 
-  return (
-    <Row>
-      <SingleSelect
-        defaultValue={selectedMonth.toString()}
-        ariaLabel='Month select'
-        id={`${name}-month-select`}
-        onChange={value => onMonthChange(parseInt(value))}
-        options={monthOptions}
-        placeholder='Select month'
-      />
-      <SingleSelect
-        defaultValue={selectedYear.toString()}
-        ariaLabel='year select'
-        id={`${name}-year-select`}
-        onChange={value => onYearChange(parseInt(value))}
-        options={yearOptions}
-        placeholder='Select year'
-      />
-    </Row>
-  )
-}
+    const handleChange =
+      (key: 'month' | 'year') =>
+      ({
+        target: { value: selectValue }
+      }: React.ChangeEvent<HTMLSelectElement>) => {
+        const newDate = value.set({ [key]: parseInt(selectValue) })
+        console.log(selectValue, newDate.month)
+        onDateChange(newDate)
+      }
+
+    return (
+      <Row>
+        <select
+          key={value.month}
+          value={value.month}
+          onChange={handleChange('month')}
+        >
+          {monthOptions.map(({ id, label }) => (
+            <option key={id} value={id}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <select
+          key={value.year}
+          value={value.year}
+          onChange={handleChange('year')}
+        >
+          {yearOptions.map(({ id, label, disabled }) => (
+            <option key={id} value={id} disabled={disabled}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </Row>
+    )
+  }
+)
 
 const Row = styled.div`
   width: 100%;
