@@ -45,3 +45,11 @@ export {
 } from './widgets/FreeformInputWidget'
 
 export { createWidget } from './utils/widgetFactory'
+
+export {
+  getAvailableMonths,
+  getAvailableYears,
+  getDateLimits,
+  getEndDateErrors,
+  getStartDateErrors
+} from './widgets/DateRangeWidget'

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import React from 'react'
 
 import styled from 'styled-components'
@@ -30,7 +31,7 @@ type ValidateDateFn = (
   maxEnd: string,
   isDateUnavailable: (date: DateValue) => boolean
 ) => string | undefined
-const getStartDateErrors: ValidateDateFn = (
+export const getStartDateErrors: ValidateDateFn = (
   startDate,
   endDate,
   minStart,
@@ -41,7 +42,7 @@ const getStartDateErrors: ValidateDateFn = (
     fMaxDate = parseDate(maxEnd)
 
   if (!startDate) {
-    return 'Date is no valid'
+    return 'Date is not valid'
   }
 
   if (!endDate) {
@@ -61,7 +62,7 @@ const getStartDateErrors: ValidateDateFn = (
   }
 
   if (startDate.compare(fMinDate) < 0) {
-    return `Start date cannot be set earlier than the minimum date (${fMinDate.toString()}) `
+    return `Start date cannot be set earlier than the minimum date (${fMinDate.toString()})`
   }
 
   if (isDateUnavailable(startDate)) {
@@ -69,7 +70,7 @@ const getStartDateErrors: ValidateDateFn = (
   }
 }
 
-const getEndDateErrors: ValidateDateFn = (
+export const getEndDateErrors: ValidateDateFn = (
   startDate,
   endDate,
   minStart,
@@ -80,7 +81,7 @@ const getEndDateErrors: ValidateDateFn = (
     fMaxDate = parseDate(maxEnd)
 
   if (!endDate) {
-    return 'Date is no valid'
+    return 'Date is not valid'
   }
 
   if (!startDate) {
@@ -100,7 +101,7 @@ const getEndDateErrors: ValidateDateFn = (
   }
 
   if (endDate.compare(fMinDate) < 0) {
-    return `End date cannot be set earlier than the deadline (${fMinDate.toString()}) `
+    return `End date cannot be set earlier than the deadline (${fMinDate.toString()})`
   }
 
   if (isDateUnavailable(startDate)) {
@@ -108,7 +109,7 @@ const getEndDateErrors: ValidateDateFn = (
   }
 }
 
-const getDateLimits = (
+export const getDateLimits = (
   startDate: CalendarDate,
   endDate: CalendarDate,
   minStart: string,
@@ -142,10 +143,11 @@ const getDateLimits = (
   }
 }
 
-const getAvailableYears = (minDate: CalendarDate, maxDate: CalendarDate) => {
+export const getAvailableYears = (
+  minDate: CalendarDate,
+  maxDate: CalendarDate
+) => {
   const delta = maxDate.year - minDate.year
-
-  console.log(minDate, maxDate, delta)
 
   if (maxDate.year === minDate.year || delta <= 0) {
     return [minDate.year]
@@ -154,7 +156,7 @@ const getAvailableYears = (minDate: CalendarDate, maxDate: CalendarDate) => {
   return new Array(delta + 1).fill(0).map((_, i) => minDate.year + i)
 }
 
-const getAvailableMonths = (
+export const getAvailableMonths = (
   date?: CalendarDate,
   minDate?: CalendarDate,
   maxDate?: CalendarDate

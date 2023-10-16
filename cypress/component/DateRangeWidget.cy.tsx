@@ -12,12 +12,12 @@ const Form = ({
     <form
       onSubmit={ev => {
         ev.preventDefault()
-        const formData = new FormData(ev.currentTarget)
+        const formData = new FormData(ev.currentTarget) ?? []
         handleSubmit([...formData.entries()])
       }}
     >
       {children}
-      <button>submit</button>
+      <button style={{ position: 'absolute', bottom: 0 }}>submit</button>
     </form>
   )
 }
@@ -55,14 +55,15 @@ describe('<DateRangeWidget />', () => {
       </Form>
     )
     // cy.get('[data-trigger="true"]').first().click()
-    // cy.findByText('15').click()
-    // cy.findByText('submit').trigger('pointerdown', {
-    //   pointerId: 0
+    // cy.findByText('15').trigger('pointerdown', {
+    //   pointerId: 0,
+    //   force: true
     // })
+    // cy.findByText('submit').click({ force: true })
 
     // cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
-    //   ['date_range_start', '2023-09-15'],
-    //   ['date_range_end', '2025-02-10']
+    //   ['date_range_start', '2023-09-30'],
+    //   ['date_range_end', '2023-10-10']
     // ])
   })
 })
