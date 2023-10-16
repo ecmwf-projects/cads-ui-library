@@ -32,8 +32,8 @@ interface DateFieldProps {
   value: CalendarDate
   onChange(date: CalendarDate): void
   defaultValue: CalendarDate
-  minStart: CalendarDate
-  maxEnd: CalendarDate
+  minStart?: CalendarDate
+  maxEnd?: CalendarDate
   isDateUnavailable?: (date: DateValue) => boolean
   error?: string
   disabled?: boolean
@@ -83,7 +83,7 @@ const DateField = ({
       </StyledReservedSpace>
       <StyledPopover>
         <StyledDialog>
-          <StyledCalendar>
+          <StyledCalendar focusedValue={value}>
             <StyledCalendarHeader>
               {months && months.length > 0 && years && years.length > 0 ? (
                 <DateSelects
@@ -148,8 +148,8 @@ const DateSelects = React.memo(
     const monthOptions = React.useMemo(
       () =>
         months.map((m, i) => ({
-          id: (m + 1).toString(),
-          label: Months[m]
+          id: m.toString(),
+          label: Months[m - 1]
         })),
       [months]
     )
@@ -160,7 +160,6 @@ const DateSelects = React.memo(
         target: { value: selectValue }
       }: React.ChangeEvent<HTMLSelectElement>) => {
         const newDate = value.set({ [key]: parseInt(selectValue) })
-        console.log(selectValue, newDate.month)
         onDateChange(newDate)
       }
 

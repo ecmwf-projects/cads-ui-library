@@ -118,6 +118,10 @@ const getDateLimits = (
   const fMinStart = parseDate(minStart),
     fMaxEnd = parseDate(maxEnd)
 
+  if (!fMinStart || !fMaxEnd || !startDate || !endDate) {
+    return {}
+  }
+
   let startMinDate = fMinStart,
     startMaxDate = endDate,
     endMinDate = startDate,
@@ -141,31 +145,48 @@ const getDateLimits = (
 
 const getAvailableYears = (minDate: CalendarDate, maxDate: CalendarDate) => {
   const delta = maxDate.year - minDate.year
-  if (delta <= 0) {
+
+  console.log(minDate, maxDate, delta)
+
+  if (maxDate.year === minDate.year || delta <= 0) {
     return [minDate.year]
   }
 
-  return new Array(delta).fill(0).map((_, i) => minDate.year + i)
+  return new Array(delta + 1).fill(0).map((_, i) => minDate.year + i)
 }
 
-const getAvailableMonths = () =>
-  // date: CalendarDate,
-  // minDate: CalendarDate,
-  // maxDate: CalendarDate
-  {
-    // if (date.year !== minDate.year && date.year !== maxDate.year) {
-    //   if (date.year === minDate.year && date.year === maxDate.year) {
-    //     const delta = maxDate.month - minDate.month;
-    //     return new Array(delta).map((_, i) => minDate.month + i);
-    //   }
-
-    //   if (date.year === minDate.year) {
-
-    //   }
-    // }
-
-    return new Array(12).fill(1).map((_, i) => i)
+const getAvailableMonths = (
+  date?: CalendarDate,
+  minDate?: CalendarDate,
+  maxDate?: CalendarDate
+) => {
+  if (!date || !minDate || !maxDate) {
+    return []
   }
+
+  if (date.year === minDate.year && date.year === maxDate.year) {
+    const delta = maxDate.month - minDate.month + 1
+    return delta >= 0
+      ? new Array(delta).fill(0).map((_, i) => minDate.month + i)
+      : [minDate.month]
+  }
+
+  if (date.year === minDate.year) {
+    const delta = 12 - minDate.month + 1
+    return delta >= 0
+      ? new Array(delta).fill(0).map((_, i) => minDate.month + i)
+      : [minDate.month]
+  }
+
+  if (date.year === maxDate.year) {
+    const delta = maxDate.month
+    return delta >= 0
+      ? new Array(delta).fill(1).map((_, i) => i + 1)
+      : [date.month]
+  }
+
+  return new Array(12).fill(1).map((_, i) => i + 1)
+}
 
 interface DateRangeWidgetConfiguration {
   type: 'DateRangeWidget'
@@ -285,14 +306,26 @@ const DateRangeWidget = ({
     }, [startDate, endDate, configuration.details])
 
   const startYears = React.useMemo(() => {
-    return getAvailableYears(startMinDate, endDate)
-  }, [startMinDate, endDate.year])
+    return startMinDate && startMaxDate
+      ? getAvailableYears(startMinDate, startMaxDate)
+      : []
+  }, [startMinDate, startMaxDate])
 
   const endYears = React.useMemo(() => {
-    return getAvailableYears(startDate, startMaxDate)
-  }, [startDate.year, startMaxDate])
+    return endMinDate && endMaxDate
+      ? getAvailableYears(endMinDate, endMaxDate)
+      : []
+  }, [endMinDate, endMaxDate])
 
-  const months = React.useMemo(() => getAvailableMonths(), [])
+  const startMonths = React.useMemo(
+    () => getAvailableMonths(startDate, startMinDate, startMaxDate),
+    [startDate, startMinDate, startMaxDate]
+  )
+
+  const endMonths = React.useMemo(
+    () => getAvailableMonths(endDate, endMinDate, endMaxDate),
+    [endDate, endMinDate, endMaxDate]
+  )
 
   return (
     <Widget data-stylizable='widget date-range-widget'>
@@ -327,7 +360,7 @@ const DateRangeWidget = ({
             disabled={disabled}
             required={configuration.required}
             years={startYears}
-            months={months}
+            months={startMonths}
           />
           <DateField
             value={endDate}
@@ -342,7 +375,7 @@ const DateRangeWidget = ({
             disabled={disabled}
             required={configuration.required}
             years={endYears}
-            months={months}
+            months={endMonths}
           />
         </Row>
       </Fieldset>
