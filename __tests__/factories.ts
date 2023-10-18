@@ -269,6 +269,7 @@ export const getDateRangeWidgetConfiguration = () => ({
     maxEnd: '2024-03-20'
   }
 })
+
 export const getFreeformInputWidgetConfiguration = () => {
   return {
     type: 'FreeformInputWidget' as const,

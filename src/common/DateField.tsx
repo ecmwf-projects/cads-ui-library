@@ -2,11 +2,7 @@ import React from 'react'
 
 import styled from 'styled-components'
 
-import {
-  CalendarIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon
-} from '@radix-ui/react-icons'
+import { CalendarIcon } from '@radix-ui/react-icons'
 import {
   DatePicker,
   DateValue,
@@ -82,25 +78,23 @@ const DateField = ({
         {error && <Error>{error}</Error>}
       </StyledReservedSpace>
       <StyledPopover>
-        <StyledDialog>
-          <StyledCalendar focusedValue={value}>
-            <StyledCalendarHeader>
-              {months && months.length > 0 && years && years.length > 0 ? (
-                <DateSelects
-                  value={value}
-                  years={years}
-                  months={months}
-                  onDateChange={onChange}
-                />
-              ) : (
-                <StyledHeading />
-              )}
-            </StyledCalendarHeader>
-            <StyledCalendarGrid>
-              {date => <StyledCalendarCell date={date} />}
-            </StyledCalendarGrid>
-          </StyledCalendar>
-        </StyledDialog>
+        <StyledCalendar focusedValue={value}>
+          <StyledCalendarHeader>
+            {months && months.length > 0 && years && years.length > 0 ? (
+              <DateSelects
+                value={value}
+                years={years}
+                months={months}
+                onDateChange={onChange}
+              />
+            ) : (
+              <StyledHeading />
+            )}
+          </StyledCalendarHeader>
+          <StyledCalendarGrid>
+            {date => <StyledCalendarCell date={date} />}
+          </StyledCalendarGrid>
+        </StyledCalendar>
       </StyledPopover>
     </DatePicker>
   )

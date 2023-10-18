@@ -329,7 +329,7 @@ const DateRangeWidget = ({
   )
 
   return (
-    <Widget data-stylizable='widget date-range-widget'>
+    <Widget data-stylizable='widget'>
       <WidgetHeader>
         <WidgetTitle
           htmlFor={configuration.name}
