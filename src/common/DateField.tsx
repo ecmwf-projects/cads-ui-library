@@ -77,24 +77,26 @@ const DateField = ({
       <StyledReservedSpace>
         {error && <Error>{error}</Error>}
       </StyledReservedSpace>
-      <StyledPopover>
-        <StyledCalendar focusedValue={value}>
-          <StyledCalendarHeader>
-            {months && months.length > 0 && years && years.length > 0 ? (
-              <DateSelects
-                value={value}
-                years={years}
-                months={months}
-                onDateChange={onChange}
-              />
-            ) : (
-              <StyledHeading />
-            )}
-          </StyledCalendarHeader>
-          <StyledCalendarGrid>
-            {date => <StyledCalendarCell date={date} />}
-          </StyledCalendarGrid>
-        </StyledCalendar>
+      <StyledPopover isNonModal>
+        <StyledDialog>
+          <StyledCalendar focusedValue={value}>
+            <StyledCalendarHeader>
+              {months && months.length > 0 && years && years.length > 0 ? (
+                <DateSelects
+                  value={value}
+                  years={years}
+                  months={months}
+                  onDateChange={onChange}
+                />
+              ) : (
+                <StyledHeading />
+              )}
+            </StyledCalendarHeader>
+            <StyledCalendarGrid>
+              {date => <StyledCalendarCell date={date} />}
+            </StyledCalendarGrid>
+          </StyledCalendar>
+        </StyledDialog>
       </StyledPopover>
     </DatePicker>
   )
