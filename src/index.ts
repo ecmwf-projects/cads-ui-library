@@ -8,7 +8,13 @@ export { Tabs, StyledTabTrigger, StyledTabContent } from './common/Tabs'
 export { RadioGroup, RadioGroupItem, RadioIndicator } from './common/RadioGroup'
 export { WidgetTooltip } from './common/WidgetTooltip'
 export { SingleSelect } from './common/Select'
-export { DateField, createCalendar } from './common/DateField'
+export {
+  DateField,
+  createCalendar,
+  sortDateSegments,
+  getYearOptions,
+  getMonthOptions
+} from './common/DateField'
 
 export { LicenceWidget } from './widgets/LicenceWidget'
 export { TextWidget } from './widgets/TextWidget'

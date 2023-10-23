@@ -23,11 +23,30 @@ import {
   GregorianCalendar,
   toCalendarDate
 } from '@internationalized/date'
-import { DateFieldState, useDateFieldState } from '@react-stately/datepicker'
+import {
+  DateFieldState,
+  DateSegment,
+  useDateFieldState
+} from '@react-stately/datepicker'
 import { useLocale } from '@react-aria/i18n'
 import { useDateField, useDateSegment } from '@react-aria/datepicker'
 
 import { Error as WidgetError, ReservedSpace } from '../widgets/Widget'
+
+const Months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+]
 
 export const createCalendar = (identifier: string) => {
   switch (identifier) {
@@ -36,6 +55,35 @@ export const createCalendar = (identifier: string) => {
     default:
       throw new Error(`Unsupported calendar ${identifier}`)
   }
+}
+export const sortDateSegments = (segments: DateSegment[]) => {
+  const literal = segments.find(s => s.type === 'literal')!
+  const year = segments.find(s => s.type === 'year')!
+  const month = segments.find(s => s.type === 'month')!
+  const day = segments.find(s => s.type === 'day')!
+
+  return [year, literal, month, literal, day]
+}
+export const getYearOptions = (years: number[], value: CalendarDate) => {
+  const baseYears = years.map(y => ({
+    id: y.toString(),
+    label: y.toString(),
+    disabled: false
+  }))
+  if (!baseYears.find(({ id }) => value.year.toString() === id)) {
+    return baseYears.concat({
+      id: value.year.toString(),
+      label: value.year.toString(),
+      disabled: true
+    })
+  }
+  return baseYears
+}
+export const getMonthOptions = (months: number[]) => {
+  return months.map((m, i) => ({
+    id: m.toString(),
+    label: Months[m - 1]
+  }))
 }
 const DateFieldInner = (props: AriaDateFieldProps<CalendarDate>) => {
   const { locale } = useLocale()
@@ -49,14 +97,10 @@ const DateFieldInner = (props: AriaDateFieldProps<CalendarDate>) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const { fieldProps } = useDateField(props, state, ref)
 
-  const segments = React.useMemo(() => {
-    const literal = state.segments.find(s => s.type === 'literal')!
-    const year = state.segments.find(s => s.type === 'year')!
-    const month = state.segments.find(s => s.type === 'month')!
-    const day = state.segments.find(s => s.type === 'day')!
-
-    return [year, literal, month, literal, day]
-  }, [state.segments])
+  const segments = React.useMemo(
+    () => sortDateSegments(state.segments),
+    [state.segments]
+  )
 
   return (
     <StyledDateInput
@@ -173,21 +217,6 @@ const DateField = ({
   )
 }
 
-const Months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
-]
-
 interface DateSelectsProps {
   value: CalendarDate
   years: number[]
@@ -196,30 +225,12 @@ interface DateSelectsProps {
 }
 const DateSelects = React.memo(
   ({ value, years, months, onDateChange }: DateSelectsProps) => {
-    const yearOptions = React.useMemo(() => {
-      const baseYears = years.map(y => ({
-        id: y.toString(),
-        label: y.toString(),
-        disabled: false
-      }))
-      if (!baseYears.find(({ id }) => value.year.toString() === id)) {
-        return baseYears.concat({
-          id: value.year.toString(),
-          label: value.year.toString(),
-          disabled: true
-        })
-      }
-      return baseYears
-    }, [years, value])
-
-    const monthOptions = React.useMemo(
-      () =>
-        months.map((m, i) => ({
-          id: m.toString(),
-          label: Months[m - 1]
-        })),
-      [months]
+    const yearOptions = React.useMemo(
+      () => getYearOptions(years, value),
+      [years, value]
     )
+
+    const monthOptions = React.useMemo(() => getMonthOptions(months), [months])
 
     const handleChange =
       (key: 'month' | 'year') =>
