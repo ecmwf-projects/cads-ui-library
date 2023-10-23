@@ -29,7 +29,7 @@ import { useDateField, useDateSegment } from '@react-aria/datepicker'
 
 import { Error, ReservedSpace } from '../widgets/Widget'
 
-const createCalendar = (identifier: string) => {
+export const createCalendar = (identifier: string) => {
   switch (identifier) {
     case 'gregory':
       return new GregorianCalendar()
