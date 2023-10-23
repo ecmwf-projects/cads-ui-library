@@ -10,20 +10,83 @@ import {
   Calendar,
   CalendarCell,
   CalendarGrid,
-  DateInput,
-  DateSegment,
   Dialog,
   Group,
   Heading,
   Label,
-  Popover
+  Popover,
+  DateFieldProps as AriaDateFieldProps,
+  DateSegmentProps
 } from 'react-aria-components'
-import { CalendarDate } from '@internationalized/date'
+import {
+  CalendarDate,
+  GregorianCalendar,
+  toCalendarDate
+} from '@internationalized/date'
+import { DateFieldState, useDateFieldState } from '@react-stately/datepicker'
+import { useLocale } from '@react-aria/i18n'
+import { useDateField, useDateSegment } from '@react-aria/datepicker'
 
 import { Error, ReservedSpace } from '../widgets/Widget'
 
+const createCalendar = (identifier: string) => {
+  switch (identifier) {
+    case 'gregory':
+      return new GregorianCalendar()
+    default:
+      throw `Unsupported calendar ${identifier}`
+  }
+}
+const DateFieldInner = (props: AriaDateFieldProps<CalendarDate>) => {
+  const { locale } = useLocale()
+
+  const state = useDateFieldState({
+    ...props,
+    locale,
+    createCalendar
+  })
+
+  const ref = React.useRef<HTMLDivElement>(null)
+  const { fieldProps } = useDateField(props, state, ref)
+
+  const segments = React.useMemo(() => {
+    const literal = state.segments.find(s => s.type === 'literal')!
+    const year = state.segments.find(s => s.type === 'year')!
+    const month = state.segments.find(s => s.type === 'month')!
+    const day = state.segments.find(s => s.type === 'day')!
+
+    return [year, literal, month, literal, day]
+  }, [state.segments])
+
+  return (
+    <StyledDateInput
+      ref={ref}
+      {...fieldProps}
+      className={state.isInvalid ? 'invalid' : ''}
+    >
+      {segments.map((segment, i) => (
+        <InnerDateSegment key={i} segment={segment} state={state} />
+      ))}
+    </StyledDateInput>
+  )
+}
+
+const InnerDateSegment = ({
+  segment,
+  state
+}: DateSegmentProps & { state: DateFieldState }) => {
+  let ref = React.useRef<HTMLDivElement>(null)
+  let { segmentProps } = useDateSegment(segment, state, ref)
+
+  return (
+    <StyledDateSegment {...segmentProps} ref={ref}>
+      {segment.text}
+    </StyledDateSegment>
+  )
+}
+
 interface DateFieldProps {
-  name: string
+  name?: string
   label: string
   value: CalendarDate
   onChange(date: CalendarDate): void
@@ -53,7 +116,8 @@ const DateField = ({
   years
 }: DateFieldProps) => {
   return (
-    <DatePicker
+    <StyledDatePicker
+      className={'my-date-picker'}
       name={name}
       value={value}
       maxValue={maxEnd}
@@ -62,14 +126,21 @@ const DateField = ({
       isDisabled={disabled}
       granularity='day'
       isRequired={required}
-      onChange={onChange}
+      onChange={value => onChange(toCalendarDate(value))}
       isDateUnavailable={isDateUnavailable}
     >
       <StyledLabel>{label}</StyledLabel>
       <StyledGroup>
-        <StyledDateInput>
-          {segment => <StyledDateSegment segment={segment} />}
-        </StyledDateInput>
+        <DateFieldInner
+          value={value}
+          maxValue={maxEnd}
+          minValue={minStart}
+          isDateUnavailable={isDateUnavailable}
+          onChange={onChange}
+          defaultValue={defaultValue}
+          isDisabled={disabled}
+          isRequired={required}
+        />
         <StyledInputButton isDisabled={disabled} data-trigger>
           <CalendarIcon width={24} height={24} />
         </StyledInputButton>
@@ -98,7 +169,7 @@ const DateField = ({
           </StyledCalendar>
         </StyledDialog>
       </StyledPopover>
-    </DatePicker>
+    </StyledDatePicker>
   )
 }
 
@@ -197,6 +268,14 @@ const Row = styled.div`
   gap: 1em;
 `
 
+const StyledDatePicker = styled(DatePicker)`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-basis: 50%;
+`
+
 const StyledLabel = styled(Label)`
   font-size: 12px;
 `
@@ -205,31 +284,30 @@ const StyledGroup = styled(Group)`
   width: fit-content;
   align-items: center;
 `
-const StyledDateInput = styled(DateInput)`
+const StyledDateInput = styled.div`
+  all: unset;
   width: 100%;
   display: flex;
-  padding: 18px 12px;
-  border: 1px solid #9599a6;
+  color: #9599a6;
+  border: 2px solid #9599a6;
   border-radius: 4px;
+  padding: 1em;
   min-width: 250px;
   white-space: nowrap;
-  color: #999999;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 
-  &[data-focus-within] {
-    border-color: black;
-    color: black;
-    box-shadow: 0 0 0 1px black;
-  }
-
-  &:hover,
-  &:focus,
-  &:focus-within {
-    background-color: #f0f2f7;
+  &.invalid {
+    color: red;
   }
 `
 
 const StyledReservedSpace = styled(ReservedSpace)`
   margin-top: 4px;
+  width: 100%;
+  max-width: 100%;
 `
 
 const StyledBlankButton = styled(Button)`
@@ -244,35 +322,32 @@ const StyledInputButton = styled(StyledBlankButton)`
   margin-left: -2.25rem;
 `
 
-const StyledDateSegment = styled(DateSegment)`
+const StyledDateSegment = styled.div`
   padding: 0 2px;
   font-variant-numeric: tabular-nums;
   text-align: end;
-  color: var(--text-color);
+  color: inherit;
 
   &[data-type='literal'] {
     padding: 0;
   }
 
   &[data-placeholder] {
-    color: var(--text-color-placeholder);
     font-style: italic;
   }
 
   &:focus {
-    color: var(--highlight-foreground);
-    background: var(--highlight-background);
+    color: #58595e;
     outline: none;
-    border-radius: 4px;
-    caret-color: transparent;
+    caret-color: black;
   }
 
   &[data-invalid] {
-    color: red;
+    color: red !important;
   }
 
   &[data-disabled] {
-    color: red;
+    color: #9599a6;
   }
 `
 const StyledPopover = styled(Popover)`

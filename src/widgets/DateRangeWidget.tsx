@@ -240,6 +240,10 @@ const DateRangeWidget = ({
     parseDate(configuration.details.defaultEnd)
   )
 
+  const finalValue = React.useMemo(() => {
+    return `${startDate?.toString()}/${endDate?.toString()}`
+  }, [startDate, endDate])
+
   React.useEffect(() => {
     const getInitialSelection = () => {
       const inputs = persistedSelectionRef.current?.inputs
@@ -347,11 +351,12 @@ const DateRangeWidget = ({
       </ReservedSpace>
       <Fieldset name={configuration.name} ref={fieldSetRef}>
         <Legend>{configuration.label}</Legend>
+        <HiddenInput readOnly value={finalValue} name={configuration.name} />
         <Row>
           <DateField
             value={startDate}
             onChange={setStartDate}
-            name={`${configuration.name}_start`}
+            // name={`${configuration.name}_start`}
             label='Start date'
             error={startDateError}
             defaultValue={parseDate(configuration.details.defaultStart)}
@@ -366,7 +371,7 @@ const DateRangeWidget = ({
           <DateField
             value={endDate}
             onChange={setEndDate}
-            name={`${configuration.name}_end`}
+            // name={`${configuration.name}_end`}
             label='End date'
             error={endDateError}
             defaultValue={parseDate(configuration.details.defaultEnd)}
@@ -385,12 +390,16 @@ const DateRangeWidget = ({
 }
 
 const Row = styled.div`
-  width: 100%;
+  width: auto;
   display: flex;
   flex-direction: row;
-  justify-conten: space-between;
-  align-items: center;
+  justify-conten: flex-start;
+  align-items: flex-start;
   gap: 1em;
+`
+
+const HiddenInput = styled.input`
+  display: none;
 `
 
 export { DateRangeWidget }

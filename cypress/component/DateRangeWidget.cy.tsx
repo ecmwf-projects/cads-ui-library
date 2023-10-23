@@ -30,7 +30,7 @@ describe('<DateRangeWidget />', () => {
   it('test', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
-    cy.viewport(700, 600)
+    cy.viewport(1000, 600)
 
     localStorage.setItem(
       'formSelection',
@@ -46,7 +46,7 @@ describe('<DateRangeWidget />', () => {
     const configuration = getDateRangeWidgetConfiguration()
 
     cy.mount(
-      <Form handleSubmit={stubbedHandleSubmit}>
+      <Form handleSubmit={console.log}>
         <DateRangeWidget
           configuration={configuration}
           constraints={['2023-10-05', '2023-10-11', '2023-10-30']}
