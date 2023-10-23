@@ -27,14 +27,14 @@ import { DateFieldState, useDateFieldState } from '@react-stately/datepicker'
 import { useLocale } from '@react-aria/i18n'
 import { useDateField, useDateSegment } from '@react-aria/datepicker'
 
-import { Error, ReservedSpace } from '../widgets/Widget'
+import { Error as WidgetError, ReservedSpace } from '../widgets/Widget'
 
 export const createCalendar = (identifier: string) => {
   switch (identifier) {
     case 'gregory':
       return new GregorianCalendar()
     default:
-      throw `Unsupported calendar ${identifier}`
+      throw new Error(`Unsupported calendar ${identifier}`)
   }
 }
 const DateFieldInner = (props: AriaDateFieldProps<CalendarDate>) => {
@@ -146,7 +146,7 @@ const DateField = ({
         </StyledInputButton>
       </StyledGroup>
       <StyledReservedSpace>
-        {error && <Error>{error}</Error>}
+        {error && <WidgetError>{error}</WidgetError>}
       </StyledReservedSpace>
       <StyledPopover isNonModal>
         <StyledDialog>
