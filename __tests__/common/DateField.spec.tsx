@@ -1,16 +1,58 @@
+import React from 'react'
+
 import { expect } from '@jest/globals'
+import { render, screen } from '@testing-library/react'
 
 import { GregorianCalendar, parseDate } from '@internationalized/date'
 import { DateSegment } from '@react-stately/datepicker'
 
 import {
+  DateField,
+  DateSelects,
   createCalendar,
   getMonthOptions,
   getYearOptions,
   sortDateSegments
 } from '../../src'
+import { DateValue } from 'react-aria-components'
 
 describe('<DateField />', () => {
+  describe('renders', () => {
+    it('It renders', () => {
+      render(
+        <DateField
+          defaultValue={parseDate('2023-03-02')}
+          value={parseDate('2024-04-20')}
+          label='Date input'
+          onChange={console.log}
+          error='Some error'
+          isDateUnavailable={(date: DateValue) => false}
+          maxEnd={parseDate('2025-03-20')}
+          minStart={parseDate('2020-03-20')}
+          name='date_field'
+          required
+        />
+      )
+    })
+    it('It renders with year and month selectors', () => {
+      render(
+        <DateField
+          defaultValue={parseDate('2023-03-02')}
+          value={parseDate('2024-04-20')}
+          label='Date input'
+          onChange={console.log}
+          error='Some error'
+          isDateUnavailable={(date: DateValue) => false}
+          maxEnd={parseDate('2025-03-20')}
+          minStart={parseDate('2020-03-20')}
+          name='date_field'
+          required
+          months={[1, 2, 3, 4]}
+          years={[2023, 2024]}
+        />
+      )
+    })
+  })
   describe('createCalendar', () => {
     it('should return gregorian calendar', () => {
       const calendar = createCalendar('gregory')
@@ -112,5 +154,18 @@ describe('<DateField />', () => {
         { id: '4', label: 'April' }
       ])
     })
+  })
+})
+
+describe('<DateSelects />', () => {
+  it('renders with months and years', () => {
+    render(
+      <DateSelects
+        value={parseDate('2023-03-20')}
+        onDateChange={console.log}
+        months={[1, 2]}
+        years={[2023]}
+      />
+    )
   })
 })

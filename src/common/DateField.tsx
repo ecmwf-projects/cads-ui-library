@@ -13,10 +13,10 @@ import {
   Dialog,
   Group,
   Heading,
-  Label,
   Popover,
   DateFieldProps as AriaDateFieldProps,
-  DateSegmentProps
+  DateSegmentProps,
+  Label
 } from 'react-aria-components'
 import {
   CalendarDate,
@@ -95,7 +95,7 @@ const DateFieldInner = (props: AriaDateFieldProps<CalendarDate>) => {
   })
 
   const ref = React.useRef<HTMLDivElement>(null)
-  const { fieldProps } = useDateField(props, state, ref)
+  const { fieldProps, labelProps } = useDateField(props, state, ref)
 
   const segments = React.useMemo(
     () => sortDateSegments(state.segments),
@@ -119,12 +119,12 @@ const InnerDateSegment = ({
   segment,
   state
 }: DateSegmentProps & { state: DateFieldState }) => {
-  let ref = React.useRef<HTMLDivElement>(null)
-  let { segmentProps } = useDateSegment(segment, state, ref)
+  const ref = React.useRef<HTMLDivElement>(null)
+  const { segmentProps } = useDateSegment(segment, state, ref)
 
   return (
     <StyledDateSegment {...segmentProps} ref={ref}>
-      {segment.text}
+      {segment.type === 'literal' ? '-' : segment.text}
     </StyledDateSegment>
   )
 }
@@ -170,12 +170,14 @@ const DateField = ({
       isDisabled={disabled}
       granularity='day'
       isRequired={required}
+      shouldForceLeadingZeros
       onChange={value => onChange(toCalendarDate(value))}
       isDateUnavailable={isDateUnavailable}
     >
       <StyledLabel>{label}</StyledLabel>
       <StyledGroup>
         <DateFieldInner
+          aria-label={label}
           value={value}
           maxValue={maxEnd}
           minValue={minStart}
@@ -184,6 +186,7 @@ const DateField = ({
           defaultValue={defaultValue}
           isDisabled={disabled}
           isRequired={required}
+          shouldForceLeadingZeros
         />
         <StyledInputButton isDisabled={disabled} data-trigger>
           <CalendarIcon width={24} height={24} />
@@ -223,52 +226,57 @@ interface DateSelectsProps {
   months: number[]
   onDateChange(date: CalendarDate): void
 }
-const DateSelects = React.memo(
-  ({ value, years, months, onDateChange }: DateSelectsProps) => {
-    const yearOptions = React.useMemo(
-      () => getYearOptions(years, value),
-      [years, value]
-    )
+export const DateSelects = ({
+  value,
+  years,
+  months,
+  onDateChange
+}: DateSelectsProps) => {
+  const yearOptions = React.useMemo(
+    () => getYearOptions(years, value),
+    [years, value]
+  )
 
-    const monthOptions = React.useMemo(() => getMonthOptions(months), [months])
+  const monthOptions = React.useMemo(() => getMonthOptions(months), [months])
 
-    const handleChange =
-      (key: 'month' | 'year') =>
-      ({
-        target: { value: selectValue }
-      }: React.ChangeEvent<HTMLSelectElement>) => {
-        const newDate = value.set({ [key]: parseInt(selectValue) })
-        onDateChange(newDate)
-      }
+  const handleChange =
+    (key: 'month' | 'year') =>
+    ({
+      target: { value: selectValue }
+    }: React.ChangeEvent<HTMLSelectElement>) => {
+      const newDate = value.set({ [key]: parseInt(selectValue) })
+      onDateChange(newDate)
+    }
 
-    return (
-      <Row>
-        <select
-          key={value.month}
-          value={value.month}
-          onChange={handleChange('month')}
-        >
-          {monthOptions.map(({ id, label }) => (
-            <option key={id} value={id}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <select
-          key={value.year}
-          value={value.year}
-          onChange={handleChange('year')}
-        >
-          {yearOptions.map(({ id, label, disabled }) => (
-            <option key={id} value={id} disabled={disabled}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </Row>
-    )
-  }
-)
+  return (
+    <Row>
+      <select
+        key={value.month}
+        value={value.month}
+        onChange={handleChange('month')}
+      >
+        {monthOptions.map(({ id, label }) => (
+          <option key={id} value={id}>
+            {label}
+          </option>
+        ))}
+      </select>
+      <select
+        key={value.year}
+        value={value.year}
+        onChange={handleChange('year')}
+      >
+        {yearOptions.map(({ id, label, disabled }) => (
+          <option key={id} value={id} disabled={disabled}>
+            {label}
+          </option>
+        ))}
+      </select>
+    </Row>
+  )
+}
+
+DateField.displayName = 'DateField'
 
 const Row = styled.div`
   width: 100%;
@@ -286,10 +294,11 @@ const StyledDatePicker = styled(DatePicker)`
   align-items: flex-start;
   flex-basis: 50%;
 `
-
 const StyledLabel = styled(Label)`
-  font-size: 12px;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
 `
+
 const StyledGroup = styled(Group)`
   display: flex;
   width: fit-content;
@@ -311,7 +320,7 @@ const StyledDateInput = styled.div`
   align-items: center;
 
   &.invalid {
-    color: red;
+    border-color: red;
   }
 `
 
@@ -331,6 +340,7 @@ const StyledBlankButton = styled(Button)`
 
 const StyledInputButton = styled(StyledBlankButton)`
   margin-left: -2.25rem;
+  cursor: pointer;
 `
 
 const StyledDateSegment = styled.div`
@@ -348,13 +358,11 @@ const StyledDateSegment = styled.div`
   }
 
   &:focus {
-    color: #58595e;
+    background-color: #3297fd;
+    border-radius: 2px;
+    color: white;
     outline: none;
     caret-color: black;
-  }
-
-  &[data-invalid] {
-    color: red !important;
   }
 
   &[data-disabled] {

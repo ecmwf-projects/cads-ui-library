@@ -49,12 +49,8 @@ export const getStartDateErrors: ValidateDateFn = (
     return ''
   }
 
-  if (!startDate) {
-    return 'Start date is required'
-  }
-
   if (startDate.compare(endDate) > 0) {
-    return 'Start date should be above to End date'
+    return 'Start date should be later than End date'
   }
 
   if (startDate.compare(fMaxDate) > 0) {
@@ -88,10 +84,6 @@ export const getEndDateErrors: ValidateDateFn = (
     return ''
   }
 
-  if (!endDate) {
-    return 'End date is required'
-  }
-
   if (endDate.compare(startDate) < 0) {
     return 'End date cannot be earlier than Start date'
   }
@@ -122,9 +114,9 @@ export const getDateLimits = (
     return {}
   }
 
-  let startMinDate = fMinStart,
-    startMaxDate = endDate,
-    endMinDate = startDate,
+  const startMinDate = fMinStart,
+    endMinDate = startDate
+  let startMaxDate = endDate,
     endMaxDate = fMaxEnd
 
   if (startMinDate.compare(startMaxDate) > 0) {
@@ -356,7 +348,6 @@ const DateRangeWidget = ({
           <DateField
             value={startDate}
             onChange={setStartDate}
-            // name={`${configuration.name}_start`}
             label='Start date'
             error={startDateError}
             defaultValue={parseDate(configuration.details.defaultStart)}
@@ -371,7 +362,6 @@ const DateRangeWidget = ({
           <DateField
             value={endDate}
             onChange={setEndDate}
-            // name={`${configuration.name}_end`}
             label='End date'
             error={endDateError}
             defaultValue={parseDate(configuration.details.defaultEnd)}
@@ -388,6 +378,8 @@ const DateRangeWidget = ({
     </Widget>
   )
 }
+
+DateRangeWidget.displayName = 'DateField'
 
 const Row = styled.div`
   width: auto;

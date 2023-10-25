@@ -94,6 +94,7 @@ const createWidget: CreateWidget = (configuration, constraints, opts) => {
       // eslint-disable-next-line react/display-name
       return props => <TextWidget configuration={configuration} {...props} />
     case 'DateRangeWidget':
+      // eslint-disable-next-line react/display-name
       return props => (
         <DateRangeWidget
           configuration={configuration}

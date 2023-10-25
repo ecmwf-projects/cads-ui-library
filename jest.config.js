@@ -10,7 +10,7 @@ module.exports = async () => {
      */
     collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/widgets/**/*.tsx'],
     coverageThreshold: {
-      global: { lines: 80 }
+      global: { lines: 90 }
     },
     modulePaths: [compilerOptions.baseUrl],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),

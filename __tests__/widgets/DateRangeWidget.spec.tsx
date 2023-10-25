@@ -1,18 +1,30 @@
+import React from 'react'
+
 import { expect } from '@jest/globals'
+import { render, screen } from '@testing-library/react'
 
 import { DateValue, parseDate } from '@internationalized/date'
 
 import {
+  DateRangeWidget,
   getAvailableMonths,
   getAvailableYears,
   getDateLimits,
   getEndDateErrors,
   getStartDateErrors
 } from '../../src'
+import { getDateRangeWidgetConfiguration } from '../factories'
 
 const mockIsDateUnavailable = (date: DateValue) => false
 
 describe('<DateRangeWidget />', () => {
+  describe('renders', () => {
+    it('renders', () => {
+      const configuration = getDateRangeWidgetConfiguration()
+
+      render(<DateRangeWidget configuration={configuration} />)
+    })
+  })
   describe('getStartDateErrors', () => {
     it('should return "Date is not valid" error', () => {
       const date = parseDate('2023-03-20')
@@ -26,7 +38,7 @@ describe('<DateRangeWidget />', () => {
 
       expect(error).toBe('Date is not valid')
     })
-    it('should return "Start date should be above to End date" error', () => {
+    it('should return "Start date should be later than End date" error', () => {
       const startDate = parseDate('2023-03-20')
       const endDate = parseDate('2023-02-10')
       const error = getStartDateErrors(
@@ -37,7 +49,7 @@ describe('<DateRangeWidget />', () => {
         mockIsDateUnavailable
       )
 
-      expect(error).toBe('Start date should be above to End date')
+      expect(error).toBe('Start date should be later than End date')
     })
     it('should return "Start date cannot exceed the deadline" error', () => {
       const startDate = parseDate('2023-03-20'),
@@ -53,7 +65,7 @@ describe('<DateRangeWidget />', () => {
         mockIsDateUnavailable
       )
 
-      expect(error).toBe(`Start date cannot exceed the deadline (${maxDate})`)
+      expect(error).toBe(`Start date cannot exceed the deadline (2023-02-10)`)
     })
     it('should return "Start date cannot be set earlier than the minimum date" error', () => {
       const startDate = parseDate('2023-03-20'),
@@ -70,7 +82,7 @@ describe('<DateRangeWidget />', () => {
       )
 
       expect(error).toBe(
-        `Start date cannot be set earlier than the minimum date (${minDate})`
+        `Start date cannot be set earlier than the minimum date (2024-01-10)`
       )
     })
   })
@@ -114,7 +126,7 @@ describe('<DateRangeWidget />', () => {
         mockIsDateUnavailable
       )
 
-      expect(error).toBe(`End date cannot exceed the deadline (${maxDate})`)
+      expect(error).toBe(`End date cannot exceed the deadline (2023-02-10)`)
     })
     it('should return "End date cannot be set earlier than the deadline" error', () => {
       const startDate = parseDate('2023-03-20'),
@@ -131,7 +143,7 @@ describe('<DateRangeWidget />', () => {
       )
 
       expect(error).toBe(
-        `End date cannot be set earlier than the deadline (${minDate})`
+        `End date cannot be set earlier than the deadline (2024-01-10)`
       )
     })
   })

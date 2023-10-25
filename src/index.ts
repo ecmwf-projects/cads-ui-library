@@ -10,6 +10,7 @@ export { WidgetTooltip } from './common/WidgetTooltip'
 export { SingleSelect } from './common/Select'
 export {
   DateField,
+  DateSelects,
   createCalendar,
   sortDateSegments,
   getYearOptions,
