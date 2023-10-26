@@ -6,6 +6,7 @@ import { TextWidgetConfiguration } from '../widgets/TextWidget'
 import { LicenceWidgetConfiguration } from '../widgets/LicenceWidget'
 import { ExclusiveGroupWidgetConfiguration } from '../widgets/ExclusiveGroupWidget'
 import { FreeformInputWidgetConfiguration } from '../widgets/FreeformInputWidget'
+import { DateRangeWidgetConfiguration } from '../widgets/DateRangeWidget'
 
 export type FormConfiguration =
   | ExclusiveGroupWidgetConfiguration
@@ -16,3 +17,4 @@ export type FormConfiguration =
   | TextWidgetConfiguration
   | LicenceWidgetConfiguration
   | FreeformInputWidgetConfiguration
+  | DateRangeWidgetConfiguration

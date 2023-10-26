@@ -1,6 +1,6 @@
 {
   "name": "@ecmwf-projects/cads-ui-library",
-  "version": "7.0.1",
+  "version": "7.0.8",
   "description": "Common UI kit library",
   "repository": {
     "type": "git",
@@ -76,6 +76,7 @@
     "vite-plugin-istanbul": "^4.1.0"
   },
   "dependencies": {
+    "@internationalized/date": "^3.5.0",
     "@radix-ui/react-accordion": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.0.3",
     "@radix-ui/react-icons": "^1.3.0",
@@ -84,9 +85,13 @@
     "@radix-ui/react-select": "^1.2.1",
     "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.5",
+    "@react-aria/datepicker": "^3.8.1",
+    "@react-aria/i18n": "^3.8.4",
+    "@react-stately/datepicker": "^3.8.0",
     "core-js": "^3.30.1",
     "markdown-to-jsx": "^7.2.0",
     "react": "^18.2.0",
+    "react-aria-components": "^1.0.0-beta.0",
     "react-dom": "^18.2.0",
     "resize-observer-polyfill": "^1.5.1",
     "styled-system": "^5.1.5",

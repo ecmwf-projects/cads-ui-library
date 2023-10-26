@@ -256,6 +256,20 @@ export const getStringChoiceWidgetConfiguration = () => {
   }
 }
 
+export const getDateRangeWidgetConfiguration = () => ({
+  type: 'DateRangeWidget' as const,
+  help: null,
+  label: 'Date range',
+  name: 'date_range',
+  required: true,
+  details: {
+    defaultStart: '2023-10-12',
+    defaultEnd: '2023-10-24',
+    minStart: '2023-09-09',
+    maxEnd: '2024-03-20'
+  }
+})
+
 export const getFreeformInputWidgetConfiguration = () => {
   return {
     type: 'FreeformInputWidget' as const,

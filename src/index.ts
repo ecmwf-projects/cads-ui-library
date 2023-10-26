@@ -8,6 +8,14 @@ export { Tabs, StyledTabTrigger, StyledTabContent } from './common/Tabs'
 export { RadioGroup, RadioGroupItem, RadioIndicator } from './common/RadioGroup'
 export { WidgetTooltip } from './common/WidgetTooltip'
 export { SingleSelect } from './common/Select'
+export {
+  DateField,
+  DateSelects,
+  createCalendar,
+  sortDateSegments,
+  getYearOptions,
+  getMonthOptions
+} from './common/DateField'
 
 export { LicenceWidget } from './widgets/LicenceWidget'
 export { TextWidget } from './widgets/TextWidget'
@@ -16,6 +24,7 @@ export { GeographicExtentWidget } from './widgets/GeographicExtentWidget'
 export { ExclusiveGroupWidget } from './widgets/ExclusiveGroupWidget'
 export { StringListWidget } from './widgets/StringListWidget'
 export { StringChoiceWidget } from './widgets/StringChoiceWidget'
+export { DateRangeWidget } from './widgets/DateRangeWidget'
 export { FreeformInputWidget } from './widgets/FreeformInputWidget'
 
 export { StringListArrayWidget } from './widgets/StringListArrayWidget'
@@ -43,3 +52,11 @@ export {
 } from './widgets/FreeformInputWidget'
 
 export { createWidget } from './utils/widgetFactory'
+
+export {
+  getAvailableMonths,
+  getAvailableYears,
+  getDateLimits,
+  getEndDateErrors,
+  getStartDateErrors
+} from './widgets/DateRangeWidget'
