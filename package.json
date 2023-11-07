@@ -1,6 +1,6 @@
 {
   "name": "@ecmwf-projects/cads-ui-library",
-  "version": "7.0.8",
+  "version": "7.1.0-0",
   "description": "Common UI kit library",
   "repository": {
     "type": "git",

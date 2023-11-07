@@ -8,6 +8,8 @@ export { Tabs, StyledTabTrigger, StyledTabContent } from './common/Tabs'
 export { RadioGroup, RadioGroupItem, RadioIndicator } from './common/RadioGroup'
 export { WidgetTooltip } from './common/WidgetTooltip'
 export { SingleSelect } from './common/Select'
+export { Inertable } from './widgets/Widget'
+
 export {
   DateField,
   DateSelects,

@@ -6,7 +6,8 @@ import {
   StringChoiceWidget,
   TextWidget,
   FreeformInputWidget,
-  DateRangeWidget
+  DateRangeWidget,
+  Inertable
 } from '../index'
 
 import type { FormConfiguration } from '../types/Form'
@@ -22,6 +23,8 @@ export type CreateWidgetOpts = {
    * When true, shows the active selection count for closed accordions.
    */
   renderActiveSelectionsCount?: boolean
+
+  loading?: boolean
 
   /**
    * An object of key/validator pairs to apply to each child.
@@ -52,13 +55,15 @@ const createWidget: CreateWidget = (configuration, constraints, opts) => {
     case 'StringListArrayWidget':
       // eslint-disable-next-line react/display-name
       return props => (
-        <StringListArrayWidget
-          configuration={configuration}
-          bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
-          renderActiveSelectionsCount={opts?.renderActiveSelectionsCount}
-          constraints={constraints}
-          {...props}
-        />
+        <Inertable {...(opts?.loading && { inert: '' })}>
+          <StringListArrayWidget
+            configuration={configuration}
+            bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
+            renderActiveSelectionsCount={opts?.renderActiveSelectionsCount}
+            constraints={constraints}
+            {...props}
+          />
+        </Inertable>
       )
     case 'FreeformInputWidget':
       // eslint-disable-next-line react/display-name
@@ -73,22 +78,26 @@ const createWidget: CreateWidget = (configuration, constraints, opts) => {
     case 'StringListWidget':
       // eslint-disable-next-line react/display-name
       return props => (
-        <StringListWidget
-          configuration={configuration}
-          bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
-          constraints={constraints}
-          {...props}
-        />
+        <Inertable {...(opts?.loading && { inert: '' })}>
+          <StringListWidget
+            configuration={configuration}
+            bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
+            constraints={constraints}
+            {...props}
+          />
+        </Inertable>
       )
     case 'StringChoiceWidget':
       // eslint-disable-next-line react/display-name
       return props => (
-        <StringChoiceWidget
-          configuration={configuration}
-          bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
-          constraints={constraints}
-          {...props}
-        />
+        <Inertable {...(opts?.loading && { inert: '' })}>
+          <StringChoiceWidget
+            configuration={configuration}
+            bypassRequiredForConstraints={opts?.bypassRequiredForConstraints}
+            constraints={constraints}
+            {...props}
+          />
+        </Inertable>
       )
     case 'FreeEditionWidget':
       // eslint-disable-next-line react/display-name

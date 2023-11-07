@@ -194,9 +194,30 @@ describe('<ExclusiveGroupWidget/>', () => {
           'checkbox_groups'
         )}
       />
-    )
+    ).then(({ rerender }) => {
+      cy.findByLabelText('Skin temperature')
 
-    cy.findByLabelText('Skin temperature')
+      cy.log('Re-render in loading state')
+
+      rerender(
+        <ExclusiveGroupWidget
+          configuration={configuration}
+          childrenGetter={getExclusiveGroupChildren(
+            formConfiguration,
+            'checkbox_groups',
+            null,
+            {
+              loading: true
+            }
+          )}
+        />
+      )
+
+      cy.get('[data-stylizable="widget exclusive-group"] div[inert]').should(
+        'have.length',
+        3
+      )
+    })
   })
 
   it('with GeographicExtentWidget and TextWidget', () => {
