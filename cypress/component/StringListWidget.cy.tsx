@@ -184,4 +184,25 @@ describe('<StringListWidget/>', () => {
       'false'
     )
   })
+
+  it('uses default selection values', () => {
+    const conf = getStringListWidgetConfiguration()
+    cy.mount(
+      <StringListWidget
+        configuration={{
+          ...conf,
+          details: {
+            ...conf.details,
+            defaultValue: ['monthly_averaged_reanalysis']
+          }
+        }}
+      />
+    )
+
+    cy.findByLabelText('Monthly averaged reanalysis').should(
+      'have.attr',
+      'aria-checked',
+      'true'
+    )
+  })
 })
