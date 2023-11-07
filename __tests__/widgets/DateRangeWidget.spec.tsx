@@ -11,6 +11,7 @@ import {
   getAvailableYears,
   getDateLimits,
   getEndDateErrors,
+  getInitialSelection,
   getStartDateErrors
 } from '../../src'
 import { getDateRangeWidgetConfiguration } from '../factories'
@@ -220,6 +221,22 @@ describe('<DateRangeWidget />', () => {
       const months = getAvailableMonths(date, minDate, maxDate)
       expect(months).toHaveLength(6)
       expect(months).toStrictEqual([1, 2, 3, 4, 5, 6])
+    })
+  })
+  describe('getInitialSelection', () => {
+    it('should return parsed persisted value', () => {
+      const persisted = {
+        date_range: ['2023-11-03/2023-12-24']
+      }
+      const { start, end } = getInitialSelection('date_range', persisted)
+
+      expect(start?.toString()).toStrictEqual('2023-11-03')
+      expect(end?.toString()).toStrictEqual('2023-12-24')
+    })
+    it('should return undefined values', () => {
+      const { start, end } = getInitialSelection('date_range')
+      expect(start).toBeUndefined()
+      expect(end).toBeUndefined()
     })
   })
 })

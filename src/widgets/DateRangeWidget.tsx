@@ -21,7 +21,7 @@ import {
 } from './Widget'
 import { DateField } from '../common/DateField'
 import { WidgetTooltip } from '../common/WidgetTooltip'
-import { useBypassRequired } from '../utils'
+import { useBypassRequired, useWidgetSelection } from '../utils'
 import { useReadLocalStorage } from 'usehooks-ts'
 
 type ValidateDateFn = (
@@ -181,6 +181,27 @@ export const getAvailableMonths = (
   return new Array(12).fill(1).map((_, i) => i + 1)
 }
 
+export const getInitialSelection = (
+  name: string,
+  selection?: Record<string, string[]>
+) => {
+  if (selection) {
+    const firstEntry = selection[name]?.[0]
+    if (firstEntry) {
+      const [rawStart, rawEnd] = firstEntry.split('/')
+
+      return {
+        start: rawStart ? parseDate(rawStart) : undefined,
+        end: rawEnd ? parseDate(rawEnd) : undefined
+      }
+    }
+  }
+  return {
+    start: undefined,
+    end: undefined
+  }
+}
+
 export interface DateRangeWidgetConfiguration {
   type: 'DateRangeWidget'
   help: string | null
@@ -220,10 +241,14 @@ const DateRangeWidget = ({
 
   const persistedSelection = useReadLocalStorage<{
     dataset: { id: string }
-    inputs: { [k: string]: string }
+    inputs: Record<string, string[]>
   }>('formSelection')
 
   const persistedSelectionRef = React.useRef(persistedSelection)
+
+  const { selection, setSelection } = useWidgetSelection(configuration.name)
+
+  console.log(selection)
 
   const [startDate, setStartDate] = React.useState(
     parseDate(configuration.details.defaultStart)
@@ -232,33 +257,20 @@ const DateRangeWidget = ({
     parseDate(configuration.details.defaultEnd)
   )
 
-  const finalValue = React.useMemo(() => {
-    return `${startDate?.toString()}/${endDate?.toString()}`
+  React.useEffect(() => {
+    setSelection(prev => ({
+      ...prev,
+      [configuration.name]: [`${startDate?.toString()}/${endDate?.toString()}`]
+    }))
   }, [startDate, endDate])
 
   React.useEffect(() => {
-    const getInitialSelection = () => {
-      const inputs = persistedSelectionRef.current?.inputs
-
-      if (inputs) {
-        const start = inputs[`${configuration.name}_start`],
-          end = inputs[`${configuration.name}_end`]
-
-        return {
-          startDate: start ? parseDate(start) : undefined,
-          endDate: end ? parseDate(end) : undefined
-        }
-      }
-
-      return {
-        startDate: parseDate(configuration.details.defaultStart),
-        endDate: parseDate(configuration.details.defaultEnd)
-      }
-    }
-
-    const { startDate, endDate } = getInitialSelection()
-    setStartDate(d => startDate ?? d)
-    setEndDate(d => endDate ?? d)
+    const { start, end } = getInitialSelection(
+      configuration.name,
+      persistedSelectionRef.current?.inputs
+    )
+    setStartDate(d => start ?? d)
+    setEndDate(d => end ?? d)
   }, [configuration])
 
   const isDateUnavailable = React.useCallback(
@@ -343,7 +355,11 @@ const DateRangeWidget = ({
       </ReservedSpace>
       <Fieldset name={configuration.name} ref={fieldSetRef}>
         <Legend>{configuration.label}</Legend>
-        <HiddenInput readOnly value={finalValue} name={configuration.name} />
+        <HiddenInput
+          readOnly
+          value={selection[configuration.name]}
+          name={configuration.name}
+        />
         <Row>
           <DateField
             value={startDate}
