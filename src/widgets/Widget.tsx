@@ -114,6 +114,15 @@ const ActionButton = styled(BaseButton)`
   text-decoration: underline;
 `
 
+const Inertable = styled.div`
+  &[inert] {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: default;
+    user-select: none;
+  }
+`
+
 export {
   Actions,
   ActionButton,
@@ -124,6 +133,7 @@ export {
   Legend,
   Error,
   ReservedSpace,
+  Inertable,
   Widget,
   WidgetActionsWrapper,
   WidgetHeader,
