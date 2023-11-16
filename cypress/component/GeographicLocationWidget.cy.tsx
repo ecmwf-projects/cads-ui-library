@@ -51,8 +51,7 @@ describe('<GeographicLocationWidget />', () => {
             name: 'name',
             label: 'The label',
             required: true,
-            details: {
-            },
+            details: {},
             help: 'The help'
           }}
         />
@@ -94,9 +93,7 @@ describe('<GeographicLocationWidget />', () => {
       'formSelection',
       JSON.stringify({
         dataset: 'fake',
-        inputs: { dataposition: [
-          10, 20
-        ] }
+        inputs: { dataposition: [10, 20] }
       })
     )
 
@@ -108,8 +105,7 @@ describe('<GeographicLocationWidget />', () => {
             name: 'dataposition',
             label: 'The label',
             required: true,
-            details: {
-            },
+            details: {},
             help: 'The help'
           }}
         />
@@ -125,7 +121,6 @@ describe('<GeographicLocationWidget />', () => {
    *  < -180 or > 180 for X
    * < -90 or > 90 for Y
    */
-
 
   /*
    * Test to prevent setting values outside the custom range
