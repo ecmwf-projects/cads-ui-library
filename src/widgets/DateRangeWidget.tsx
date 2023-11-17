@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 import React from 'react'
+import { unstable_batchedUpdates } from 'react-dom'
 
 import styled from 'styled-components'
 import { DateValue } from 'react-aria-components'
@@ -232,7 +233,7 @@ const DateRangeWidget = ({
   error
 }: DateRangeWidgetProps) => {
   const fieldSetRef = React.useRef<HTMLFieldSetElement>(null)
-
+  const inputRef = React.useRef<HTMLInputElement>(null)
   const bypassed = useBypassRequired(
     fieldSetRef,
     bypassRequiredForConstraints,
@@ -248,8 +249,6 @@ const DateRangeWidget = ({
 
   const { selection, setSelection } = useWidgetSelection(configuration.name)
 
-  console.log(selection)
-
   const [startDate, setStartDate] = React.useState(
     parseDate(configuration.details.defaultStart)
   )
@@ -258,10 +257,26 @@ const DateRangeWidget = ({
   )
 
   React.useEffect(() => {
+    const v = `${startDate?.toString()}/${endDate?.toString()}`
     setSelection(prev => ({
       ...prev,
-      [configuration.name]: [`${startDate?.toString()}/${endDate?.toString()}`]
+      [configuration.name]: [v]
     }))
+  }, [startDate, endDate])
+
+  const notifyForm = React.useCallback(() => {
+    if (inputRef.current) {
+      const v = `${startDate?.toString()}/${endDate?.toString()}`
+      console.log('notifyForm', v)
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        window.HTMLInputElement.prototype,
+        'value'
+      )?.set
+      nativeInputValueSetter?.call(inputRef.current, v)
+
+      var evt = new Event('input', { bubbles: true })
+      inputRef.current.dispatchEvent(evt)
+    }
   }, [startDate, endDate])
 
   React.useEffect(() => {
@@ -356,9 +371,9 @@ const DateRangeWidget = ({
       <Fieldset name={configuration.name} ref={fieldSetRef}>
         <Legend>{configuration.label}</Legend>
         <HiddenInput
-          readOnly
           value={selection[configuration.name]}
           name={configuration.name}
+          ref={inputRef}
         />
         <Row>
           <DateField
@@ -366,6 +381,7 @@ const DateRangeWidget = ({
             onChange={setStartDate}
             label='Start date'
             error={startDateError}
+            onBlur={() => notifyForm()}
             defaultValue={parseDate(configuration.details.defaultStart)}
             minStart={startMinDate}
             maxEnd={startMaxDate}
@@ -380,6 +396,7 @@ const DateRangeWidget = ({
             onChange={setEndDate}
             label='End date'
             error={endDateError}
+            onBlur={() => notifyForm()}
             defaultValue={parseDate(configuration.details.defaultEnd)}
             maxEnd={endMaxDate}
             minStart={endMinDate}
@@ -407,7 +424,9 @@ const Row = styled.div`
 `
 
 const HiddenInput = styled.input`
-  display: none;
+  width: 0px;
+  height: 0px;
+  visibility: hidden;
 `
 
 export { DateRangeWidget }
