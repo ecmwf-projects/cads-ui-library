@@ -118,11 +118,54 @@ describe('<GeographicLocationWidget />', () => {
 
   /*
    * Test to prevent setting values outside of the range
-   *  < -180 or > 180 for X
-   * < -90 or > 90 for Y
+   *  < -180 or > 180 for X (default)
+   * < -90 or > 90 for Y    (default)
    */
 
-  /*
-   * Test to prevent setting values outside the custom range
-   */
+
+  it('Test to prevent setting values outside of the range', () => {
+    localStorage.setItem(
+      'formSelection',
+      JSON.stringify({
+        dataset: 'fake',
+        inputs: { dataposition: [10, 20] }
+      })
+    )
+
+    cy.mount(
+      <Wrapper>
+        <GeographicLocationWidget
+          configuration={{
+            type: 'GeographicLocationWidget',
+            name: 'dataposition',
+            label: 'The label',
+            required: true,
+            details: {
+              minX: -20,
+              maxX: 20,
+              minY: -10,
+              maxY: 10
+              
+            },
+            help: 'The help'
+          }}
+        />
+      </Wrapper>
+    )
+
+    cy.get('input[name="dataposition[0]"]').should('have.value', '10')
+    cy.get('input[name="dataposition[1]"]').should('have.value', '20')
+    
+    // Has an error message
+    cy.get('span[role="alert"]').should('exist')
+    cy.get('span[role="alert"]').should('have.text', 'Latitude must be less than 10.\n')
+
+    // Check for input aria-invalid="true"
+    cy.get('input[name="dataposition[1]"]').should('have.attr', 'aria-invalid', 'true')
+    
+    // The error message is removed when the value is changed
+    cy.get('input[name="dataposition[1]"]').clear().type('5')
+    cy.get('span[role="alert"]').should('not.exist')
+  })
+
 })
