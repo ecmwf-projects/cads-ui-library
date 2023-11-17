@@ -18,8 +18,8 @@ import { WidgetTooltip } from '../common/WidgetTooltip'
 import { useEventListener, useReadLocalStorage } from 'usehooks-ts'
 
 const DEFAULTS = {
-  stepX: 0.001,
-  stepY: 0.001,
+  stepX: 0.00001,
+  stepY: 0.00001,
   minX: -180,
   maxX: 180,
   minY: -90,
