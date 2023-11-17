@@ -283,12 +283,15 @@ GeographicLocationWidget.displayName = 'DateField'
 const InpustWrapper = styled.div`
   display: flex;
   flex-flow: row;
-  justify-content: space-between;
+  justify-content: flex-start;
+  flex-wrap: wrap;
 `
 
 const InputWrapper = styled.div`
   display: flex;
   flex-flow: column;
+  margin-right: 2em;
+  margin-bottom: 2em;
 `
 
 const Wrapper = styled.div`
