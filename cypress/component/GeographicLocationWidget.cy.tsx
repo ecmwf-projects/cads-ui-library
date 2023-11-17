@@ -122,7 +122,6 @@ describe('<GeographicLocationWidget />', () => {
    * < -90 or > 90 for Y    (default)
    */
 
-
   it('Test to prevent setting values outside of the range', () => {
     localStorage.setItem(
       'formSelection',
@@ -145,7 +144,6 @@ describe('<GeographicLocationWidget />', () => {
               maxX: 20,
               minY: -10,
               maxY: 10
-              
             },
             help: 'The help'
           }}
@@ -155,17 +153,23 @@ describe('<GeographicLocationWidget />', () => {
 
     cy.get('input[name="dataposition[0]"]').should('have.value', '10')
     cy.get('input[name="dataposition[1]"]').should('have.value', '20')
-    
+
     // Has an error message
     cy.get('span[role="alert"]').should('exist')
-    cy.get('span[role="alert"]').should('have.text', 'Latitude must be less than 10.\n')
+    cy.get('span[role="alert"]').should(
+      'have.text',
+      'Latitude must be less than 10.\n'
+    )
 
     // Check for input aria-invalid="true"
-    cy.get('input[name="dataposition[1]"]').should('have.attr', 'aria-invalid', 'true')
-    
+    cy.get('input[name="dataposition[1]"]').should(
+      'have.attr',
+      'aria-invalid',
+      'true'
+    )
+
     // The error message is removed when the value is changed
     cy.get('input[name="dataposition[1]"]').clear().type('5')
     cy.get('span[role="alert"]').should('not.exist')
   })
-
 })
