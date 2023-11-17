@@ -148,10 +148,13 @@ const GeographicLocationWidget = ({
 
   const sanitize = (value: string): string => {
     if (value !== undefined && value !== null) {
-      // Check if starts with a zero
-      if (value.startsWith('0') && value.length > 1) {
+      // Check if starts with a zero and is followed by a number
+      const sign = value.startsWith('-') ? '-' : ''
+      const noSignValue = value.replace(/^-/, '')
+      const matcher = /^0\d+/
+      if (matcher.test(noSignValue)) {
         // Remove the leading zero
-        return value.replace(/^0+/, '')
+        return sign + noSignValue.replace(/^0+/, '')
       }
     }
     return value
