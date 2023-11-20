@@ -61,5 +61,6 @@ export {
   getAvailableYears,
   getDateLimits,
   getEndDateErrors,
-  getStartDateErrors
+  getStartDateErrors,
+  getInitialSelection
 } from './widgets/DateRangeWidget'

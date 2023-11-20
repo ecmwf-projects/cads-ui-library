@@ -134,6 +134,7 @@ interface DateFieldProps {
   label: string
   value: CalendarDate
   onChange(date: CalendarDate): void
+  onBlur?: VoidFunction
   defaultValue: CalendarDate
   minStart?: CalendarDate
   maxEnd?: CalendarDate
@@ -149,6 +150,7 @@ const DateField = ({
   label,
   value,
   onChange,
+  onBlur,
   defaultValue,
   minStart,
   maxEnd,
@@ -171,6 +173,7 @@ const DateField = ({
       granularity='day'
       isRequired={required}
       shouldForceLeadingZeros
+      onBlur={onBlur}
       onChange={value => onChange(toCalendarDate(value))}
       isDateUnavailable={isDateUnavailable}
     >

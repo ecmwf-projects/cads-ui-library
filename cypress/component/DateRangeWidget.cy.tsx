@@ -50,8 +50,7 @@ describe('<DateRangeWidget />', () => {
       JSON.stringify({
         dataset: 'fake',
         inputs: {
-          date_range_start: '2023-09-30',
-          date_range_end: '2023-10-10'
+          date_range: ['2023-09-30/2023-10-10']
         }
       })
     )
