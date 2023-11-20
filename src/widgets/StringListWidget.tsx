@@ -45,6 +45,7 @@ export interface StringListWidgetDetails {
     [value: string]: string
   }
   values: string[]
+  defaultValue?: string[]
 }
 
 export interface StringListWidgetConfiguration {
@@ -93,9 +94,7 @@ const StringListWidget = ({
 }: StringListWidgetProps) => {
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
   const { details, label, help, name, required } = configuration
-  const {
-    details: { columns, labels }
-  } = configuration
+  const { columns, labels, defaultValue } = details
 
   const { selection, setSelection } = useWidgetSelection(name)
 
@@ -104,6 +103,15 @@ const StringListWidget = ({
     bypassRequiredForConstraints,
     constraints
   )
+
+  React.useEffect(() => {
+    if (defaultValue) {
+      setSelection(prevState => ({
+        ...prevState,
+        [name]: [...prevState[name].concat(defaultValue)]
+      }))
+    }
+  }, [defaultValue, name])
 
   if (!configuration) return null
 
