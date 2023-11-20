@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 import React from 'react'
-import { unstable_batchedUpdates } from 'react-dom'
 
 import styled from 'styled-components'
 import { DateValue } from 'react-aria-components'
@@ -264,20 +263,19 @@ const DateRangeWidget = ({
     }))
   }, [startDate, endDate])
 
-  const notifyForm = React.useCallback(() => {
+  const notifyForm = () => {
     if (inputRef.current) {
       const v = `${startDate?.toString()}/${endDate?.toString()}`
-      console.log('notifyForm', v)
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
         window.HTMLInputElement.prototype,
         'value'
       )?.set
       nativeInputValueSetter?.call(inputRef.current, v)
 
-      var evt = new Event('input', { bubbles: true })
+      const evt = new Event('input', { bubbles: true })
       inputRef.current.dispatchEvent(evt)
     }
-  }, [startDate, endDate])
+  }
 
   React.useEffect(() => {
     const { start, end } = getInitialSelection(
@@ -371,7 +369,8 @@ const DateRangeWidget = ({
       <Fieldset name={configuration.name} ref={fieldSetRef}>
         <Legend>{configuration.label}</Legend>
         <HiddenInput
-          value={selection[configuration.name]}
+          readOnly
+          defaultValue={selection[configuration.name]}
           name={configuration.name}
           ref={inputRef}
         />

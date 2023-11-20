@@ -15,12 +15,6 @@ const Form = ({
         const formData = new FormData(ev.currentTarget) ?? []
         handleSubmit([...formData.entries()])
       }}
-      onChange={ev => {
-        console.log('CHANGED')
-        ev.preventDefault()
-        const formData = new FormData(ev.currentTarget) ?? []
-        handleSubmit([...formData.entries()])
-      }}
     >
       {children}
       <button style={{ position: 'absolute', bottom: 0 }}>submit</button>
@@ -183,12 +177,11 @@ describe('<DateRangeWidget />', () => {
     const configuration = getDateRangeWidgetConfiguration()
 
     cy.mount(
-      <Form handleSubmit={console.log}>
+      <Form handleSubmit={stubbedHandleSubmit}>
         <DateRangeWidget
           error='Dates are required'
           configuration={configuration}
         />
-        <input name='text' />
       </Form>
     )
 
