@@ -193,7 +193,7 @@ describe('<StringListWidget/>', () => {
           ...conf,
           details: {
             ...conf.details,
-            defaultValue: ['monthly_averaged_reanalysis']
+            default: ['monthly_averaged_reanalysis']
           }
         }}
       />
