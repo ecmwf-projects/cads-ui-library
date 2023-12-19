@@ -45,7 +45,7 @@ export interface StringListWidgetDetails {
     [value: string]: string
   }
   values: string[]
-  defaultValue?: string[]
+  default?: string[]
 }
 
 export interface StringListWidgetConfiguration {
@@ -94,7 +94,7 @@ const StringListWidget = ({
 }: StringListWidgetProps) => {
   const fieldSetRef = useRef<HTMLFieldSetElement>(null)
   const { details, label, help, name, required } = configuration
-  const { columns, labels, defaultValue } = details
+  const { columns, labels, default: defaultValue } = details
 
   const { selection, setSelection } = useWidgetSelection(name)
 
