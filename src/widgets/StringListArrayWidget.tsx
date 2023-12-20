@@ -687,7 +687,7 @@ const ChildGroup = ({
             </ActionButton>
           )}
           {groupIntersectsSelection(
-            groups.find(group => group.label === group.label)?.values || [],
+            getOwnGroupValues(groups, group.label),
             selection[name]
           ) ? (
             <ActionButton
