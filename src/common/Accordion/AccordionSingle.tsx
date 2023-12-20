@@ -108,14 +108,6 @@ const StyledTrigger = styled(AccordionTriggerPrimitive)`
 
     margin-bottom: 0.75em;
   }
-
-  svg {
-    position: absolute;
-  }
-
-  [data-stylizable='widget string-listarray accordion-header'] {
-    margin-left: 2rem;
-  }
 `
 
 const StyledChevron = styled(ChevronDownIcon)``
