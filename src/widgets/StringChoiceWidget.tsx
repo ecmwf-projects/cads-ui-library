@@ -140,8 +140,10 @@ const StringChoiceWidget = ({
 
   const [defaultValue] = selection || []
 
+  const requiredError = !bypassed && required && !selection?.length
+
   return (
-    <Widget data-stylizable='widget'>
+    <Widget data-stylizable='widget' data-widget-required={requiredError}>
       <WidgetHeader>
         <WidgetActionsWrapper data-stylizable='widget-action-wrapper'>
           <WidgetTitle
@@ -174,9 +176,7 @@ const StringChoiceWidget = ({
         />
       </WidgetHeader>
       <ReservedSpace data-stylizable='widget string-choice reserved-error-space'>
-        {!bypassed && required && !selection?.length ? (
-          <RequiredErrorMessage />
-        ) : null}
+        <RequiredErrorMessage show={requiredError} />
       </ReservedSpace>
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>

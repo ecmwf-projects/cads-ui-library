@@ -354,8 +354,10 @@ const StringListArrayWidget = ({
 
   const allValues = getAllValues(allGroups)
 
+  const requiredError = !bypassed && required && !selection[name]?.length
+
   return (
-    <Widget data-stylizable='widget'>
+    <Widget data-stylizable='widget' data-widget-required={requiredError}>
       <WidgetHeader>
         <WidgetActionsWrapper data-stylizable='widget-action-wrapper'>
           <WidgetTitle
@@ -430,9 +432,7 @@ const StringListArrayWidget = ({
         />
       </WidgetHeader>
       <ReservedSpace data-stylizable='widget string-listarray reserved-error-space'>
-        {!bypassed && required && !selection[name]?.length ? (
-          <RequiredErrorMessage />
-        ) : null}
+        <RequiredErrorMessage show={requiredError} />
       </ReservedSpace>
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
