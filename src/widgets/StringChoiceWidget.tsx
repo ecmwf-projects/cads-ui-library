@@ -23,11 +23,11 @@ import {
   ReservedSpace,
   WidgetActionsWrapper,
   WidgetHeader,
-  WidgetTitle,
-  Error
+  WidgetTitle
 } from './Widget'
 
 import { isDisabled, useBypassRequired } from '../utils'
+import { RequiredErrorMessage } from './RequiredErrorMessage'
 
 export interface StringChoiceWidgetDetails {
   columns: number
@@ -175,7 +175,7 @@ const StringChoiceWidget = ({
       </WidgetHeader>
       <ReservedSpace data-stylizable='widget string-choice reserved-error-space'>
         {!bypassed && required && !selection?.length ? (
-          <Error>At least one selection must be made</Error>
+          <RequiredErrorMessage />
         ) : null}
       </ReservedSpace>
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>

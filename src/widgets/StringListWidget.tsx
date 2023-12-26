@@ -19,7 +19,6 @@ import {
   WidgetActionsWrapper,
   WidgetHeader,
   WidgetTitle,
-  Error,
   ReservedSpace
 } from './Widget'
 
@@ -30,6 +29,7 @@ import {
   useBypassRequired,
   useWidgetSelection
 } from '../utils'
+import { RequiredErrorMessage } from './RequiredErrorMessage'
 
 declare global {
   interface Set<T> {
@@ -189,7 +189,7 @@ const StringListWidget = ({
       </WidgetHeader>
       <ReservedSpace>
         {!bypassed && required && !selection[name]?.length ? (
-          <Error>At least one selection must be made</Error>
+          <RequiredErrorMessage />
         ) : null}
       </ReservedSpace>
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
