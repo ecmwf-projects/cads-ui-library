@@ -29,6 +29,7 @@ export { StringListWidget } from './widgets/StringListWidget'
 export { StringChoiceWidget } from './widgets/StringChoiceWidget'
 export { DateRangeWidget } from './widgets/DateRangeWidget'
 export { FreeformInputWidget } from './widgets/FreeformInputWidget'
+export { BlankWidget } from './widgets/BlankWidget'
 
 export { StringListArrayWidget } from './widgets/StringListArrayWidget'
 /**
