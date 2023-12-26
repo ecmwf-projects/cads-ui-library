@@ -23,7 +23,6 @@ import {
   WidgetActionsWrapper,
   WidgetHeader,
   WidgetTitle,
-  Error,
   ReservedSpace
 } from './Widget'
 
@@ -34,6 +33,7 @@ import {
   useBypassRequired,
   useWidgetSelection
 } from '../utils'
+import { RequiredErrorMessage } from './RequiredErrorMessage'
 
 declare global {
   interface Set<T> {
@@ -354,8 +354,10 @@ const StringListArrayWidget = ({
 
   const allValues = getAllValues(allGroups)
 
+  const requiredError = !bypassed && required && !selection[name]?.length
+
   return (
-    <Widget data-stylizable='widget'>
+    <Widget data-stylizable='widget' data-widget-required={requiredError}>
       <WidgetHeader>
         <WidgetActionsWrapper data-stylizable='widget-action-wrapper'>
           <WidgetTitle
@@ -430,9 +432,7 @@ const StringListArrayWidget = ({
         />
       </WidgetHeader>
       <ReservedSpace data-stylizable='widget string-listarray reserved-error-space'>
-        {!bypassed && required && !selection[name]?.length ? (
-          <Error>At least one selection must be made</Error>
-        ) : null}
+        <RequiredErrorMessage show={requiredError} />
       </ReservedSpace>
       <Fieldset name={name} ref={fieldSetRef} disabled={fieldsetDisabled}>
         <Legend>{label}</Legend>
