@@ -133,7 +133,7 @@ interface DateFieldProps {
   name?: string
   label: string
   value: CalendarDate
-  onChange(date: CalendarDate): void
+  onChange(date: CalendarDate, source: 'input' | 'calendar'): void
   onBlur?: VoidFunction
   defaultValue: CalendarDate
   minStart?: CalendarDate
@@ -171,10 +171,10 @@ const DateField = ({
       defaultValue={defaultValue}
       isDisabled={disabled}
       granularity='day'
+      onChange={val => onChange(toCalendarDate(val), 'calendar')}
       isRequired={required}
       shouldForceLeadingZeros
       onBlur={onBlur}
-      onChange={value => onChange(toCalendarDate(value))}
       isDateUnavailable={isDateUnavailable}
     >
       <StyledLabel>{label}</StyledLabel>
@@ -185,7 +185,7 @@ const DateField = ({
           maxValue={maxEnd}
           minValue={minStart}
           isDateUnavailable={isDateUnavailable}
-          onChange={onChange}
+          onChange={v => onChange(v, 'input')}
           defaultValue={defaultValue}
           isDisabled={disabled}
           isRequired={required}
@@ -207,7 +207,7 @@ const DateField = ({
                   value={value}
                   years={years}
                   months={months}
-                  onDateChange={onChange}
+                  onDateChange={v => onChange(v, 'calendar')}
                 />
               ) : (
                 <StyledHeading />
@@ -285,9 +285,9 @@ const Row = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
-  justify-conten: space-between;
+  justify-conten: flex-start;
   align-items: center;
-  gap: 1em;
+  gap: 4em;
 `
 
 const StyledDatePicker = styled(DatePicker)`
@@ -295,7 +295,7 @@ const StyledDatePicker = styled(DatePicker)`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  flex-basis: 50%;
+  width: 285px;
 `
 const StyledLabel = styled(Label)`
   margin-bottom: 0.5rem;
