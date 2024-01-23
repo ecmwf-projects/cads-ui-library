@@ -1,5 +1,12 @@
+import { parseDate } from '@internationalized/date'
 import { getDateRangeWidgetConfiguration } from '../../__tests__/factories'
-import { DateRangeWidget } from '../../src'
+import {
+  DateRangeWidget,
+  getEndDateErrors,
+  getStartDateErrors,
+  validateDateRangeWidget
+} from '../../src'
+import { DateValue } from 'react-aria-components'
 
 const Form = ({
   children,
@@ -258,5 +265,39 @@ describe('<DateRangeWidget />', () => {
         />
       </Form>
     )
-  })
+  }),
+    it('Validate start date', () => {
+      const date = parseDate('2023-03-20')
+      const error = getStartDateErrors(
+        date,
+        date,
+        date,
+        date,
+        (_date: DateValue) => _date.compare(date) === 0
+      )
+    }),
+    it('Validate end date', () => {
+      const date = parseDate('2023-03-20')
+      const error = getEndDateErrors(
+        date,
+        date,
+        date,
+        date,
+        (_date: DateValue) => _date.compare(date) === 0
+      )
+    }),
+    it('Uses basic validate', () => {
+      const result = validateDateRangeWidget(
+        '2024-10-12/2024-10-23',
+        getDateRangeWidgetConfiguration(),
+        []
+      )
+    }),
+    it('Uses constrained validate', () => {
+      const result = validateDateRangeWidget(
+        '2024-10-12/2024-10-23',
+        getDateRangeWidgetConfiguration(),
+        ['2024-10-09/2024-10-15']
+      )
+    })
 })

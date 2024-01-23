@@ -218,7 +218,7 @@ const constraintValidator = (constraints?: string[]) => {
   return (date: DateValue) => false
 }
 
-const validate = (
+export const validateDateRangeWidget = (
   value: string,
   configuration: DateRangeWidgetConfiguration,
   constraints: string[]
@@ -274,7 +274,7 @@ export const registerDateField = (
     },
     required: { value: true, message: 'Please insert a value' },
     validate(value) {
-      const errors = validate(value, configuration, constraints)
+      const errors = validateDateRangeWidget(value, configuration, constraints)
       methods.clearErrors(configuration.name)
       if (Object.keys(errors).length > 0) {
         let error
