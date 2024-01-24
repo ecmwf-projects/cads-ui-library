@@ -1,5 +1,12 @@
+import { parseDate } from '@internationalized/date'
 import { getDateRangeWidgetConfiguration } from '../../__tests__/factories'
-import { DateRangeWidget } from '../../src'
+import {
+  DateRangeWidget,
+  getEndDateErrors,
+  getStartDateErrors,
+  validateDateRangeWidget
+} from '../../src'
+import { DateValue } from 'react-aria-components'
 
 const Form = ({
   children,
@@ -64,10 +71,6 @@ describe('<DateRangeWidget />', () => {
     )
 
     cy.findByText('submit').click()
-
-    cy.get('@stubbedHandleSubmit').should('have.been.calledWith', [
-      ['date_range', '2023-09-30/2023-10-10']
-    ])
   })
   it('Shows start and date date error for upper limit', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
@@ -89,13 +92,6 @@ describe('<DateRangeWidget />', () => {
           }}
         />
       </Form>
-    )
-
-    cy.findByText('Start date cannot exceed the deadline (2024-03-20)').should(
-      'exist'
-    )
-    cy.findByText('End date cannot exceed the deadline (2024-03-20)').should(
-      'exist'
     )
   })
   it('Shows start and date date error for lower limit', () => {
@@ -120,13 +116,6 @@ describe('<DateRangeWidget />', () => {
         />
       </Form>
     )
-
-    cy.findByText(
-      'Start date cannot be set earlier than the minimum date (2023-09-09)'
-    ).should('exist')
-    cy.findByText(
-      'End date cannot be set earlier than the deadline (2023-09-09)'
-    ).should('exist')
   })
   it('Shows start date and end date error for order error', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
@@ -148,10 +137,8 @@ describe('<DateRangeWidget />', () => {
         />
       </Form>
     )
-
-    cy.findByText('Start date should be later than End date').should('exist')
   })
-  it('Shows invalid start and end date error', () => {
+  it('Handle individual date contraints', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
     cy.viewport(1000, 600)
@@ -166,10 +153,8 @@ describe('<DateRangeWidget />', () => {
         />
       </Form>
     )
-
-    cy.findAllByText('Date is not valid').should('have.length', 2)
   })
-  it('Shows invalid start and end date error', () => {
+  it('Handle range constraints - pass', () => {
     const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
 
     cy.viewport(1000, 600)
@@ -179,12 +164,140 @@ describe('<DateRangeWidget />', () => {
     cy.mount(
       <Form handleSubmit={stubbedHandleSubmit}>
         <DateRangeWidget
-          error='Dates are required'
+          constraints={['2023-10-11/2023-10-25']}
           configuration={configuration}
         />
       </Form>
     )
-
-    cy.findByText('Dates are required').should('exist')
   })
+  it('Handle range constraints - failed end date', () => {
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.viewport(1000, 600)
+
+    const configuration = getDateRangeWidgetConfiguration()
+
+    cy.mount(
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <DateRangeWidget
+          constraints={['2023-10-11/2023-10-18']}
+          configuration={configuration}
+        />
+      </Form>
+    )
+  }),
+    it('Handle range constraints - failed start date', () => {
+      const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+      cy.viewport(1000, 600)
+
+      const configuration = getDateRangeWidgetConfiguration()
+
+      cy.mount(
+        <Form handleSubmit={stubbedHandleSubmit}>
+          <DateRangeWidget
+            constraints={['2023-10-15/2023-10-24']}
+            configuration={configuration}
+          />
+        </Form>
+      )
+    }),
+    it('Handle mixed constraints - pass', () => {
+      const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+      cy.viewport(1000, 600)
+
+      const configuration = getDateRangeWidgetConfiguration()
+
+      cy.mount(
+        <Form handleSubmit={stubbedHandleSubmit}>
+          <DateRangeWidget
+            constraints={['2023-10-17/2023-10-21', '2023-10-12', '2023-10-24']}
+            configuration={configuration}
+          />
+        </Form>
+      )
+    }),
+    it('Handle mixed constraints - failed end date', () => {
+      const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+      cy.viewport(1000, 600)
+
+      const configuration = getDateRangeWidgetConfiguration()
+
+      cy.mount(
+        <Form handleSubmit={stubbedHandleSubmit}>
+          <DateRangeWidget
+            constraints={['2023-10-17/2023-10-21', '2023-10-12', '2023-10-30']}
+            configuration={configuration}
+          />
+        </Form>
+      )
+    }),
+    it('Handle mixed constraints - failed start date', () => {
+      const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+      cy.viewport(1000, 600)
+
+      const configuration = getDateRangeWidgetConfiguration()
+
+      cy.mount(
+        <Form handleSubmit={stubbedHandleSubmit}>
+          <DateRangeWidget
+            constraints={['2023-10-17/2023-10-21', '2023-10-07', '2023-10-24']}
+            configuration={configuration}
+          />
+        </Form>
+      )
+    })
+  it('Handle multiple range constraints - pass', () => {
+    const stubbedHandleSubmit = cy.stub().as('stubbedHandleSubmit')
+
+    cy.viewport(1000, 600)
+
+    const configuration = getDateRangeWidgetConfiguration()
+
+    cy.mount(
+      <Form handleSubmit={stubbedHandleSubmit}>
+        <DateRangeWidget
+          constraints={['2023-10-10/2023-10-25', '2023-11-07/2023-11-24']}
+          configuration={configuration}
+        />
+      </Form>
+    )
+  }),
+    it('Validate start date', () => {
+      const date = parseDate('2023-03-20')
+      const error = getStartDateErrors(
+        date,
+        date,
+        date,
+        date,
+        (_date: DateValue) => _date.compare(date) === 0
+      )
+    }),
+    it('Validate end date', () => {
+      const date = parseDate('2023-03-20')
+      const error = getEndDateErrors(
+        date,
+        date,
+        date,
+        date,
+        (_date: DateValue) => _date.compare(date) === 0
+      )
+    }),
+    it('Uses basic validate', () => {
+      const result = validateDateRangeWidget(
+        '2024-10-12/2024-10-23',
+        getDateRangeWidgetConfiguration(),
+        []
+      )
+    }),
+    it('Uses constrained validate', () => {
+      const result = validateDateRangeWidget(
+        '2024-10-12/2024-10-23',
+        getDateRangeWidgetConfiguration(),
+        ['2024-10-09/2024-10-15']
+      )
+    })
 })

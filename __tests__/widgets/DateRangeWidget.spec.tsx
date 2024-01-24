@@ -32,8 +32,8 @@ describe('<DateRangeWidget />', () => {
       const error = getStartDateErrors(
         date,
         date,
-        date.toString(),
-        date.toString(),
+        date,
+        date,
         (_date: DateValue) => _date.compare(date) === 0
       )
 
@@ -45,8 +45,8 @@ describe('<DateRangeWidget />', () => {
       const error = getStartDateErrors(
         startDate,
         endDate,
-        endDate.toString(),
-        endDate.toString(),
+        endDate,
+        endDate,
         mockIsDateUnavailable
       )
 
@@ -55,8 +55,8 @@ describe('<DateRangeWidget />', () => {
     it('should return "Start date cannot exceed the deadline" error', () => {
       const startDate = parseDate('2023-03-20'),
         endDate = parseDate('2024-05-10'),
-        maxDate = '2023-02-10',
-        minDate = '2022-01-10'
+        maxDate = parseDate('2023-02-10'),
+        minDate = parseDate('2022-01-10')
 
       const error = getStartDateErrors(
         startDate,
@@ -71,8 +71,8 @@ describe('<DateRangeWidget />', () => {
     it('should return "Start date cannot be set earlier than the minimum date" error', () => {
       const startDate = parseDate('2023-03-20'),
         endDate = parseDate('2024-05-10'),
-        maxDate = '2024-12-10',
-        minDate = '2024-01-10'
+        maxDate = parseDate('2024-12-10'),
+        minDate = parseDate('2024-01-10')
 
       const error = getStartDateErrors(
         startDate,
@@ -93,8 +93,8 @@ describe('<DateRangeWidget />', () => {
       const error = getEndDateErrors(
         date,
         date,
-        date.toString(),
-        date.toString(),
+        date,
+        date,
         (_date: DateValue) => _date.compare(date) === 0
       )
 
@@ -106,8 +106,8 @@ describe('<DateRangeWidget />', () => {
       const error = getEndDateErrors(
         startDate,
         endDate,
-        endDate.toString(),
-        endDate.toString(),
+        endDate,
+        endDate,
         mockIsDateUnavailable
       )
 
@@ -116,8 +116,8 @@ describe('<DateRangeWidget />', () => {
     it('should return "End date cannot exceed the deadline" error', () => {
       const startDate = parseDate('2023-03-20'),
         endDate = parseDate('2024-05-10'),
-        maxDate = '2023-02-10',
-        minDate = '2022-01-10'
+        maxDate = parseDate('2023-02-10'),
+        minDate = parseDate('2022-01-10')
 
       const error = getEndDateErrors(
         startDate,
@@ -132,8 +132,8 @@ describe('<DateRangeWidget />', () => {
     it('should return "End date cannot be set earlier than the deadline" error', () => {
       const startDate = parseDate('2023-03-20'),
         endDate = parseDate('2024-01-01'),
-        maxDate = '2024-12-10',
-        minDate = '2024-01-10'
+        maxDate = parseDate('2024-12-10'),
+        minDate = parseDate('2024-01-10')
 
       const error = getEndDateErrors(
         startDate,

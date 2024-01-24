@@ -1,6 +1,12 @@
 /* istanbul ignore file */
 import React from 'react'
 
+import {
+  RegisterOptions,
+  UseFormRegisterReturn,
+  UseFormReturn,
+  FieldError
+} from 'react-hook-form'
 import styled from 'styled-components'
 import { DateValue } from 'react-aria-components'
 import {
@@ -27,8 +33,8 @@ import { useReadLocalStorage } from 'usehooks-ts'
 type ValidateDateFn = (
   startDate: CalendarDate,
   endDate: CalendarDate,
-  minStart: string,
-  maxEnd: string,
+  minStart: CalendarDate,
+  maxEnd: CalendarDate,
   isDateUnavailable: (date: DateValue) => boolean
 ) => string | undefined
 export const getStartDateErrors: ValidateDateFn = (
@@ -38,9 +44,6 @@ export const getStartDateErrors: ValidateDateFn = (
   maxEnd,
   isDateUnavailable
 ) => {
-  const fMinDate = parseDate(minStart),
-    fMaxDate = parseDate(maxEnd)
-
   if (!startDate) {
     return 'Date is not valid'
   }
@@ -53,12 +56,12 @@ export const getStartDateErrors: ValidateDateFn = (
     return 'Start date should be later than End date'
   }
 
-  if (startDate.compare(fMaxDate) > 0) {
-    return `Start date cannot exceed the deadline (${fMaxDate.toString()})`
+  if (startDate.compare(maxEnd) > 0) {
+    return `Start date cannot exceed the deadline (${maxEnd.toString()})`
   }
 
-  if (startDate.compare(fMinDate) < 0) {
-    return `Start date cannot be set earlier than the minimum date (${fMinDate.toString()})`
+  if (startDate.compare(minStart) < 0) {
+    return `Start date cannot be set earlier than the minimum date (${minStart.toString()})`
   }
 
   if (isDateUnavailable(startDate)) {
@@ -73,9 +76,6 @@ export const getEndDateErrors: ValidateDateFn = (
   maxEnd,
   isDateUnavailable
 ) => {
-  const fMinDate = parseDate(minStart),
-    fMaxDate = parseDate(maxEnd)
-
   if (!endDate) {
     return 'Date is not valid'
   }
@@ -88,15 +88,15 @@ export const getEndDateErrors: ValidateDateFn = (
     return 'End date cannot be earlier than Start date'
   }
 
-  if (endDate.compare(fMaxDate) > 0) {
-    return `End date cannot exceed the deadline (${fMaxDate.toString()})`
+  if (endDate.compare(maxEnd) > 0) {
+    return `End date cannot exceed the deadline (${maxEnd.toString()})`
   }
 
-  if (endDate.compare(fMinDate) < 0) {
-    return `End date cannot be set earlier than the deadline (${fMinDate.toString()})`
+  if (endDate.compare(minStart) < 0) {
+    return `End date cannot be set earlier than the deadline (${minStart.toString()})`
   }
 
-  if (isDateUnavailable(startDate)) {
+  if (isDateUnavailable(endDate)) {
     return `Date is not valid`
   }
 }
@@ -202,6 +202,109 @@ export const getInitialSelection = (
   }
 }
 
+const constraintValidator = (constraints?: string[]) => {
+  if (constraints) {
+    const parsedConstraints = constraints
+      .map((date: string) =>
+        date.includes('/') ? date.split('/') : [date, date]
+      )
+      .map(([start, end]) => [parseDate(start), parseDate(end)])
+    return (date: DateValue) => {
+      return !parsedConstraints.some(([start, end]) => {
+        return date.compare(start) >= 0 && date.compare(end) <= 0
+      })
+    }
+  }
+  return (date: DateValue) => false
+}
+
+export const validateDateRangeWidget = (
+  value: string,
+  configuration: DateRangeWidgetConfiguration,
+  constraints: string[]
+) => {
+  const [strStart, strEnd] = value.split('/')
+  let start, end
+  const min = parseDate(configuration.details.minStart),
+    max = parseDate(configuration.details.maxEnd)
+
+  const errors: any = {}
+  try {
+    start = parseDate(strStart)
+  } catch (err) {
+    errors.start = 'Invalid date'
+  }
+
+  try {
+    end = parseDate(strEnd)
+  } catch (err) {
+    errors.end = 'Invalid date'
+  }
+
+  if (errors.start || errors.end) {
+    return errors
+  }
+
+  const cValidator = constraintValidator(constraints)
+
+  const startError = getStartDateErrors(start!, end!, min, max, cValidator)
+  const endError = getEndDateErrors(start!, end!, min, max, cValidator)
+
+  if (startError) {
+    errors.start = startError
+  }
+
+  if (endError) {
+    errors.end = endError
+  }
+  return errors
+}
+
+export const registerDateField = (
+  configuration: DateRangeWidgetConfiguration,
+  constraints: string[],
+  methods: UseFormReturn
+): RegisterOptions => {
+  return {
+    onChange(evt) {
+      methods.setValue(configuration.name, evt.target.value, {
+        shouldValidate: true
+      })
+      methods.trigger(configuration.name)
+    },
+    required: { value: true, message: 'Please insert a value' },
+    validate(value) {
+      const errors = validateDateRangeWidget(value, configuration, constraints)
+      methods.clearErrors(configuration.name)
+      if (Object.keys(errors).length > 0) {
+        let error
+        if (errors.start && errors.end) {
+          error = {
+            type: 'both',
+            message: `${errors.start}|${errors.end}`
+          }
+        } else if (errors.start) {
+          error = {
+            type: 'start',
+            message: errors.start
+          }
+        } else if (errors.end) {
+          error = {
+            type: 'end',
+            message: errors.end
+          }
+        }
+        if (error) {
+          methods.setError(configuration.name, error)
+          return error.message
+        }
+        return false
+      }
+      return true
+    }
+  }
+}
+
 export interface DateRangeWidgetConfiguration {
   type: 'DateRangeWidget'
   help: string | null
@@ -221,7 +324,8 @@ interface DateRangeWidgetProps {
   bypassRequiredForConstraints?: boolean
   constraints?: string[]
   disabled?: boolean
-  error?: string
+  error?: FieldError
+  register?: UseFormRegisterReturn
 }
 
 const DateRangeWidget = ({
@@ -229,10 +333,11 @@ const DateRangeWidget = ({
   bypassRequiredForConstraints,
   constraints,
   disabled,
+  register = {} as any,
   error
 }: DateRangeWidgetProps) => {
   const fieldSetRef = React.useRef<HTMLFieldSetElement>(null)
-  const inputRef = React.useRef<HTMLInputElement>(null)
+  const fieldRef = React.useRef<HTMLInputElement>(null)
   const bypassed = useBypassRequired(
     fieldSetRef,
     bypassRequiredForConstraints,
@@ -263,17 +368,18 @@ const DateRangeWidget = ({
     }))
   }, [startDate, endDate])
 
-  const notifyForm = () => {
-    if (inputRef.current) {
-      const v = `${startDate?.toString()}/${endDate?.toString()}`
-      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+  const notify = () => {
+    const v = `${startDate?.toString()}/${endDate?.toString()}`
+
+    if (fieldRef.current) {
+      const setValue = Object.getOwnPropertyDescriptor(
         window.HTMLInputElement.prototype,
         'value'
       )?.set
-      nativeInputValueSetter?.call(inputRef.current, v)
+      const event = new Event('input', { bubbles: true })
 
-      const evt = new Event('input', { bubbles: true })
-      inputRef.current.dispatchEvent(evt)
+      setValue?.call(fieldRef.current, v)
+      fieldRef.current.dispatchEvent(event)
     }
   }
 
@@ -286,35 +392,9 @@ const DateRangeWidget = ({
     setEndDate(d => end ?? d)
   }, [configuration])
 
-  const isDateUnavailable = React.useCallback(
-    (date: DateValue) => {
-      return Boolean(constraints?.find(d => parseDate(d).compare(date) === 0))
-    },
+  const isDateUnavailable = React.useMemo(
+    () => constraintValidator(constraints),
     [constraints]
-  )
-
-  const startDateError = React.useMemo(
-    () =>
-      getStartDateErrors(
-        startDate,
-        endDate,
-        configuration.details.minStart,
-        configuration.details.maxEnd,
-        isDateUnavailable
-      ),
-    [startDate, endDate, configuration.details, isDateUnavailable]
-  )
-
-  const endDateError = React.useMemo(
-    () =>
-      getEndDateErrors(
-        startDate,
-        endDate,
-        configuration.details.minStart,
-        configuration.details.maxEnd,
-        isDateUnavailable
-      ),
-    [startDate, endDate, configuration.details, isDateUnavailable]
   )
 
   const { startMinDate, startMaxDate, endMinDate, endMaxDate } =
@@ -349,6 +429,34 @@ const DateRangeWidget = ({
     [endDate, endMinDate, endMaxDate]
   )
 
+  const { startError, endError } = React.useMemo(() => {
+    if (error?.message) {
+      if (error.message.includes('|')) {
+        const [s, e] = error.message.split('|')
+        return {
+          startError: s,
+          endError: e
+        }
+      } else {
+        if (error.message.startsWith('Start')) {
+          return {
+            startError: error.message,
+            endError: undefined
+          }
+        } else {
+          return {
+            startError: undefined,
+            endError: error.message
+          }
+        }
+      }
+    }
+    return {
+      startError: undefined,
+      endError: undefined
+    }
+  }, [error])
+
   return (
     <Widget data-stylizable='widget'>
       <WidgetHeader>
@@ -364,26 +472,33 @@ const DateRangeWidget = ({
         />
       </WidgetHeader>
       <ReservedSpace>
-        {error && !bypassed && <Error>{error}</Error>}
+        {error && !bypassed && <Error>{error && 'Field no valid'}</Error>}
       </ReservedSpace>
-      <Fieldset name={configuration.name} ref={fieldSetRef}>
+      <Fieldset name={configuration.name} ref={fieldSetRef} disabled={disabled}>
         <Legend>{configuration.label}</Legend>
         <HiddenInput
-          readOnly
           defaultValue={selection[configuration.name]}
-          name={configuration.name}
-          ref={inputRef}
+          {...register}
+          ref={ref => {
+            register.ref?.(ref)
+            ;(fieldRef.current as any) = ref
+          }}
         />
         <Row>
           <DateField
             value={startDate}
-            onChange={setStartDate}
+            onChange={(val, source) => {
+              setStartDate(val)
+              if (source === 'calendar') {
+                notify()
+              }
+            }}
             label='Start date'
-            error={startDateError}
-            onBlur={() => notifyForm()}
+            onBlur={notify}
             defaultValue={parseDate(configuration.details.defaultStart)}
             minStart={startMinDate}
             maxEnd={startMaxDate}
+            error={startError}
             isDateUnavailable={isDateUnavailable}
             disabled={disabled}
             required={configuration.required}
@@ -392,13 +507,18 @@ const DateRangeWidget = ({
           />
           <DateField
             value={endDate}
-            onChange={setEndDate}
+            onChange={(val, source) => {
+              setEndDate(val)
+              if (source === 'calendar') {
+                notify()
+              }
+            }}
             label='End date'
-            error={endDateError}
-            onBlur={() => notifyForm()}
+            onBlur={notify}
             defaultValue={parseDate(configuration.details.defaultEnd)}
             maxEnd={endMaxDate}
             minStart={endMinDate}
+            error={endError}
             isDateUnavailable={isDateUnavailable}
             disabled={disabled}
             required={configuration.required}

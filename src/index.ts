@@ -63,5 +63,7 @@ export {
   getDateLimits,
   getEndDateErrors,
   getStartDateErrors,
-  getInitialSelection
+  getInitialSelection,
+  registerDateField,
+  validateDateRangeWidget
 } from './widgets/DateRangeWidget'
